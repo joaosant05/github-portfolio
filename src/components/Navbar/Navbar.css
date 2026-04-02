@@ -1,31 +1,40 @@
 .navbar {
   position: fixed;
-  inset: 0 0 auto 0;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 60;
-  padding-top: 14px;
+  padding-top: 12px;
+  padding-inline: 0;
 }
 
 .navbar__shell {
   position: relative;
-  min-height: 68px;
+  width: min(1180px, calc(100% - 28px));
+  margin: 0 auto;
+  min-height: 58px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0 1rem;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--surface) 78%, transparent),
-      color-mix(in srgb, var(--bg) 78%, transparent)
-    );
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  padding: 0 0.9rem;
+  border-radius: 18px;
+  overflow: hidden;
+
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--surface) 22%, transparent) 0%,
+    color-mix(in srgb, var(--bg) 34%, transparent) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--secondary) 16%, transparent);
+
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+
   box-shadow:
-    0 12px 40px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 8px 30px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 color-mix(in srgb, var(--secondary) 12%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--bg) 18%, transparent);
 }
 
 .navbar__shell::before {
@@ -35,13 +44,28 @@
   border-radius: inherit;
   pointer-events: none;
   background: linear-gradient(
-    90deg,
-    transparent 0%,
-    color-mix(in srgb, var(--primary) 18%, transparent) 30%,
-    color-mix(in srgb, var(--secondary) 12%, transparent) 60%,
+    180deg,
+    color-mix(in srgb, var(--secondary) 14%, transparent) 0%,
+    color-mix(in srgb, var(--secondary) 6%, transparent) 18%,
+    transparent 55%,
     transparent 100%
   );
-  opacity: 0.65;
+}
+
+.navbar__shell::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--primary) 10%, transparent) 0%,
+    transparent 35%,
+    transparent 65%,
+    color-mix(in srgb, var(--secondary) 8%, transparent) 100%
+  );
+  opacity: 0.85;
 }
 
 .navbar__brand {
@@ -49,20 +73,22 @@
   z-index: 1;
   display: inline-flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.55rem;
   text-decoration: none;
-  color: var(--text);
-  font-size: 1.05rem;
+  color: var(--secondary);
+  font-size: 0.98rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
+  flex-shrink: 0;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.18);
 }
 
 .navbar__brand-dot {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 999px;
   background: var(--primary);
-  box-shadow: 0 0 18px color-mix(in srgb, var(--primary) 50%, transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--primary) 35%, transparent);
 }
 
 .navbar__brand-text {
@@ -80,13 +106,12 @@
 .navbar__list {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.3rem;
+  gap: 0.15rem;
+  padding: 0.15rem;
   margin: 0;
   list-style: none;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--bg) 28%, transparent);
-  border: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
+  background: transparent;
+  border: none;
 }
 
 .navbar__item {
@@ -98,27 +123,29 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 88px;
-  padding: 0.72rem 1rem;
-  border-radius: 999px;
-  color: var(--text-muted);
+  min-width: 78px;
+  padding: 0.62rem 0.9rem;
+  border-radius: 12px;
+  color: color-mix(in srgb, var(--secondary) 78%, var(--text) 22%);
   text-decoration: none;
   font-size: 0.92rem;
   font-weight: 500;
   transition:
-    color 0.25s ease,
-    transform 0.25s ease,
-    opacity 0.25s ease;
+    color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    border-color 0.2s ease;
   overflow: hidden;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
 }
 
 .navbar__link:hover {
-  color: var(--text);
-  transform: translateY(-1px);
+  color: var(--secondary);
+  background: color-mix(in srgb, var(--surface) 26%, transparent);
 }
 
 .navbar__link.is-active {
-  color: var(--text);
+  color: var(--secondary);
 }
 
 .navbar__link span {
@@ -129,17 +156,16 @@
 .navbar__active-pill {
   position: absolute;
   inset: 0;
-  border-radius: 999px;
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--primary) 40%, transparent),
-      color-mix(in srgb, var(--surface) 92%, transparent)
-    );
-  border: 1px solid color-mix(in srgb, var(--primary) 22%, transparent);
+  border-radius: 12px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--primary) 18%, transparent) 0%,
+    color-mix(in srgb, var(--surface) 22%, transparent) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--secondary) 12%, transparent);
   box-shadow:
-    0 8px 24px color-mix(in srgb, var(--primary) 16%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    inset 0 1px 0 color-mix(in srgb, var(--secondary) 10%, transparent),
+    0 4px 12px rgba(0, 0, 0, 0.08);
   z-index: 1;
 }
 
@@ -148,100 +174,112 @@
   z-index: 1;
   display: flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.45rem;
+  flex-shrink: 0;
 }
 
 .navbar__action-btn,
 .navbar__theme-btn,
 .navbar__toggle {
-  border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--surface) 55%, transparent);
-  color: var(--text);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--secondary) 12%, transparent);
+  background: color-mix(in srgb, var(--surface) 18%, transparent);
+  color: var(--secondary);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
 }
 
 .navbar__action-btn {
-  height: 42px;
-  padding: 0 0.9rem;
-  border-radius: 999px;
+  height: 38px;
+  padding: 0 0.8rem;
+  border-radius: 12px;
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
   cursor: pointer;
   transition:
-    transform 0.25s ease,
-    background 0.25s ease,
-    border-color 0.25s ease;
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .navbar__action-btn:hover {
-  transform: translateY(-1px);
-  background: color-mix(in srgb, var(--primary) 14%, var(--surface));
+  background: color-mix(in srgb, var(--surface) 30%, transparent);
 }
 
 .navbar__theme-btn {
   position: relative;
-  width: 56px;
-  height: 42px;
-  border-radius: 999px;
+  width: 44px;
+  height: 38px;
+  border-radius: 12px;
   padding: 4px;
   cursor: pointer;
-  transition: background 0.25s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.navbar__theme-btn:hover {
+  background: color-mix(in srgb, var(--surface) 30%, transparent);
 }
 
 .navbar__theme-thumb {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   border-radius: 999px;
   display: grid;
   place-items: center;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--secondary) 74%, white),
-    var(--secondary)
-  );
+  background: color-mix(in srgb, var(--secondary) 88%, white 12%);
   color: var(--bg);
   box-shadow:
-    0 6px 18px rgba(0, 0, 0, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    inset 0 1px 0 color-mix(in srgb, white 35%, transparent),
+    0 2px 8px rgba(0, 0, 0, 0.14);
 }
 
 .navbar__toggle {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   display: none;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: transform 0.25s ease, background 0.25s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .navbar__toggle:hover {
-  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--surface) 30%, transparent);
 }
 
 .navbar__mobile {
-  margin-top: 0.85rem;
-  padding: 1rem;
-  border-radius: 28px;
-  border: 1px solid var(--border);
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--surface) 90%, transparent),
-      color-mix(in srgb, var(--bg) 95%, transparent)
-    );
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.14);
+  width: min(1180px, calc(100% - 28px));
+  margin: 0.65rem auto 0;
+  padding: 0.85rem;
+  border-radius: 18px;
+  overflow: hidden;
+
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--surface) 24%, transparent) 0%,
+    color-mix(in srgb, var(--bg) 38%, transparent) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--secondary) 14%, transparent);
+
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 color-mix(in srgb, var(--secondary) 10%, transparent);
 }
 
 .navbar__mobile-list {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.35rem;
   padding: 0;
   margin: 0;
   list-style: none;
@@ -249,29 +287,29 @@
 
 .navbar__mobile-link {
   display: block;
-  padding: 0.95rem 1rem;
-  border-radius: 18px;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
   text-decoration: none;
-  color: var(--text-muted);
+  color: color-mix(in srgb, var(--secondary) 78%, var(--text) 22%);
   font-weight: 500;
   transition:
-    background 0.25s ease,
-    color 0.25s ease,
-    transform 0.25s ease;
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .navbar__mobile-link:hover,
 .navbar__mobile-link.is-active {
-  color: var(--text);
-  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--secondary);
+  background: color-mix(in srgb, var(--surface) 26%, transparent);
 }
 
 .navbar__mobile-actions {
   display: flex;
   gap: 0.75rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border);
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid color-mix(in srgb, var(--secondary) 10%, transparent);
 }
 
 @media (max-width: 980px) {
@@ -289,14 +327,19 @@
     padding-top: 10px;
   }
 
+  .navbar__shell,
+  .navbar__mobile {
+    width: calc(100% - 20px);
+  }
+
   .navbar__shell {
-    min-height: 62px;
+    min-height: 54px;
     padding: 0 0.75rem;
-    border-radius: 24px;
+    border-radius: 16px;
   }
 
   .navbar__brand {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
 
   .navbar__action-btn span {

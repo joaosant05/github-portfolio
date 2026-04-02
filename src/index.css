@@ -11,16 +11,16 @@
   --text-grande: 1.5rem;
   --text-muito_grande: 2.25rem;
 
-  /* dark - nova paleta */
-  --color-bg-dark: #181c14;
-  --color-surface-dark: #3c3d37;
-  --color-card-dark: #53594d;
-  --color-primary-dark: #697565;
-  --color-secondary-dark: #ecdfcc;
-  --color-text-dark: #ecdfcc;
-  --color-text-muted-dark: #b8ae9f;
-  --color-border-dark: rgba(236, 223, 204, 0.12);
-  --color-input-dark: rgba(236, 223, 204, 0.06);
+  /* dark */
+  --color-bg-dark: #2D2424;
+  --color-surface-dark: #5C3D2E;
+  --color-card-dark: #5C3D2E;
+  --color-primary-dark: #B85C38;
+  --color-secondary-dark: #E0C097;
+  --color-text-dark: #E0C097;
+  --color-text-muted-dark: rgba(224, 192, 151, 0.78);
+  --color-border-dark: rgba(224, 192, 151, 0.16);
+  --color-input-dark: rgba(224, 192, 151, 0.08);
 
   /* light */
   --color-bg-light: #deded1;
@@ -75,15 +75,15 @@
 
 /* tema padrão */
 :root {
-  --bg: #181c14;
-  --surface: #3c3d37;
-  --card: #53594d;
-  --primary: #697565;
-  --secondary: #ecdfcc;
-  --text: #ecdfcc;
-  --text-muted: #b8ae9f;
-  --border: rgba(236, 223, 204, 0.12);
-  --input: rgba(236, 223, 204, 0.06);
+  --bg: #2D2424;
+  --surface: #5C3D2E;
+  --card: #5C3D2E;
+  --primary: #B85C38;
+  --secondary: #E0C097;
+  --text: #E0C097;
+  --text-muted: rgba(224, 192, 151, 0.78);
+  --border: rgba(224, 192, 151, 0.16);
+  --input: rgba(224, 192, 151, 0.08);
 }
 
 /* light */
@@ -101,15 +101,15 @@ html.light {
 
 /* dark */
 html.dark {
-  --bg: #181c14;
-  --surface: #3c3d37;
-  --card: #53594d;
-  --primary: #697565;
-  --secondary: #ecdfcc;
-  --text: #ecdfcc;
-  --text-muted: #b8ae9f;
-  --border: rgba(236, 223, 204, 0.12);
-  --input: rgba(236, 223, 204, 0.06);
+  --bg: #2D2424;
+  --surface: #5C3D2E;
+  --card: #5C3D2E;
+  --primary: #B85C38;
+  --secondary: #E0C097;
+  --text: #E0C097;
+  --text-muted: rgba(224, 192, 151, 0.78);
+  --border: rgba(224, 192, 151, 0.16);
+  --input: rgba(224, 192, 151, 0.08);
 }
 
 html {
@@ -251,12 +251,11 @@ svg {
   background: var(--primary);
   color: var(--secondary);
   border: 1px solid var(--border);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
   @apply relative w-[12rem] cursor-pointer overflow-hidden rounded-full px-1 py-4 text-center text-sm font-medium transition-all duration-200;
 }
 
 .btn:hover {
-  filter: brightness(1.07);
+  filter: brightness(1.05);
   transform: translateY(-1px);
 }
 
@@ -290,7 +289,7 @@ svg {
 
 .grid-special-color {
   background: linear-gradient(to bottom, var(--primary), var(--surface));
-  color: var(--secondary);
+  color: var(--text);
   border: 1px solid var(--border);
   @apply rounded-2xl p-6;
 }

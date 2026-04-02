@@ -117,7 +117,7 @@ function Navbar() {
               <span>{currentLanguageLabel}</span>
             </motion.button>
 
-            <motion.button
+            {/* <motion.button
               whileTap={{ scale: 0.96 }}
               whileHover={{ y: -1 }}
               className="navbar__theme-btn"
@@ -133,7 +133,7 @@ function Navbar() {
               >
                 {theme === "dark" ? <HiOutlineMoon size={14} /> : <HiOutlineSun size={14} />}
               </motion.div>
-            </motion.button>
+            </motion.button> */}
 
             <button
               className="navbar__toggle"
