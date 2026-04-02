@@ -1,0 +1,336 @@
+/*//src/index.css*/
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Montserrat", sans-serif;
+
+  /* tamanhos */
+  --text-pequeno: 0.875rem;
+  --text-medio: 1rem;
+  --text-grande: 1.5rem;
+  --text-muito_grande: 2.25rem;
+
+  /* dark - nova paleta */
+  --color-bg-dark: #181c14;
+  --color-surface-dark: #3c3d37;
+  --color-card-dark: #53594d;
+  --color-primary-dark: #697565;
+  --color-secondary-dark: #ecdfcc;
+  --color-text-dark: #ecdfcc;
+  --color-text-muted-dark: #b8ae9f;
+  --color-border-dark: rgba(236, 223, 204, 0.12);
+  --color-input-dark: rgba(236, 223, 204, 0.06);
+
+  /* light */
+  --color-bg-light: #deded1;
+  --color-surface-light: #c5c7bc;
+  --color-card-light: #ece9df;
+  --color-primary-light: #b6ae9f;
+  --color-secondary-light: #fbf3d1;
+  --color-text-light: #3f3a34;
+  --color-text-muted-light: #6d675f;
+  --color-border-light: rgba(63, 58, 52, 0.12);
+  --color-input-light: rgba(63, 58, 52, 0.05);
+
+  /* compatibilidade */
+  --color-primary: var(--color-primary-dark);
+
+  /* animações */
+  --animate-orbit: orbit 50s linear infinite;
+  --animate-marquee: marquee 50s linear infinite;
+  --animate-marquee-vertical: marquee-vertical 50s linear infinite;
+
+  @keyframes orbit {
+    0% {
+      transform: rotate(calc(var(--angle) * 1deg))
+        translateY(calc(var(--radius) * 1px))
+        rotate(calc(var(--angle) * -1deg));
+    }
+    100% {
+      transform: rotate(calc(var(--angle) * 1deg + 360deg))
+        translateY(calc(var(--radius) * 1px))
+        rotate(calc((var(--angle) * -1deg) - 360deg));
+    }
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+
+  @keyframes marquee-vertical {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
+}
+
+/* tema padrão */
+:root {
+  --bg: #181c14;
+  --surface: #3c3d37;
+  --card: #53594d;
+  --primary: #697565;
+  --secondary: #ecdfcc;
+  --text: #ecdfcc;
+  --text-muted: #b8ae9f;
+  --border: rgba(236, 223, 204, 0.12);
+  --input: rgba(236, 223, 204, 0.06);
+}
+
+/* light */
+html.light {
+  --bg: #deded1;
+  --surface: #c5c7bc;
+  --card: #ece9df;
+  --primary: #b6ae9f;
+  --secondary: #fbf3d1;
+  --text: #3f3a34;
+  --text-muted: #6d675f;
+  --border: rgba(63, 58, 52, 0.12);
+  --input: rgba(63, 58, 52, 0.05);
+}
+
+/* dark */
+html.dark {
+  --bg: #181c14;
+  --surface: #3c3d37;
+  --card: #53594d;
+  --primary: #697565;
+  --secondary: #ecdfcc;
+  --text: #ecdfcc;
+  --text-muted: #b8ae9f;
+  --border: rgba(236, 223, 204, 0.12);
+  --input: rgba(236, 223, 204, 0.06);
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--bg);
+  font-family: "Montserrat", sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Montserrat", sans-serif;
+  overflow-x: hidden;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+#root {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Montserrat", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+a,
+button,
+input,
+textarea,
+section,
+div,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+span,
+small,
+strong,
+label,
+li,
+ul,
+ol,
+svg {
+  transition:
+    background-color 0.28s ease,
+    color 0.28s ease,
+    border-color 0.28s ease,
+    box-shadow 0.28s ease,
+    opacity 0.28s ease;
+}
+
+/* tamanhos */
+.text-pequeno {
+  font-size: var(--text-pequeno);
+}
+
+.text-medio {
+  font-size: var(--text-medio);
+}
+
+.text-grande {
+  font-size: var(--text-grande);
+}
+
+.text-muito-grande {
+  font-size: var(--text-muito_grande);
+}
+
+/* helpers */
+.c-space {
+  @apply px-5 sm:px-10 lg:px-15;
+}
+
+.hover-animation {
+  @apply duration-200 hover:-translate-y-1;
+}
+
+.section-spacing {
+  @apply mt-20 min-h-screen md:mt-30;
+}
+
+.text-heading {
+  font-size: var(--text-muito_grande);
+  @apply font-bold md:text-4xl;
+}
+
+.headtext {
+  font-size: var(--text-grande);
+  @apply mt-2 mb-2;
+}
+
+.subtext {
+  color: var(--text-muted);
+  font-size: var(--text-pequeno);
+  @apply text-pretty md:text-base;
+}
+
+/* navegação */
+.nav-ul {
+  @apply relative z-20 flex flex-col items-center gap-4 sm:flex-row md:gap-6;
+}
+
+.nav-li {
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  @apply py-2 transition-colors duration-200 max-sm:w-full max-sm:rounded-md max-sm:px-5;
+}
+
+.nav-li:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+}
+
+.nav-link {
+  color: var(--text-muted);
+  @apply text-lg transition-colors duration-200 md:text-base;
+}
+
+.nav-link:hover {
+  color: var(--text);
+}
+
+/* botões globais */
+.btn {
+  background: var(--primary);
+  color: var(--secondary);
+  border: 1px solid var(--border);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+  @apply relative w-[12rem] cursor-pointer overflow-hidden rounded-full px-1 py-4 text-center text-sm font-medium transition-all duration-200;
+}
+
+.btn:hover {
+  filter: brightness(1.07);
+  transform: translateY(-1px);
+}
+
+/* about grids */
+.grid-1 {
+  @apply relative row-span-2 h-[15rem] overflow-hidden duration-200 hover:-translate-y-1 md:col-span-3 md:h-full;
+}
+
+.grid-2 {
+  @apply relative row-span-1 h-[15rem] overflow-hidden duration-200 hover:-translate-y-1 md:col-span-3 md:h-full;
+}
+
+.grid-3 {
+  @apply relative row-span-1 h-[15rem] overflow-hidden duration-200 hover:-translate-y-1 md:col-span-3 md:h-full;
+}
+
+.grid-4 {
+  @apply relative row-span-1 h-[15rem] overflow-hidden duration-200 hover:-translate-y-1 md:col-span-2 md:h-full;
+}
+
+.grid-5 {
+  @apply relative row-span-1 h-[15rem] overflow-hidden duration-200 hover:-translate-y-1 md:col-span-4 md:h-full;
+}
+
+.grid-default-color {
+  background: linear-gradient(to bottom, var(--surface), var(--card));
+  color: var(--text);
+  border: 1px solid var(--border);
+  @apply rounded-2xl p-6;
+}
+
+.grid-special-color {
+  background: linear-gradient(to bottom, var(--primary), var(--surface));
+  color: var(--secondary);
+  border: 1px solid var(--border);
+  @apply rounded-2xl p-6;
+}
+
+.grid-black-color {
+  background: linear-gradient(to top left, var(--bg), var(--card), var(--surface));
+  color: var(--text);
+  border: 1px solid var(--border);
+  @apply rounded-2xl p-6;
+}
+
+/* contato */
+.field-label {
+  color: var(--text);
+  @apply text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
+}
+
+.field-input {
+  width: 100%;
+  min-height: 2.5rem;
+  background: var(--input);
+  color: var(--text);
+  border: 1px solid var(--border);
+  @apply mt-2 rounded-md px-3 py-2 text-sm transition duration-200;
+}
+
+.field-input::placeholder {
+  color: var(--text-muted);
+}
+
+.field-input-focus {
+  @apply focus-visible:outline-none focus-visible:ring-2;
+}
+
+.field-input-focus:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+/* seleção */
+::selection {
+  background: color-mix(in srgb, var(--primary) 45%, transparent);
+  color: var(--secondary);
+}

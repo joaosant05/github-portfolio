@@ -1,0 +1,25 @@
+{
+  "navbar": {
+    "brand": "Ali",
+    "home": "Início",
+    "about": "Sobre",
+    "work": "Projetos",
+    "achievements": "Conquistas",
+    "contact": "Contato",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu",
+    "changeTheme": "Alternar tema",
+    "changeLanguage": "Alterar idioma",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "hero": {
+    "eyebrow": "Oi, eu sou Lorem Ipsum",
+    "titleLine1": "Crio interfaces",
+    "titleLine2": "digitais",
+    "rotatingWords": ["Escaláveis", "Modernas", "Interativas", "Marcantes"],
+    "subtitle": "Front-end developer focado em experiências responsivas, visuais e bem estruturadas, com atenção em performance, componentização e identidade visual.",
+    "ctaPrimary": "Ver projetos",
+    "ctaSecondary": "Sobre mim"
+  }
+}

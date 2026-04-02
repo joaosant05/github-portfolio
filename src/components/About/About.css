@@ -1,0 +1,134 @@
+.about {
+  position: relative;
+}
+
+.about__heading {
+  margin-bottom: 2rem;
+  max-width: 700px;
+}
+
+.about__grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.about__card {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.about__card--bio {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.about__image-wrap {
+  width: 100%;
+  height: 72%;
+  min-height: 250px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.about__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about__card-content {
+  margin-top: 1rem;
+}
+
+.about__card-content h3,
+.about__card--stack h3,
+.about__card--info h3 {
+  font-size: 1.45rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.about__card--stack {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.about__stack-copy {
+  max-width: 250px;
+}
+
+.about__orbit {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  margin-inline: auto;
+  flex-shrink: 0;
+}
+
+.about__orbit-core {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  width: 110px;
+  height: 110px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--color-royal), var(--color-lavender));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  box-shadow: 0 0 40px rgba(122, 87, 219, 0.35);
+}
+
+.about__orbit-item {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 56px;
+  height: 56px;
+  transform:
+    rotate(calc(var(--angle) * 1deg))
+    translateY(calc(var(--radius) * -1px))
+    rotate(calc(var(--angle) * -1deg));
+  animation: orbit 18s linear infinite;
+}
+
+.about__orbit-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+.about__card--info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (max-width: 980px) {
+  .about__grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  .about__card--stack {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .about__stack-copy {
+    max-width: 100%;
+  }
+
+  .about__orbit {
+    width: 240px;
+    height: 240px;
+  }
+}
