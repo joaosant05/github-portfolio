@@ -55,7 +55,7 @@ html.light {
   pointer-events: none;
 }
 
-/* conteúdo acima do canvas */
+/* conteúdo acima do canvas visualmente, mas sem bloquear os cliques do 3D */
 .hero__container {
   position: relative;
   z-index: 4;
@@ -67,6 +67,7 @@ html.light {
   align-items: center;
   padding-top: clamp(0.45rem, 1vh, 0.95rem);
   padding-bottom: clamp(0.75rem, 1.6vh, 1.2rem);
+  pointer-events: none;
 }
 
 .hero__content-zone {
@@ -78,13 +79,14 @@ html.light {
   align-items: center;
   justify-content: flex-start;
   padding-left: clamp(3rem, 7vw, 8rem);
+  pointer-events: none;
 }
 
 .hero__content {
   position: relative;
   z-index: 6;
-  width: min(100%, 620px);
-  max-width: 620px;
+  width: min(100%, 900px);
+  max-width: 900px;
   margin: 0;
   padding-inline: clamp(1rem, 3vw, 2rem);
   display: flex;
@@ -92,7 +94,7 @@ html.light {
   align-items: flex-start;
   justify-content: center;
   text-align: left;
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 .hero__eyebrow {
@@ -114,19 +116,21 @@ html.light {
   letter-spacing: 0.02em;
   width: fit-content;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
 }
 
 .hero__title {
   position: relative;
   z-index: 10;
   margin: 0;
-  max-width: 12ch;
-  font-size: clamp(2.2rem, 3.9vw, 4.2rem);
-  line-height: 0.96;
+  max-width: none;
+  font-size: clamp(1.9rem, 3.1vw, 3.35rem); /* menor */
+  line-height: 0.98;
   letter-spacing: -0.05em;
-  font-weight: 800;
+  font-weight: 400;
   color: var(--text);
   text-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+  pointer-events: none;
 }
 
 .hero__line {
@@ -147,14 +151,21 @@ html.light {
   white-space: nowrap;
 }
 
+.hero__line--word {
+  margin-top: 0.04em;
+  line-height: 0.9;
+}
+
 .hero__word-wrap {
   position: relative;
   display: inline-block;
   vertical-align: baseline;
-  overflow: clip;
+  overflow: visible;
   height: 1em;
   min-width: 7ch;
   line-height: 1;
+  font-size: clamp(2.5rem, 4.4vw, 4.6rem); /* maior só para a palavra rotativa */
+  font-weight: 700;
   padding: 0;
   flex: 0 0 auto;
 }
@@ -199,6 +210,7 @@ html.light {
   font-size: 0.98rem;
   line-height: 1.65;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.14);
+  pointer-events: none;
 }
 
 .hero__actions {
@@ -209,10 +221,14 @@ html.light {
   gap: 0.9rem;
   flex-wrap: wrap;
   margin-top: 1.35rem;
+  pointer-events: none;
 }
 
 .hero__primary,
-.hero__secondary {
+.hero__secondary,
+.hero__content a,
+.hero__content button {
+  pointer-events: auto;
   text-decoration: none;
   padding: 0.95rem 1.35rem;
   border-radius: 999px;
@@ -261,7 +277,7 @@ html.light {
   inset: 0;
   z-index: 2;
   display: block;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .hero__canvas-shell {
@@ -269,7 +285,7 @@ html.light {
   inset: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none;
+  pointer-events: auto;
   overflow: hidden;
 }
 
@@ -284,20 +300,20 @@ html.light {
   height: 100%;
   max-width: none;
   overflow: hidden;
-  pointer-events: none;
-  cursor: default;
+  pointer-events: auto;
+  cursor: grab;
   touch-action: none;
 }
 
 .hero__canvas:active {
-  cursor: default;
+  cursor: grabbing;
 }
 
 .hero__canvas canvas {
   display: block;
   width: 100% !important;
   height: 100% !important;
-  pointer-events: none !important;
+  pointer-events: auto !important;
 }
 
 @media (max-width: 853px) {
@@ -467,4 +483,10 @@ html.light {
     max-height: 50vh;
     overflow: auto;
   }
+}
+
+.hero__canvas,
+.hero__canvas:active,
+.hero__canvas canvas {
+  cursor: default;
 }

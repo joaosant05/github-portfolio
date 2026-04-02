@@ -15,11 +15,10 @@
   },
   "hero": {
     "eyebrow": "Hi, I'm João Santos",
-    "titleLine1": "I build complete",
-    "titleLine2": "solutions",
-    "rotatingWords": ["Frontend", "Backend", "Scalable", "Reliable"],
-    "subtitle": "Full-stack developer crafting complete solutions with modern interfaces, efficient APIs, databases, and scalable architecture.",
-    "ctaPrimary": "See projects",
-    "ctaSecondary": "About me"
+    "titleLine1": "A Developer",
+    "titleLine2": "Dedicated to Crafting",
+    "titleLine4": "Solutions",
+    "rotatingWords": ["Robust", "Scalable", "Reliable", "Modern"],
+    "subtitle": "I build end-to-end applications with a focus on user experience, clean code, well-structured APIs, and systems designed to grow."
   }
 }

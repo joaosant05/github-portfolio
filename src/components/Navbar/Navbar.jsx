@@ -71,11 +71,6 @@ function Navbar() {
     >
       <div className="c-space">
         <div className="navbar__shell">
-          <a href="#home" className="navbar__brand" onClick={closeMenu}>
-            <span className="navbar__brand-dot" />
-            <span className="navbar__brand-text">{t("navbar.brand")}</span>
-          </a>
-
           <nav className="navbar__desktop" aria-label="Primary">
             <ul className="navbar__list">
               {navItems.map((item) => {

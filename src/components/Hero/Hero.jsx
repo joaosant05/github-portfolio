@@ -120,13 +120,14 @@ function AnimatedWord() {
   );
 }
 
-function BB8Runner({ isMobile }) {
+function BB8Runner({ isMobile, controlsRef }) {
   const rootRef = useRef(null);
-  const interactiveRef = useRef(null);
+  const visualRef = useRef(null);
   const animRef = useRef(null);
 
   const dragRef = useRef({
     active: false,
+    hovered: false,
     pointerId: null,
     lastX: 0,
     lastY: 0,
@@ -141,38 +142,86 @@ function BB8Runner({ isMobile }) {
       totalFrames: 299,
       moveStartFrame: 230,
       baseX: isMobile ? -0.9 : 1.3,
-      baseY: isMobile ? -1.82 : -2.8,
+      baseY: isMobile ? -1.4 : -2.8,
       baseZ: 0,
       wrapPadding: isMobile ? 0.52 : 0.68,
-      scale: isMobile ? 0.09 : 5,
+      scale: isMobile ? 3.2 : 5,
       dragRotateSpeedX: 0.0035,
       dragRotateSpeedY: 0.0085,
       maxDragTiltX: 0.35,
-      dragFollowLerp: 0.22,
+      dragFollowLerp: 0.18,
       dragReturnLerp: 0.08,
     }),
     [isMobile]
   );
 
+  const setCursor = useCallback((value) => {
+    document.body.style.cursor = value;
+  }, []);
+
   const handleAnimationReady = useCallback((data) => {
     animRef.current = data;
   }, []);
 
-  const handlePointerDown = useCallback((e) => {
-    e.stopPropagation();
-    dragRef.current.active = true;
-    dragRef.current.pointerId = e.pointerId;
-    dragRef.current.lastX = e.clientX;
-    dragRef.current.lastY = e.clientY;
-    e.target.setPointerCapture?.(e.pointerId);
-  }, []);
-
-  const handlePointerMove = useCallback(
+  const handlePointerDown = useCallback(
     (e) => {
-      const drag = dragRef.current;
-      if (!drag.active || drag.pointerId !== e.pointerId) return;
-
       e.stopPropagation();
+      e.target.setPointerCapture?.(e.pointerId);
+
+      dragRef.current.active = true;
+      dragRef.current.pointerId = e.pointerId;
+      dragRef.current.lastX = e.clientX;
+      dragRef.current.lastY = e.clientY;
+
+      if (controlsRef?.current) {
+        controlsRef.current.enabled = false;
+      }
+
+      setCursor("grabbing");
+    },
+    [controlsRef, setCursor]
+  );
+
+  const handlePointerUpOnMesh = useCallback(
+    (e) => {
+      e.stopPropagation();
+      e.target.releasePointerCapture?.(e.pointerId);
+
+      const drag = dragRef.current;
+      drag.active = false;
+      drag.pointerId = null;
+
+      if (controlsRef?.current) {
+        controlsRef.current.enabled = true;
+      }
+
+      setCursor(drag.hovered ? "grab" : "");
+    },
+    [controlsRef, setCursor]
+  );
+
+  const handlePointerOver = useCallback(
+    (e) => {
+      e.stopPropagation();
+      dragRef.current.hovered = true;
+      if (!dragRef.current.active) setCursor("grab");
+    },
+    [setCursor]
+  );
+
+  const handlePointerOut = useCallback(
+    (e) => {
+      e.stopPropagation();
+      dragRef.current.hovered = false;
+      if (!dragRef.current.active) setCursor("");
+    },
+    [setCursor]
+  );
+
+  useEffect(() => {
+    const handlePointerMove = (e) => {
+      const drag = dragRef.current;
+      if (!drag.active) return;
 
       const deltaX = e.clientX - drag.lastX;
       const deltaY = e.clientY - drag.lastY;
@@ -186,25 +235,50 @@ function BB8Runner({ isMobile }) {
         -RUN_CONFIG.maxDragTiltX,
         RUN_CONFIG.maxDragTiltX
       );
-    },
-    [RUN_CONFIG.dragRotateSpeedX, RUN_CONFIG.dragRotateSpeedY, RUN_CONFIG.maxDragTiltX]
-  );
+    };
 
-  const endDrag = useCallback((e) => {
-    const drag = dragRef.current;
-    if (drag.pointerId !== null && e?.pointerId === drag.pointerId) {
-      e.target.releasePointerCapture?.(e.pointerId);
-    }
+    const handleWindowPointerUp = () => {
+      const drag = dragRef.current;
+      if (!drag.active) return;
 
-    drag.active = false;
-    drag.pointerId = null;
-  }, []);
+      drag.active = false;
+      drag.pointerId = null;
+
+      if (controlsRef?.current) {
+        controlsRef.current.enabled = true;
+      }
+
+      setCursor(drag.hovered ? "grab" : "");
+    };
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handleWindowPointerUp);
+    window.addEventListener("pointercancel", handleWindowPointerUp);
+
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handleWindowPointerUp);
+      window.removeEventListener("pointercancel", handleWindowPointerUp);
+
+      if (controlsRef?.current) {
+        controlsRef.current.enabled = true;
+      }
+
+      document.body.style.cursor = "";
+    };
+  }, [
+    RUN_CONFIG.dragRotateSpeedX,
+    RUN_CONFIG.dragRotateSpeedY,
+    RUN_CONFIG.maxDragTiltX,
+    controlsRef,
+    setCursor,
+  ]);
 
   useFrame((state) => {
     const root = rootRef.current;
-    const interactive = interactiveRef.current;
+    const visual = visualRef.current;
     const anim = animRef.current;
-    if (!root || !interactive) return;
+    if (!root || !visual) return;
 
     const {
       totalFrames,
@@ -267,23 +341,27 @@ function BB8Runner({ isMobile }) {
     drag.currentRotX = lerp(drag.currentRotX, drag.targetRotX, dragFollowLerp);
     drag.currentRotY = lerp(drag.currentRotY, drag.targetRotY, dragFollowLerp);
 
-    interactive.rotation.x = drag.currentRotX;
-    interactive.rotation.y = drag.currentRotY;
-    interactive.rotation.z = 0;
+    visual.rotation.x = drag.currentRotX;
+    visual.rotation.y = drag.currentRotY;
+    visual.rotation.z = 0;
   });
+
+  const interactiveHandlers = useMemo(
+    () => ({
+      onPointerDown: handlePointerDown,
+      onPointerUp: handlePointerUpOnMesh,
+      onPointerOver: handlePointerOver,
+      onPointerOut: handlePointerOut,
+    }),
+    [handlePointerDown, handlePointerUpOnMesh, handlePointerOver, handlePointerOut]
+  );
 
   return (
     <group ref={rootRef}>
-      <group
-        ref={interactiveRef}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={endDrag}
-        onPointerLeave={endDrag}
-        onPointerCancel={endDrag}
-      >
+      <group ref={visualRef}>
         <BB8
           onAnimationReady={handleAnimationReady}
+          interactiveHandlers={interactiveHandlers}
           scale={RUN_CONFIG.scale}
           position={[0, 0, 0]}
           rotation={[0, 0, 0]}
@@ -296,6 +374,7 @@ function BB8Runner({ isMobile }) {
 function Hero() {
   const isMobile = useMediaQuery({ maxWidth: 853 });
   const { t } = useTranslation();
+  const controlsRef = useRef(null);
 
   const cameraSettings = isMobile
     ? { position: [0, 0.2, 6], fov: 34 }
@@ -320,17 +399,18 @@ function Hero() {
           <div className="hero__canvas">
             <Canvas camera={cameraSettings} shadows dpr={[1, 2]}>
               <OrbitControls
+                ref={controlsRef}
                 makeDefault
                 enableZoom={false}
                 enablePan={false}
-                enableRotate
+                enableRotate={false}
                 autoRotate={false}
                 enableDamping
                 dampingFactor={0.08}
                 rotateSpeed={isMobile ? 0.85 : 0.75}
                 minPolarAngle={Math.PI / 2.28}
                 maxPolarAngle={Math.PI / 1.9}
-                target={[0, -1.45, 0]}
+                target={orbitTarget}
               />
 
               <Suspense fallback={null}>
@@ -352,7 +432,7 @@ function Hero() {
                     shadow-camera-bottom={-4}
                     />
 
-                <BB8Runner isMobile={isMobile} />
+                <BB8Runner isMobile={isMobile} controlsRef={controlsRef} />
               </Suspense>
             </Canvas>
           </div>
@@ -377,16 +457,20 @@ function Hero() {
             </motion.p>
 
             <motion.h1
-              className="hero__title"
+              className="hero__title hero__title--stacked"
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.14, duration: 0.55 }}
             >
               <span className="hero__line">{t("hero.titleLine1")}</span>
+              <span className="hero__line">{t("hero.titleLine2")}</span>
 
-              <span className="hero__line hero__line--inline">
-                <span className="hero__title-soft">{t("hero.titleLine2")}</span>
+              <span className="hero__line hero__line--word">
                 <AnimatedWord />
+              </span>
+
+              <span className="hero__line hero__line--solution">
+                <span className="hero__title-soft">{t("hero.titleLine4")}</span>
               </span>
             </motion.h1>
 

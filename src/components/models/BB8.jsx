@@ -1,7 +1,8 @@
+//src/components/models/BB8.jsx
 import React, { useEffect, useRef } from "react";
 import { useGLTF, useAnimations } from "@react-three/drei";
 
-export function BB8({ onAnimationReady, ...props }) {
+export function BB8({ onAnimationReady, interactiveHandlers = {}, ...props }) {
   const group = useRef();
   const { nodes, materials, animations } = useGLTF("/models/bb8.glb");
   const { actions, mixer } = useAnimations(animations, group);
@@ -47,6 +48,7 @@ export function BB8({ onAnimationReady, ...props }) {
                     <group name="BB8Center">
                       <group name="BB8BB8_Body">
                         <mesh
+                          {...interactiveHandlers}
                           name="BB8BB8_Body_Scene_Material_0"
                           castShadow
                           receiveShadow
@@ -54,6 +56,7 @@ export function BB8({ onAnimationReady, ...props }) {
                           material={materials.Scene_Material}
                         />
                         <mesh
+                          {...interactiveHandlers}
                           name="BB8BB8_Body_Scene_Material_0_1"
                           castShadow
                           receiveShadow
@@ -61,8 +64,10 @@ export function BB8({ onAnimationReady, ...props }) {
                           material={materials.Scene_Material}
                         />
                       </group>
+
                       <group name="BB8Hatch_Door">
                         <mesh
+                          {...interactiveHandlers}
                           name="BB8Hatch_Door_Scene_Material_0"
                           castShadow
                           receiveShadow
@@ -77,6 +82,7 @@ export function BB8({ onAnimationReady, ...props }) {
                     <group name="BB8Center_Head">
                       <group name="BB8Antena">
                         <mesh
+                          {...interactiveHandlers}
                           name="BB8Antena_Scene_Material1_0"
                           castShadow
                           receiveShadow
@@ -84,8 +90,10 @@ export function BB8({ onAnimationReady, ...props }) {
                           material={materials.Scene_Material1}
                         />
                       </group>
+
                       <group name="BB8BB8_Head">
                         <mesh
+                          {...interactiveHandlers}
                           name="BB8BB8_Head_Scene_Material1_0"
                           castShadow
                           receiveShadow
@@ -93,6 +101,7 @@ export function BB8({ onAnimationReady, ...props }) {
                           material={materials.Scene_Material1}
                         />
                         <mesh
+                          {...interactiveHandlers}
                           name="BB8BB8_Head_Scene_Material1_0_1"
                           castShadow
                           receiveShadow
@@ -100,8 +109,10 @@ export function BB8({ onAnimationReady, ...props }) {
                           material={materials.Scene_Material1}
                         />
                       </group>
+
                       <group name="BB8Eye">
                         <mesh
+                          {...interactiveHandlers}
                           name="BB8Eye_Eye_0"
                           castShadow
                           receiveShadow
