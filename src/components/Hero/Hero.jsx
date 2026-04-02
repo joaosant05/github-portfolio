@@ -8,13 +8,15 @@ import {
   useState,
 } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, useAnimations, useGLTF } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import { useMediaQuery } from "react-responsive";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { useTranslation } from "react-i18next";
+import { BB8 } from "../models/BB8";
 import "./Hero.css";
 
 const clamp01 = (value) => Math.min(1, Math.max(0, value));
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 const lerp = (a, b, t) => a + (b - a) * t;
 
 const easeInCubic = (t) => t * t * t;
@@ -118,152 +120,91 @@ function AnimatedWord() {
   );
 }
 
-function BB8({ onAnimationReady, ...props }) {
-  const group = useRef();
-  const { nodes, materials, animations } = useGLTF("/models/bb8.glb");
-  const { actions, mixer } = useAnimations(animations, group);
-
-  useEffect(() => {
-    const clip = animations?.[0];
-    const action = clip ? actions?.[clip.name] : null;
-
-    if (!clip || !action) return;
-
-    action.reset();
-    action.setEffectiveWeight(1);
-    action.setEffectiveTimeScale(1);
-    action.play();
-
-    onAnimationReady?.({
-      action,
-      clip,
-      mixer,
-    });
-  }, [actions, animations, mixer, onAnimationReady]);
-
-  return (
-    <group ref={group} {...props} dispose={null}>
-      <group name="Sketchfab_Scene">
-        <group
-          name="Sketchfab_model"
-          rotation={[-Math.PI / 2, 0, 0]}
-          scale={0.694}
-        >
-          <group
-            name="3924ee77ba9a46c58a2abc9fdcf9971cfbx"
-            rotation={[Math.PI / 2, 0, 0]}
-          >
-            <group name="Object_2">
-              <group name="RootNode">
-                <group name="BB8BB8" scale={0.004}>
-                  <group name="BB8Center_NeutralPose" position={[0, 62, 0]}>
-                    <group name="BB8Center">
-                      <group name="BB8BB8_Body">
-                        <mesh
-                          name="BB8BB8_Body_Scene_Material_0"
-                          castShadow
-                          receiveShadow
-                          geometry={nodes.BB8BB8_Body_Scene_Material_0.geometry}
-                          material={materials.Scene_Material}
-                        />
-                        <mesh
-                          name="BB8BB8_Body_Scene_Material_0_1"
-                          castShadow
-                          receiveShadow
-                          geometry={nodes.BB8BB8_Body_Scene_Material_0_1.geometry}
-                          material={materials.Scene_Material}
-                        />
-                      </group>
-                      <group name="BB8Hatch_Door">
-                        <mesh
-                          name="BB8Hatch_Door_Scene_Material_0"
-                          castShadow
-                          receiveShadow
-                          geometry={nodes.BB8Hatch_Door_Scene_Material_0.geometry}
-                          material={materials.Scene_Material}
-                        />
-                      </group>
-                    </group>
-                  </group>
-                  <group name="BB8Center_Head_NeutralPose" position={[0, 62, 0]}>
-                    <group name="BB8Center_Head">
-                      <group name="BB8Antena">
-                        <mesh
-                          name="BB8Antena_Scene_Material1_0"
-                          castShadow
-                          receiveShadow
-                          geometry={nodes.BB8Antena_Scene_Material1_0.geometry}
-                          material={materials.Scene_Material1}
-                        />
-                      </group>
-                      <group name="BB8BB8_Head">
-                        <mesh
-                          name="BB8BB8_Head_Scene_Material1_0"
-                          castShadow
-                          receiveShadow
-                          geometry={nodes.BB8BB8_Head_Scene_Material1_0.geometry}
-                          material={materials.Scene_Material1}
-                        />
-                        <mesh
-                          name="BB8BB8_Head_Scene_Material1_0_1"
-                          castShadow
-                          receiveShadow
-                          geometry={nodes.BB8BB8_Head_Scene_Material1_0_1.geometry}
-                          material={materials.Scene_Material1}
-                        />
-                      </group>
-                      <group name="BB8Eye">
-                        <mesh
-                          name="BB8Eye_Eye_0"
-                          castShadow
-                          receiveShadow
-                          geometry={nodes.BB8Eye_Eye_0.geometry}
-                          material={materials.material}
-                        />
-                      </group>
-                    </group>
-                  </group>
-                </group>
-              </group>
-            </group>
-          </group>
-        </group>
-      </group>
-    </group>
-  );
-}
-
-useGLTF.preload("/models/bb8.glb");
-
-function BB8Runner({ isMobile, debugConfig = {} }) {
-  const groupRef = useRef(null);
+function BB8Runner({ isMobile }) {
+  const rootRef = useRef(null);
+  const interactiveRef = useRef(null);
   const animRef = useRef(null);
 
-  const RUN_CONFIG = useMemo(() => {
-    const defaults = {
+  const dragRef = useRef({
+    active: false,
+    pointerId: null,
+    lastX: 0,
+    lastY: 0,
+    targetRotX: 0,
+    targetRotY: 0,
+    currentRotX: 0,
+    currentRotY: 0,
+  });
+
+  const RUN_CONFIG = useMemo(
+    () => ({
       totalFrames: 299,
       moveStartFrame: 230,
       baseX: isMobile ? -0.9 : 1.3,
       baseY: isMobile ? -1.82 : -2.8,
       baseZ: 0,
       wrapPadding: isMobile ? 0.52 : 0.68,
-      snapToWholeFrame: false,
-    };
-
-    return { ...defaults, ...debugConfig };
-  }, [isMobile, debugConfig]);
+      scale: isMobile ? 0.09 : 5,
+      dragRotateSpeedX: 0.0035,
+      dragRotateSpeedY: 0.0085,
+      maxDragTiltX: 0.35,
+      dragFollowLerp: 0.22,
+      dragReturnLerp: 0.08,
+    }),
+    [isMobile]
+  );
 
   const handleAnimationReady = useCallback((data) => {
     animRef.current = data;
-    console.log("BB8 clip duration:", data.clip.duration);
-    console.log("BB8 clip name:", data.clip.name);
+  }, []);
+
+  const handlePointerDown = useCallback((e) => {
+    e.stopPropagation();
+    dragRef.current.active = true;
+    dragRef.current.pointerId = e.pointerId;
+    dragRef.current.lastX = e.clientX;
+    dragRef.current.lastY = e.clientY;
+    e.target.setPointerCapture?.(e.pointerId);
+  }, []);
+
+  const handlePointerMove = useCallback(
+    (e) => {
+      const drag = dragRef.current;
+      if (!drag.active || drag.pointerId !== e.pointerId) return;
+
+      e.stopPropagation();
+
+      const deltaX = e.clientX - drag.lastX;
+      const deltaY = e.clientY - drag.lastY;
+
+      drag.lastX = e.clientX;
+      drag.lastY = e.clientY;
+
+      drag.targetRotY += deltaX * RUN_CONFIG.dragRotateSpeedY;
+      drag.targetRotX = clamp(
+        drag.targetRotX + deltaY * RUN_CONFIG.dragRotateSpeedX,
+        -RUN_CONFIG.maxDragTiltX,
+        RUN_CONFIG.maxDragTiltX
+      );
+    },
+    [RUN_CONFIG.dragRotateSpeedX, RUN_CONFIG.dragRotateSpeedY, RUN_CONFIG.maxDragTiltX]
+  );
+
+  const endDrag = useCallback((e) => {
+    const drag = dragRef.current;
+    if (drag.pointerId !== null && e?.pointerId === drag.pointerId) {
+      e.target.releasePointerCapture?.(e.pointerId);
+    }
+
+    drag.active = false;
+    drag.pointerId = null;
   }, []);
 
   useFrame((state) => {
-    const group = groupRef.current;
+    const root = rootRef.current;
+    const interactive = interactiveRef.current;
     const anim = animRef.current;
-
-    if (!group) return;
+    if (!root || !interactive) return;
 
     const {
       totalFrames,
@@ -272,7 +213,8 @@ function BB8Runner({ isMobile, debugConfig = {} }) {
       baseY,
       baseZ,
       wrapPadding,
-      snapToWholeFrame,
+      dragFollowLerp,
+      dragReturnLerp,
     } = RUN_CONFIG;
 
     let x = baseX;
@@ -280,11 +222,7 @@ function BB8Runner({ isMobile, debugConfig = {} }) {
     if (anim?.action && anim?.clip) {
       const clipDuration = anim.clip.duration;
       const actionTime = anim.action.time;
-
-      const rawFrameFloat = (actionTime / clipDuration) * totalFrames;
-      const frameFloat = snapToWholeFrame
-        ? Math.floor(rawFrameFloat)
-        : rawFrameFloat;
+      const frameFloat = (actionTime / clipDuration) * totalFrames;
 
       if (frameFloat >= moveStartFrame) {
         const viewport = state.viewport.getCurrentViewport(
@@ -308,186 +246,56 @@ function BB8Runner({ isMobile, debugConfig = {} }) {
 
         if (moveProgress < split) {
           const local = clamp01(moveProgress / split);
-          const eased = easeInCubic(local);
-          x = lerp(baseX, rightX, eased);
+          x = lerp(baseX, rightX, easeInCubic(local));
         } else {
           const local = clamp01((moveProgress - split) / (1 - split));
-          const eased = easeOutCubic(local);
-          x = lerp(leftX, baseX, eased);
+          x = lerp(leftX, baseX, easeOutCubic(local));
         }
       }
     }
 
-    group.visible = true;
-    group.position.set(x, baseY, baseZ);
-    group.rotation.set(0, 0, 0);
+    root.position.set(x, baseY, baseZ);
+    root.visible = true;
+
+    const drag = dragRef.current;
+
+    if (!drag.active) {
+      drag.targetRotX = lerp(drag.targetRotX, 0, dragReturnLerp);
+      drag.targetRotY = lerp(drag.targetRotY, 0, dragReturnLerp);
+    }
+
+    drag.currentRotX = lerp(drag.currentRotX, drag.targetRotX, dragFollowLerp);
+    drag.currentRotY = lerp(drag.currentRotY, drag.targetRotY, dragFollowLerp);
+
+    interactive.rotation.x = drag.currentRotX;
+    interactive.rotation.y = drag.currentRotY;
+    interactive.rotation.z = 0;
   });
 
   return (
-    <group ref={groupRef}>
-      <BB8
-        onAnimationReady={handleAnimationReady}
-        scale={isMobile ? 0.09 : 5}
-        position={[0, 0, 0]}
-        rotation={[0, 0, 0]}
-      />
-    </group>
-  );
-}
-
-function DebugSlider({
-  label,
-  value,
-  min,
-  max,
-  step = 0.01,
-  onChange,
-}) {
-  const isInteger = step >= 1;
-  const displayValue = isInteger
-    ? Math.round(value)
-    : Number(value).toFixed(String(step).split(".")[1]?.length ?? 2);
-
-  return (
-    <label className="hero-debug__field">
-      <div className="hero-debug__top">
-        <span>{label}</span>
-        <strong>{displayValue}</strong>
-      </div>
-
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-      />
-    </label>
-  );
-}
-
-function HeroDebugPanel({ values, setValues }) {
-  const update = (key, value) => {
-    setValues((prev) => {
-      const next = { ...prev, [key]: value };
-
-      if (key === "totalFrames") {
-        const safeTotalFrames = Math.max(2, Math.round(value));
-        next.totalFrames = safeTotalFrames;
-        next.moveStartFrame = Math.min(next.moveStartFrame, safeTotalFrames - 1);
-      }
-
-      if (key === "moveStartFrame") {
-        next.moveStartFrame = Math.min(
-          Math.max(0, Math.round(value)),
-          Math.max(1, Math.round(next.totalFrames) - 1)
-        );
-      }
-
-      return next;
-    });
-  };
-
-  const safeTotalFrames = Math.max(2, Math.round(values.totalFrames));
-  const safeMoveStartFrame = Math.min(
-    Math.max(0, Math.round(values.moveStartFrame)),
-    safeTotalFrames - 1
-  );
-
-  return (
-    <aside className="hero-debug">
-      <h3 className="hero-debug__title">BB8 Debug</h3>
-
-      <DebugSlider
-        label="totalFrames"
-        value={values.totalFrames}
-        min={60}
-        max={400}
-        step={1}
-        onChange={(v) => update("totalFrames", v)}
-      />
-
-      <DebugSlider
-        label="moveStartFrame"
-        value={values.moveStartFrame}
-        min={0}
-        max={Math.max(1, values.totalFrames - 1)}
-        step={1}
-        onChange={(v) => update("moveStartFrame", v)}
-      />
-
-      <DebugSlider
-        label="baseX"
-        value={values.baseX}
-        min={-8}
-        max={4}
-        step={0.1}
-        onChange={(v) => update("baseX", v)}
-      />
-
-      <DebugSlider
-        label="baseY"
-        value={values.baseY}
-        min={-4}
-        max={1}
-        step={0.05}
-        onChange={(v) => update("baseY", v)}
-      />
-
-      <DebugSlider
-        label="wrapPadding"
-        value={values.wrapPadding}
-        min={0.1}
-        max={1.5}
-        step={0.01}
-        onChange={(v) => update("wrapPadding", v)}
-      />
-
-      <label className="hero-debug__field hero-debug__field--toggle">
-        <div className="hero-debug__top">
-          <span>snapToWholeFrame</span>
-          <strong>{values.snapToWholeFrame ? "ON" : "OFF"}</strong>
-        </div>
-
-        <input
-          type="checkbox"
-          checked={values.snapToWholeFrame}
-          onChange={(e) =>
-            setValues((prev) => ({
-              ...prev,
-              snapToWholeFrame: e.target.checked,
-            }))
-          }
+    <group ref={rootRef}>
+      <group
+        ref={interactiveRef}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={endDrag}
+        onPointerLeave={endDrag}
+        onPointerCancel={endDrag}
+      >
+        <BB8
+          onAnimationReady={handleAnimationReady}
+          scale={RUN_CONFIG.scale}
+          position={[0, 0, 0]}
+          rotation={[0, 0, 0]}
         />
-      </label>
-    </aside>
+      </group>
+    </group>
   );
 }
 
 function Hero() {
   const isMobile = useMediaQuery({ maxWidth: 853 });
   const { t } = useTranslation();
-
-  const [debugValues, setDebugValues] = useState({
-    totalFrames: 299,
-    moveStartFrame: 230,
-    baseX: 1.3,
-    baseY: -2.8,
-    wrapPadding: 0.68,
-    snapToWholeFrame: false,
-  });
-
-  useEffect(() => {
-    setDebugValues({
-      totalFrames: 299,
-      moveStartFrame: 230,
-      baseX: isMobile ? -0.9 : 1.3,
-      baseY: isMobile ? -1.82 : -2.8,
-      wrapPadding: isMobile ? 0.52 : 0.68,
-      snapToWholeFrame: false,
-    });
-  }, [isMobile]);
 
   const cameraSettings = isMobile
     ? { position: [0, 0.2, 6], fov: 34 }
@@ -515,34 +323,36 @@ function Hero() {
                 makeDefault
                 enableZoom={false}
                 enablePan={false}
-                enableRotate={false}
+                enableRotate
                 autoRotate={false}
                 enableDamping
                 dampingFactor={0.08}
-                target={orbitTarget}
+                rotateSpeed={isMobile ? 0.85 : 0.75}
+                minPolarAngle={Math.PI / 2.28}
+                maxPolarAngle={Math.PI / 1.9}
+                target={[0, -1.45, 0]}
               />
 
               <Suspense fallback={null}>
                 <ambientLight intensity={1.18} />
 
                 <directionalLight
-                  position={[4, 5, 3]}
-                  intensity={2.15}
-                  castShadow
-                />
+                    position={[4, 5, 3]}
+                    intensity={3.15}
+                    castShadow
+                    shadow-mapSize-width={2048}
+                    shadow-mapSize-height={2048}
+                    shadow-bias={-0.00008}
+                    shadow-normalBias={0.02}
+                    shadow-camera-near={0.5}
+                    shadow-camera-far={20}
+                    shadow-camera-left={-4}
+                    shadow-camera-right={4}
+                    shadow-camera-top={4}
+                    shadow-camera-bottom={-4}
+                    />
 
-                <spotLight
-                  position={[-4, 6, 5]}
-                  intensity={1.85}
-                  angle={0.36}
-                  penumbra={1}
-                  castShadow
-                />
-
-                <BB8Runner
-                  isMobile={isMobile}
-                  debugConfig={debugValues}
-                />
+                <BB8Runner isMobile={isMobile} />
               </Suspense>
             </Canvas>
           </div>
@@ -598,8 +408,6 @@ function Hero() {
           </motion.div>
         </div>
       </div>
-
-      <HeroDebugPanel values={debugValues} setValues={setDebugValues} />
     </section>
   );
 }

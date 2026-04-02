@@ -9,6 +9,7 @@ export function BB8({ onAnimationReady, ...props }) {
   useEffect(() => {
     const clip = animations?.[0];
     const action = clip ? actions?.[clip.name] : null;
+
     if (!clip || !action) return;
 
     action.reset();
@@ -56,9 +57,7 @@ export function BB8({ onAnimationReady, ...props }) {
                           name="BB8BB8_Body_Scene_Material_0_1"
                           castShadow
                           receiveShadow
-                          geometry={
-                            nodes.BB8BB8_Body_Scene_Material_0_1.geometry
-                          }
+                          geometry={nodes.BB8BB8_Body_Scene_Material_0_1.geometry}
                           material={materials.Scene_Material}
                         />
                       </group>
@@ -73,6 +72,7 @@ export function BB8({ onAnimationReady, ...props }) {
                       </group>
                     </group>
                   </group>
+
                   <group name="BB8Center_Head_NeutralPose" position={[0, 62, 0]}>
                     <group name="BB8Center_Head">
                       <group name="BB8Antena">
@@ -96,9 +96,7 @@ export function BB8({ onAnimationReady, ...props }) {
                           name="BB8BB8_Head_Scene_Material1_0_1"
                           castShadow
                           receiveShadow
-                          geometry={
-                            nodes.BB8BB8_Head_Scene_Material1_0_1.geometry
-                          }
+                          geometry={nodes.BB8BB8_Head_Scene_Material1_0_1.geometry}
                           material={materials.Scene_Material1}
                         />
                       </group>
