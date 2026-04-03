@@ -19,7 +19,11 @@ function Navbar() {
       { key: "home", href: "#home", label: t("navbar.home") },
       { key: "about", href: "#about", label: t("navbar.about") },
       { key: "work", href: "#portfolio", label: t("navbar.work") },
-      { key: "achievements", href: "#achievements", label: t("navbar.achievements") },
+      {
+        key: "achievements",
+        href: "#achievements",
+        label: t("navbar.achievements"),
+      },
       { key: "contact", href: "#footer", label: t("navbar.contact") },
     ],
     [t]
@@ -30,27 +34,50 @@ function Navbar() {
   }, [i18n.language]);
 
   useEffect(() => {
-    const sections = navItems
-      .map((item) => document.querySelector(item.href))
-      .filter(Boolean);
+    const updateActiveSection = () => {
+      const sections = navItems
+        .map((item) => document.querySelector(item.href))
+        .filter(Boolean);
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleEntry = entries.find((entry) => entry.isIntersecting);
+      if (!sections.length) return;
 
-        if (visibleEntry?.target?.id) {
-          setActiveSection(`#${visibleEntry.target.id}`);
+      const navbarOffset = 140;
+      const currentScroll = window.scrollY + navbarOffset;
+
+      let currentSection = "#home";
+
+      for (const section of sections) {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+        const sectionBottom = sectionTop + sectionHeight;
+        const sectionId = `#${section.id}`;
+
+        if (currentScroll >= sectionTop && currentScroll < sectionBottom) {
+          currentSection = sectionId;
+          break;
         }
-      },
-      {
-        rootMargin: "-35% 0px -45% 0px",
-        threshold: 0.2,
       }
-    );
 
-    sections.forEach((section) => observer.observe(section));
+      const pageBottom =
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 10;
 
-    return () => observer.disconnect();
+      if (pageBottom) {
+        currentSection = "#footer";
+      }
+
+      setActiveSection(currentSection);
+    };
+
+    updateActiveSection();
+
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    window.addEventListener("resize", updateActiveSection);
+
+    return () => {
+      window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("resize", updateActiveSection);
+    };
   }, [navItems]);
 
   const closeMenu = () => setIsOpen(false);
@@ -88,7 +115,11 @@ function Navbar() {
                         <motion.span
                           layoutId="navbar-active-pill"
                           className="navbar__active-pill"
-                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 380,
+                            damping: 30,
+                          }}
                         />
                       )}
                     </a>
@@ -126,7 +157,11 @@ function Navbar() {
                 animate={{ x: theme === "dark" ? 0 : 26 }}
                 transition={{ type: "spring", stiffness: 320, damping: 22 }}
               >
-                {theme === "dark" ? <HiOutlineMoon size={14} /> : <HiOutlineSun size={14} />}
+                {theme === "dark" ? (
+                  <HiOutlineMoon size={14} />
+                ) : (
+                  <HiOutlineSun size={14} />
+                )}
               </motion.div>
             </motion.button> */}
 
@@ -189,8 +224,16 @@ function Navbar() {
                   onClick={toggleTheme}
                   aria-label={t("navbar.changeTheme")}
                 >
-                  {theme === "dark" ? <HiOutlineMoon size={18} /> : <HiOutlineSun size={18} />}
-                  <span>{theme === "dark" ? t("navbar.dark") : t("navbar.light")}</span>
+                  {theme === "dark" ? (
+                    <HiOutlineMoon size={18} />
+                  ) : (
+                    <HiOutlineSun size={18} />
+                  )}
+                  <span>
+                    {theme === "dark"
+                      ? t("navbar.dark")
+                      : t("navbar.light")}
+                  </span>
                 </button>
               </div>
             </motion.div>

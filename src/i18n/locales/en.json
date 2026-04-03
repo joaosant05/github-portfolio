@@ -20,5 +20,37 @@
     "titleLine4": "Solutions",
     "rotatingWords": ["Robust", "Scalable", "Reliable", "Modern"],
     "subtitle": "I build end-to-end applications with a focus on user experience, clean code, well-structured APIs, and systems designed to grow."
+  },
+  "about": {
+    "photoAlt": "Profile photo of João",
+    "eyebrow": "About me",
+    "name": "João Silva",
+    "paragraph1": "I am a developer focused on modern interfaces and digital experiences.",
+    "paragraph2": "I work with frontend, backend, and design to build complete products.",
+    "stackTitle": "Tech stack",
+    "stackAriaLabel": "Animated technologies list",
+    "socialsAriaLabel": "Social media links",
+    "socials": {
+      "linkedin": {
+        "label": "LinkedIn",
+        "description": "Connect with me"
+      },
+      "github": {
+        "label": "GitHub",
+        "description": "See my projects"
+      },
+      "instagram": {
+        "label": "Instagram",
+        "description": "Content and behind the scenes"
+      },
+      "email": {
+        "label": "Email",
+        "description": "Contact me directly"
+      },
+      "behance": {
+        "label": "Behance",
+        "description": "Visual portfolio"
+      }
+    }
   }
 }

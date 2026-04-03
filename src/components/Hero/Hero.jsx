@@ -1,3 +1,4 @@
+// src/components/Hero/Hero.jsx
 import {
   Suspense,
   useCallback,
@@ -8,12 +9,13 @@ import {
   useState,
 } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, ContactShadows } from "@react-three/drei";
 import { useMediaQuery } from "react-responsive";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import { BB8 } from "../models/BB8";
 import "./Hero.css";
+import * as THREE from "three";
 
 const clamp01 = (value) => Math.min(1, Math.max(0, value));
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
@@ -142,10 +144,11 @@ function BB8Runner({ isMobile, controlsRef }) {
       totalFrames: 299,
       moveStartFrame: 230,
       baseX: isMobile ? -0.9 : 1.3,
-      baseY: isMobile ? -1.4 : -2.8,
-      baseZ: 0,
+      baseY: isMobile ? -1.4 : -2.34,
+      baseZ: -0.5,
+      reentryZOffset: -1.3,
       wrapPadding: isMobile ? 0.52 : 0.68,
-      scale: isMobile ? 3.2 : 5,
+      scale: isMobile ? 1 : 2.2,
       dragRotateSpeedX: 0.0035,
       dragRotateSpeedY: 0.0085,
       maxDragTiltX: 0.35,
@@ -217,6 +220,45 @@ function BB8Runner({ isMobile, controlsRef }) {
     },
     [setCursor]
   );
+
+  const shadowTexture = useMemo(() => {
+  const size = 256;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+
+  const ctx = canvas.getContext("2d");
+  const gradient = ctx.createRadialGradient(
+    size / 2,
+    size / 2,
+    18,
+    size / 2,
+    size / 2,
+    size / 2
+  );
+
+  gradient.addColorStop(0, "rgba(0,0,0,0.28)");
+  gradient.addColorStop(0.55, "rgba(0,0,0,0.16)");
+  gradient.addColorStop(1, "rgba(0,0,0,0)");
+
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, size, size);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  return texture;
+}, []);
+
+  useEffect(() => {
+    if (!visualRef.current) return;
+
+    visualRef.current.traverse((obj) => {
+      if (obj.isMesh) {
+        obj.castShadow = true;
+        obj.receiveShadow = true;
+      }
+    });
+  }, []);
 
   useEffect(() => {
     const handlePointerMove = (e) => {
@@ -292,6 +334,7 @@ function BB8Runner({ isMobile, controlsRef }) {
     } = RUN_CONFIG;
 
     let x = baseX;
+    let z = baseZ;
 
     if (anim?.action && anim?.clip) {
       const clipDuration = anim.clip.duration;
@@ -320,15 +363,21 @@ function BB8Runner({ isMobile, controlsRef }) {
 
         if (moveProgress < split) {
           const local = clamp01(moveProgress / split);
+
+          // sai para a direita mantendo Z normal
           x = lerp(baseX, rightX, easeInCubic(local));
+          z = baseZ;
         } else {
           const local = clamp01((moveProgress - split) / (1 - split));
+
+          // reaparece na esquerda com Z mais fundo e volta para Z=0
           x = lerp(leftX, baseX, easeOutCubic(local));
+          z = lerp(baseZ + RUN_CONFIG.reentryZOffset, baseZ, easeOutCubic(local));
         }
       }
     }
 
-    root.position.set(x, baseY, baseZ);
+    root.position.set(x, baseY, z);
     root.visible = true;
 
     const drag = dragRef.current;
@@ -358,6 +407,21 @@ function BB8Runner({ isMobile, controlsRef }) {
 
   return (
     <group ref={rootRef}>
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[-0.17, isMobile ? -1.08 : 0, 0.127]}
+        scale={isMobile ? [1.15, 1, 0.95] : [1.45, 1, 1.16]}
+        renderOrder={-1}
+      >
+        <planeGeometry args={[1, 1]} />
+        <meshBasicMaterial
+          map={shadowTexture}
+          transparent
+          opacity={3.8}
+          depthWrite={false}
+        />
+      </mesh>
+
       <group ref={visualRef}>
         <BB8
           onAnimationReady={handleAnimationReady}
@@ -375,6 +439,59 @@ function Hero() {
   const isMobile = useMediaQuery({ maxWidth: 853 });
   const { t } = useTranslation();
   const controlsRef = useRef(null);
+  const heroRef = useRef(null);
+  const shouldReduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el) return;
+
+    if (shouldReduceMotion) {
+      el.style.setProperty("--hero-parallax-bg", "0px");
+      el.style.setProperty("--hero-parallax-canvas", "0px");
+      el.style.setProperty("--hero-parallax-content", "0px");
+      el.style.setProperty("--hero-parallax-overlay-opacity", "0");
+      return;
+    }
+
+    let raf = 0;
+
+    const updateParallax = () => {
+      raf = 0;
+
+      const rect = el.getBoundingClientRect();
+      const progress = clamp01(-rect.top / window.innerHeight);
+
+      const bgY = progress * (isMobile ? 40 : 72);
+      const canvasY = progress * (isMobile ? 22 : 38);
+      const contentY = progress * (isMobile ? 55 : 90);
+      const overlayOpacity = progress * 0.42;
+
+      el.style.setProperty("--hero-parallax-bg", `${bgY}px`);
+      el.style.setProperty("--hero-parallax-canvas", `${canvasY}px`);
+      el.style.setProperty("--hero-parallax-content", `${contentY}px`);
+      el.style.setProperty(
+        "--hero-parallax-overlay-opacity",
+        overlayOpacity.toFixed(3)
+      );
+    };
+
+    const onScroll = () => {
+      if (raf) return;
+      raf = window.requestAnimationFrame(updateParallax);
+    };
+
+    updateParallax();
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) window.cancelAnimationFrame(raf);
+    };
+  }, [isMobile, shouldReduceMotion]);
 
   const cameraSettings = isMobile
     ? { position: [0, 0.2, 6], fov: 34 }
@@ -383,7 +500,7 @@ function Hero() {
   const orbitTarget = isMobile ? [0, -1.38, 0] : [0, -1.5, 0];
 
   return (
-    <section className="hero" id="home">
+    <section ref={heroRef} className="hero" id="home">
       <div className="hero__backdrop" aria-hidden="true">
         <div className="hero__overlay" />
       </div>
@@ -417,20 +534,20 @@ function Hero() {
                 <ambientLight intensity={1.18} />
 
                 <directionalLight
-                    position={[4, 5, 3]}
-                    intensity={3.15}
-                    castShadow
-                    shadow-mapSize-width={2048}
-                    shadow-mapSize-height={2048}
-                    shadow-bias={-0.00008}
-                    shadow-normalBias={0.02}
-                    shadow-camera-near={0.5}
-                    shadow-camera-far={20}
-                    shadow-camera-left={-4}
-                    shadow-camera-right={4}
-                    shadow-camera-top={4}
-                    shadow-camera-bottom={-4}
-                    />
+                  position={[6, 3, 1]}
+                  intensity={1.30}
+                  castShadow
+                  shadow-mapSize-width={2048}
+                  shadow-mapSize-height={2048}
+                  shadow-bias={-0.00008}
+                  shadow-normalBias={0.02}
+                  shadow-camera-near={0.5}
+                  shadow-camera-far={20}
+                  shadow-camera-left={-4}
+                  shadow-camera-right={4}
+                  shadow-camera-top={4}
+                  shadow-camera-bottom={-4}
+                />
 
                 <BB8Runner isMobile={isMobile} controlsRef={controlsRef} />
               </Suspense>
@@ -473,15 +590,6 @@ function Hero() {
                 <span className="hero__title-soft">{t("hero.titleLine4")}</span>
               </span>
             </motion.h1>
-
-            {/* <motion.p
-              className="hero__subtitle"
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.22, duration: 0.55 }}
-            >
-              {t("hero.subtitle")}
-            </motion.p> */}
 
             <motion.div
               className="hero__actions"
