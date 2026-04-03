@@ -474,14 +474,14 @@ function Hero() {
               </span>
             </motion.h1>
 
-            <motion.p
+            {/* <motion.p
               className="hero__subtitle"
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.22, duration: 0.55 }}
             >
               {t("hero.subtitle")}
-            </motion.p>
+            </motion.p> */}
 
             <motion.div
               className="hero__actions"
