@@ -16,7 +16,7 @@
   "hero": {
     "eyebrow": "Hi, I'm João Santos",
     "titleLine1": "A Developer",
-    "titleLine2": "Dedicated to Crafting",
+    "titleLine2": "Dedicated to Creating",
     "titleLine4": "Solutions",
     "rotatingWords": ["Robust", "Scalable", "Reliable", "Modern"],
     "subtitle": "I build end-to-end applications with a focus on user experience, clean code, well-structured APIs, and systems designed to grow."
@@ -24,7 +24,7 @@
   "about": {
     "photoAlt": "Profile photo of João",
     "eyebrow": "About me",
-    "name": "João Silva",
+    "name": "João Santos",
     "paragraph1": "I am a developer focused on modern interfaces and digital experiences.",
     "paragraph2": "I work with frontend, backend, and design to build complete products.",
     "stackTitle": "Tech stack",
