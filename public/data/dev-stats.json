@@ -1,15 +1,15 @@
 {
-  "updatedAt": null,
+  "updatedAt": "2026-04-05T07:09:40.658Z",
   "github": {
     "username": "joaosant05",
-    "totalCommits": 0,
-    "from": null,
-    "to": null
+    "totalCommits": 22,
+    "from": "2025-04-05T07:09:40.330Z",
+    "to": "2026-04-05T07:09:40.330Z"
   },
   "leetcode": {
     "username": "joaosant05",
-    "totalSolved": 0,
-    "easySolved": 0,
+    "totalSolved": 2,
+    "easySolved": 2,
     "mediumSolved": 0,
     "hardSolved": 0
   }
