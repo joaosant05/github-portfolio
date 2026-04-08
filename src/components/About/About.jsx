@@ -1,34 +1,24 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getGithubLastYearCommits } from "../../services/github";
-import { getLeetCodeStats } from "../../services/leetcode";
+import achievementsData from "../../data/achivements";
 import "./About.css";
 
-const PROFILE_USERNAMES = {
-  linkedin: "seuusuario",
-  github: "seuusuario",
-  instagram: "seuusuario",
-  leetcode: "seuusuario",
-};
+const AUTO_ROTATE_DELAY = 50000;
 
 const stackItems = [
   { label: "React", icon: "/assets/logos/stacks/react.svg" },
   { label: "JavaScript", icon: "/assets/logos/stacks/javascript.svg" },
   { label: "HTML5", icon: "/assets/logos/stacks/html-5.svg" },
   { label: "CSS3", icon: "/assets/logos/stacks/css.svg" },
-
   { label: "Python", icon: "/assets/logos/stacks/python.svg" },
   { label: "FastAPI", icon: "/assets/logos/stacks/fastapi-icon.svg" },
   { label: "Java", icon: "/assets/logos/stacks/java.svg" },
   { label: "C++", icon: "/assets/logos/stacks/c-plusplus.svg" },
-
   { label: "PostgreSQL", icon: "/assets/logos/stacks/postgresql.svg" },
   { label: "MySQL", icon: "/assets/logos/stacks/mysql-icon.svg" },
-
   { label: "Docker", icon: "/assets/logos/stacks/docker-icon.svg" },
   { label: "Azure DevOps", icon: "/assets/logos/stacks/azure-devops.svg" },
   { label: "DigitalOcean", icon: "/assets/logos/stacks/digital-ocean-icon.svg" },
-
   { label: "Git", icon: "/assets/logos/stacks/git-icon.svg" },
   { label: "Figma", icon: "/assets/logos/stacks/figma.svg" },
   {
@@ -37,454 +27,367 @@ const stackItems = [
   },
 ];
 
-const socialItems = [
-  {
-    key: "linkedin",
-    label: "LinkedIn",
-    href: `https://linkedin.com/in/${PROFILE_USERNAMES.linkedin}`,
-    icon: "/assets/logos/social/LinkedIn_icon.png",
-  },
-  {
-    key: "github",
-    label: "GitHub",
-    href: `https://github.com/${PROFILE_USERNAMES.github}`,
-    icon: "/assets/logos/social/github_licon.webp",
-  },
-  {
-    key: "instagram",
-    label: "Instagram",
-    href: `https://instagram.com/${PROFILE_USERNAMES.instagram}`,
-    icon: "/assets/logos/social/Instagram_icon.png",
-  },
-  {
-    key: "leetcode",
-    label: "LeetCode",
-    href: `https://leetcode.com/${PROFILE_USERNAMES.leetcode}`,
-    icon: "/assets/logos/social/leetcode-icon.png",
-  },
-];
+function getDateLocale(language) {
+  if (!language) return "en-US";
 
-function formatNumber(value) {
-  return new Intl.NumberFormat("en-US").format(Number(value) || 0);
+  const normalized = language.toLowerCase();
+
+  if (normalized.includes("pt")) return "pt-BR";
+  return "en-US";
 }
 
-function formatDate(value) {
+function formatDate(value, language) {
   if (!value) return "--";
+
   const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
 
-  if (Number.isNaN(date.getTime())) return "--";
-
-  return new Intl.DateTimeFormat("pt-BR", {
+  return new Intl.DateTimeFormat(getDateLocale(language), {
     day: "2-digit",
-    month: "2-digit",
+    month: "short",
     year: "numeric",
   }).format(date);
 }
 
-function StackCrawl({ ariaLabel, title }) {
-  return (
-    <div className="about__crawl-scene" aria-label={ariaLabel}>
-      <div className="about__crawl-header">
-        <span className="about__eyebrow">{title}</span>
-      </div>
+function resolveAchievementImage(imageValue) {
+  if (!imageValue) return "/assets/achivements/default-badge.webp";
 
-      <div className="about__crawl-overlay about__crawl-overlay--top" />
-      <div className="about__crawl-overlay about__crawl-overlay--bottom" />
+  if (
+    imageValue.startsWith("/") ||
+    imageValue.startsWith("http://") ||
+    imageValue.startsWith("https://") ||
+    imageValue.startsWith("data:")
+  ) {
+    return imageValue;
+  }
 
-      <div className="about__crawl-viewport">
-        <div className="about__crawl-plane">
-          <div className="about__crawl-sequence">
-            {stackItems.map((item) => (
-              <div key={item.label} className="about__crawl-line">
-                <img
-                  src={item.icon}
-                  alt={item.label}
-                  className="about__crawl-icon"
-                />
-                <span>{item.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MetricCarousel({ slides, currentIndex, onPrev, onNext, title }) {
-  return (
-    <div className="about__metrics-card" aria-label={title}>
-      <div className="about__metrics-toolbar">
-        <button
-          type="button"
-          className="about__metrics-arrow"
-          onClick={onPrev}
-          aria-label="Mostrar plataforma anterior"
-        >
-          ←
-        </button>
-
-        <div className="about__metrics-dots" aria-hidden="true">
-          {slides.map((slide, index) => (
-            <span
-              key={slide.key}
-              className={`about__metrics-dot ${
-                index === currentIndex ? "about__metrics-dot--active" : ""
-              }`}
-            />
-          ))}
-        </div>
-
-        <button
-          type="button"
-          className="about__metrics-arrow"
-          onClick={onNext}
-          aria-label="Mostrar próxima plataforma"
-        >
-          →
-        </button>
-      </div>
-
-      <div className="about__metrics-viewport">
-        <div
-          className="about__metrics-track"
-          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-        >
-          {slides.map((slide) => (
-            <article
-              key={slide.key}
-              className={`about__metrics-slide ${slide.toneClass}`}
-            >
-              <header className="about__metrics-slide-head">
-                <div>
-                  <span className="about__metrics-platform">{slide.platform}</span>
-                  <h4>{slide.title}</h4>
-                </div>
-
-                <span className="about__metrics-highlight">
-                  {slide.highlight}
-                </span>
-              </header>
-
-              <div className="about__metrics-body">
-                {slide.type === "github" ? (
-                  <div className="about__metrics-main">
-                    <div className="about__metrics-main-value">
-                      {slide.mainValue}
-                    </div>
-                    <p className="about__metrics-main-label">{slide.mainLabel}</p>
-
-                    <div className="about__metrics-meta">
-                      <span>@{slide.username}</span>
-                      <span>Atualizado em {slide.updatedAt}</span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="about__difficulty-grid">
-                    {slide.items.map((item) => (
-                      <div
-                        key={item.label}
-                        className={`about__difficulty-item ${item.toneClass}`}
-                      >
-                        <span className="about__difficulty-label">
-                          {item.label}
-                        </span>
-                        <strong className="about__difficulty-value">
-                          {item.value}
-                        </strong>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </article>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+  return `/assets/achivements/${imageValue}`;
 }
 
 function About() {
-  const { t } = useTranslation();
-  const [currentMetricIndex, setCurrentMetricIndex] = useState(0);
-  const [statsState, setStatsState] = useState({
-    loading: true,
-    error: false,
-    github: null,
-    leetcode: null,
-  });
+  const { t, i18n } = useTranslation();
+  const carouselRef = useRef(null);
+  const [isInView, setIsInView] = useState(false);
+  const [activePanel, setActivePanel] = useState(0);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  const achievements = useMemo(() => {
+    const list = Array.isArray(achievementsData) ? achievementsData : [];
+
+    return [...list]
+      .map((achievement, index) => ({
+        id: achievement.id || `achievement-${index + 1}`,
+        title: achievement.title || achievement.name || "Conquista sem título",
+        issuer:
+          achievement.issuer ||
+          achievement.organization ||
+          achievement.company ||
+          "Emissor não informado",
+        issuedAt:
+          achievement.issuedAt ||
+          achievement.issued ||
+          achievement.date ||
+          achievement.issuedDate ||
+          "",
+        description:
+          achievement.description ||
+          achievement.summary ||
+          achievement.text ||
+          "",
+        badgeImage: resolveAchievementImage(
+          achievement.badgeImage ||
+            achievement.image ||
+            achievement.logo ||
+            achievement.icon ||
+            achievement.badge ||
+            ""
+        ),
+        credentialUrl:
+          achievement.credentialUrl ||
+          achievement.url ||
+          achievement.link ||
+          achievement.credlyUrl ||
+          "",
+      }))
+      .sort((a, b) => new Date(b.issuedAt) - new Date(a.issuedAt));
+  }, []);
+
+  const featuredAchievements = useMemo(
+    () => achievements.slice(0, 4),
+    [achievements]
+  );
+
+  const carouselItems = useMemo(
+    () => [
+      {
+        id: "bio",
+        label: t("about.eyebrow", { defaultValue: "About me" }),
+      },
+      {
+        id: "stack",
+        label: t("about.stackTitle", { defaultValue: "Tech Stack" }),
+      },
+      {
+        id: "achievements",
+        label: t("about.achievementsTitle", {
+          defaultValue: "Achievements",
+        }),
+      },
+    ],
+    [t]
+  );
 
   useEffect(() => {
-    let isMounted = true;
+    if (typeof window === "undefined" || !window.matchMedia) return undefined;
 
-    async function loadStats() {
-      setStatsState({
-        loading: true,
-        error: false,
-        github: null,
-        leetcode: null,
-      });
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-      try {
-        const [github, leetcode] = await Promise.all([
-          getGithubLastYearCommits(),
-          getLeetCodeStats(),
-        ]);
+    const updatePreference = () => {
+      setPrefersReducedMotion(mediaQuery.matches);
+    };
 
-        if (!isMounted) return;
+    updatePreference();
 
-        setStatsState({
-          loading: false,
-          error: false,
-          github,
-          leetcode,
-        });
-      } catch (error) {
-        console.error("Failed to load stats:", error);
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", updatePreference);
 
-        if (!isMounted) return;
-
-        setStatsState({
-          loading: false,
-          error: true,
-          github: null,
-          leetcode: null,
-        });
-      }
+      return () => {
+        mediaQuery.removeEventListener("change", updatePreference);
+      };
     }
 
-    loadStats();
+    mediaQuery.addListener(updatePreference);
 
     return () => {
-      isMounted = false;
+      mediaQuery.removeListener(updatePreference);
     };
   }, []);
 
-  const slides = useMemo(() => {
-    if (statsState.loading) {
-      return [
-        {
-          key: "github",
-          type: "github",
-          platform: "GitHub",
-          title: "Commits",
-          highlight: "Loading",
-          mainValue: "...",
-          mainLabel: "Últimos 12 meses",
-          username: PROFILE_USERNAMES.github,
-          updatedAt: "--",
-          toneClass: "about__metrics-slide--github",
-        },
-        {
-          key: "leetcode",
-          type: "leetcode",
-          platform: "LeetCode",
-          title: "Solved by difficulty",
-          highlight: "Loading",
-          items: [
-            {
-              label: "Easy",
-              value: "...",
-              toneClass: "about__difficulty-item--easy",
-            },
-            {
-              label: "Medium",
-              value: "...",
-              toneClass: "about__difficulty-item--medium",
-            },
-            {
-              label: "Hard",
-              value: "...",
-              toneClass: "about__difficulty-item--hard",
-            },
-            {
-              label: "Total",
-              value: "...",
-              toneClass: "about__difficulty-item--total",
-            },
-          ],
-          toneClass: "about__metrics-slide--leetcode",
-        },
-      ];
-    }
+  useEffect(() => {
+    const element = carouselRef.current;
+    if (!element) return undefined;
 
-    if (statsState.error || !statsState.github || !statsState.leetcode) {
-      return [
-        {
-          key: "github",
-          type: "github",
-          platform: "GitHub",
-          title: "Commits",
-          highlight: "Error",
-          mainValue: "--",
-          mainLabel: "Verifique usernames/workflow",
-          username: PROFILE_USERNAMES.github,
-          updatedAt: "--",
-          toneClass: "about__metrics-slide--github",
-        },
-        {
-          key: "leetcode",
-          type: "leetcode",
-          platform: "LeetCode",
-          title: "Solved by difficulty",
-          highlight: "Error",
-          items: [
-            {
-              label: "Easy",
-              value: "--",
-              toneClass: "about__difficulty-item--easy",
-            },
-            {
-              label: "Medium",
-              value: "--",
-              toneClass: "about__difficulty-item--medium",
-            },
-            {
-              label: "Hard",
-              value: "--",
-              toneClass: "about__difficulty-item--hard",
-            },
-            {
-              label: "Total",
-              value: "--",
-              toneClass: "about__difficulty-item--total",
-            },
-          ],
-          toneClass: "about__metrics-slide--leetcode",
-        },
-      ];
-    }
-
-    return [
-      {
-        key: "github",
-        type: "github",
-        platform: "GitHub",
-        title: "Commits",
-        highlight: "12 months",
-        mainValue: formatNumber(statsState.github.totalCommits),
-        mainLabel: "Total de commits nos últimos 12 meses",
-        username: statsState.github.username,
-        updatedAt: formatDate(statsState.github.updatedAt),
-        toneClass: "about__metrics-slide--github",
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.intersectionRatio >= 0.3);
       },
       {
-        key: "leetcode",
-        type: "leetcode",
-        platform: "LeetCode",
-        title: "Solved by difficulty",
-        highlight: formatNumber(statsState.leetcode.totalSolved),
-        items: [
-          {
-            label: "Easy",
-            value: formatNumber(statsState.leetcode.easySolved),
-            toneClass: "about__difficulty-item--easy",
-          },
-          {
-            label: "Medium",
-            value: formatNumber(statsState.leetcode.mediumSolved),
-            toneClass: "about__difficulty-item--medium",
-          },
-          {
-            label: "Hard",
-            value: formatNumber(statsState.leetcode.hardSolved),
-            toneClass: "about__difficulty-item--hard",
-          },
-          {
-            label: "Total",
-            value: formatNumber(statsState.leetcode.totalSolved),
-            toneClass: "about__difficulty-item--total",
-          },
-        ],
-        toneClass: "about__metrics-slide--leetcode",
-      },
-    ];
-  }, [statsState]);
+        threshold: [0, 0.15, 0.3, 0.45, 0.6],
+        rootMargin: "-6% 0px -6% 0px",
+      }
+    );
 
-  const handlePrevMetric = () => {
-    setCurrentMetricIndex((prev) => (prev - 1 + slides.length) % slides.length);
-  };
+    observer.observe(element);
 
-  const handleNextMetric = () => {
-    setCurrentMetricIndex((prev) => (prev + 1) % slides.length);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isInView || prefersReducedMotion || carouselItems.length <= 1) {
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setActivePanel((prev) => (prev + 1) % carouselItems.length);
+    }, AUTO_ROTATE_DELAY);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [carouselItems.length, isInView, prefersReducedMotion]);
+
+  const handlePanelChange = (index) => {
+    setActivePanel(index);
   };
 
   return (
     <section className="about" id="about">
       <div className="c-space">
-        <div className="about__layout">
-          <article className="about__card about__card--bio grid-default-color">
-            <div className="about__image-wrap">
-              <img
-                src="/assets/socials/foto.jpeg"
-                alt={t("about.photoAlt")}
-                className="about__image"
-              />
-            </div>
-
-            <div className="about__card-content">
-              <span className="about__eyebrow">{t("about.eyebrow")}</span>
-              <h3>{t("about.name")}</h3>
-
-              <p className="subtext">{t("about.paragraph1")}</p>
-              <p className="subtext">{t("about.paragraph2")}</p>
-            </div>
-          </article>
-
-          <article className="about__card about__card--numbers grid-default-color">
-            <div className="about__numbers-head">
-              <span className="about__eyebrow">
-                {t("about.numbersTitle", { defaultValue: "Numbers" })}
-              </span>
-              <p className="subtext about__numbers-subtext">
-                {t("about.numbersDescription", {
-                  defaultValue: "GitHub and LeetCode stats.",
-                })}
-              </p>
-            </div>
-
-            <MetricCarousel
-              slides={slides}
-              currentIndex={currentMetricIndex}
-              onPrev={handlePrevMetric}
-              onNext={handleNextMetric}
-              title={t("about.numbersAriaLabel", {
-                defaultValue: "Developer statistics",
-              })}
-            />
-          </article>
-
-          <article className="about__card about__card--stack">
-            <StackCrawl
-              ariaLabel={t("about.stackAriaLabel")}
-              title={t("about.stackTitle")}
-            />
-          </article>
-
+        <div className="about__shell">
           <div
-            className="about__socials"
-            aria-label={t("about.socialsAriaLabel")}
+            ref={carouselRef}
+            className={`about__carousel about__reveal ${
+              isInView ? "is-visible" : ""
+            }`}
+            aria-roledescription="carousel"
+            aria-label={t("about.carouselAriaLabel", {
+              defaultValue: "About section carousel",
+            })}
           >
-            {socialItems.map((social) => (
-              <a
-                key={social.key}
-                href={social.href}
-                target="_blank"
-                rel="noreferrer"
-                className="about__social"
-                aria-label={social.label}
-                title={social.label}
-              >
-                <img
-                  src={social.icon}
-                  alt=""
-                  className="about__social-badge"
-                  loading="lazy"
-                />
-                <span className="about__sr-only">{social.label}</span>
-              </a>
-            ))}
+            <div className="about__carousel-viewport">
+              <div className="about__carousel-stage">
+                <article
+                  id="about-panel-bio"
+                  className={`about__panel about__carousel-panel ${
+                    activePanel === 0 ? "is-active" : ""
+                  }`}
+                  aria-hidden={activePanel !== 0}
+                >
+                  <div className="about__panel-head">
+                    <span className="about__eyebrow">
+                      {t("about.eyebrow", { defaultValue: "About me" })}
+                    </span>
+                  </div>
+
+                  <div className="about__bio-grid">
+                    <div className="about__image-wrap">
+                      <img
+                        src="/assets/socials/foto.jpeg"
+                        alt={t("about.photoAlt")}
+                        className="about__image"
+                      />
+                    </div>
+
+                    <div className="about__copy">
+                      <h3>{t("about.name")}</h3>
+                      <p>{t("about.paragraph1")}</p>
+                      <p>{t("about.paragraph2")}</p>
+                    </div>
+                  </div>
+                </article>
+
+                <article
+                  id="about-panel-stack"
+                  className={`about__panel about__carousel-panel ${
+                    activePanel === 1 ? "is-active" : ""
+                  }`}
+                  aria-hidden={activePanel !== 1}
+                >
+                  <div className="about__panel-head">
+                    <span className="about__eyebrow">
+                      {t("about.stackTitle", { defaultValue: "Tech Stack" })}
+                    </span>
+
+                    <p className="about__intro">
+                      {t("about.stackDescription", {
+                        defaultValue:
+                          "Technologies and tools I have worked with throughout my projects.",
+                      })}
+                    </p>
+                  </div>
+
+                  <div
+                    className="about__stack-grid"
+                    aria-label={t("about.stackAriaLabel")}
+                  >
+                    {stackItems.map((item) => (
+                      <div key={item.label} className="about__stack-item">
+                        <img src={item.icon} alt={item.label} loading="lazy" />
+                        <span>{item.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </article>
+
+                <article
+                  id="about-panel-achievements"
+                  className={`about__panel about__carousel-panel ${
+                    activePanel === 2 ? "is-active" : ""
+                  }`}
+                  aria-hidden={activePanel !== 2}
+                >
+                  <div className="about__panel-head">
+                    <span className="about__eyebrow">
+                      {t("about.achievementsTitle", {
+                        defaultValue: "Achievements",
+                      })}
+                    </span>
+
+                    <p className="about__intro">
+                      {t("about.achievementsDescription", {
+                        defaultValue:
+                          "Certifications, badges, and achievements that are part of my journey.",
+                      })}
+                    </p>
+                  </div>
+
+                  {featuredAchievements.length ? (
+                    <div className="about__achievements-grid">
+                      {featuredAchievements.map((achievement, index) => (
+                        <article
+                          key={achievement.id}
+                          className="about__achievement"
+                        >
+                          <div className="about__achievement-media">
+                            <img
+                              src={achievement.badgeImage}
+                              alt={achievement.title}
+                              loading="lazy"
+                            />
+                          </div>
+
+                          <div className="about__achievement-content">
+                            <div className="about__achievement-meta">
+                              <span className="about__achievement-index">
+                                {String(index + 1).padStart(2, "0")}
+                              </span>
+                              <span className="about__achievement-date">
+                                {formatDate(achievement.issuedAt, i18n.language)}
+                              </span>
+                            </div>
+
+                            <h4>{achievement.title}</h4>
+
+                            <p className="about__achievement-issuer">
+                              {achievement.issuer}
+                            </p>
+
+                            {achievement.description ? (
+                              <p className="about__achievement-description">
+                                {achievement.description}
+                              </p>
+                            ) : null}
+
+                            {achievement.credentialUrl ? (
+                              <a
+                                href={achievement.credentialUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="about__achievement-link"
+                              >
+                                {t("about.viewCredential", {
+                                  defaultValue: "View credential",
+                                })}
+                              </a>
+                            ) : null}
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="about__empty">
+                      {t("about.achievementsEmpty", {
+                        defaultValue:
+                          "Add achievements to src/data/achivements.js",
+                      })}
+                    </div>
+                  )}
+                </article>
+              </div>
+            </div>
+
+            <div
+              className="about__carousel-guides"
+              aria-label={t("about.carouselDotsAriaLabel", {
+                defaultValue: "About section panels navigation",
+              })}
+            >
+              {carouselItems.map((item, index) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  aria-label={item.label}
+                  aria-controls={`about-panel-${item.id}`}
+                  aria-pressed={activePanel === index}
+                  className={`about__carousel-dot ${
+                    activePanel === index ? "is-active" : ""
+                  }`}
+                  onClick={() => handlePanelChange(index)}
+                >
+                  <span className="about__sr-only">{item.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

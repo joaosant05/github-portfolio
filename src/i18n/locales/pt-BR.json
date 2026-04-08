@@ -14,12 +14,50 @@
     "dark": "Dark"
   },
   "hero": {
-    "eyebrow": "Oi, eu sou Lorem Ipsum",
-    "titleLine1": "Crio interfaces",
-    "titleLine2": "digitais",
-    "rotatingWords": ["Escaláveis", "Modernas", "Interativas", "Marcantes"],
-    "subtitle": "Front-end developer focado em experiências responsivas, visuais e bem estruturadas, com atenção em performance, componentização e identidade visual.",
-    "ctaPrimary": "Ver projetos",
-    "ctaSecondary": "Sobre mim"
+    "eyebrow": "Oi, eu sou João Santos",
+    "titleLine1": "Um desenvolvedor",
+    "titleLine2": "dedicado a criar soluções",
+    "titleLine4": "",
+    "rotatingWords": ["Robustas", "Escaláveis", "Confiáveis", "Modernas"],
+    "subtitle": "Desenvolvo aplicações de ponta a ponta, com foco na experiência do usuário, código limpo, APIs bem estruturadas e sistemas pensados para evoluir."
+  },
+  "about": {
+    "photoAlt": "Foto de perfil de João",
+    "eyebrow": "Sobre mim",
+    "name": "João Santos",
+    "paragraph1": "Sou desenvolvedor full stack, em processo de finalização da minha formação em Análise e Desenvolvimento de Sistemas, com experiência em todo o ciclo de vida de projetos de software. Atuo desde o levantamento de requisitos e entendimento do problema até a modelagem do sistema, criação de lógicas, design de interfaces, desenvolvimento, testes, deploy e apoio na capacitação de usuários.",
+    "paragraph2": "Tenho como foco o desenvolvimento de aplicações completas, escaláveis e seguras, sempre buscando alinhar qualidade técnica com uma experiência moderna e intuitiva.",
+    "stackTitle": "Tecnologias",
+    "stackDescription": "Tecnologias e ferramentas com as quais já trabalhei ao longo dos projetos.",
+    "achievementsTitle": "Conquistas",
+    "achievementsDescription": "Certificações e conquistas que fazem parte da minha trajetória.",
+    "viewCredential": "Ver credencial",
+    "achievementsEmpty": "Adicione conquistas em src/data/achivements.js",
+    "stackAriaLabel": "Lista animada de tecnologias",
+    "socialsAriaLabel": "Links de redes sociais",
+    "carouselAriaLabel": "Carrossel da seção sobre mim",
+    "carouselDotsAriaLabel": "Navegação entre os painéis da seção sobre mim",
+    "socials": {
+      "linkedin": {
+        "label": "LinkedIn",
+        "description": "Conecte-se comigo"
+      },
+      "github": {
+        "label": "GitHub",
+        "description": "Veja meus projetos"
+      },
+      "instagram": {
+        "label": "Instagram",
+        "description": "Conteúdo e bastidores"
+      },
+      "email": {
+        "label": "Email",
+        "description": "Entre em contato diretamente"
+      },
+      "behance": {
+        "label": "Behance",
+        "description": "Portfólio visual"
+      }
+    }
   }
 }

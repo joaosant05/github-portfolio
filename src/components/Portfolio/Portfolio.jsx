@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { motion, useMotionValue, useSpring } from "motion/react";
 import { FiArrowUpRight } from "react-icons/fi";
-import { portfolioProjects } from "../../../public/data/portfolioData";
+import { portfolioProjects } from "../../data/portfolioData";
 import "./Portfolio.css";
 
 function Portfolio() {

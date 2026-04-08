@@ -19,11 +19,6 @@ function Navbar() {
       { key: "home", href: "#home", label: t("navbar.home") },
       { key: "about", href: "#about", label: t("navbar.about") },
       { key: "work", href: "#portfolio", label: t("navbar.work") },
-      {
-        key: "achievements",
-        href: "#achievements",
-        label: t("navbar.achievements"),
-      },
       { key: "contact", href: "#footer", label: t("navbar.contact") },
     ],
     [t]
