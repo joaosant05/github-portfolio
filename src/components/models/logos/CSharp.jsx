@@ -10,7 +10,7 @@ import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 
 export function Model(props) {
-  const { nodes, materials } = useGLTF('/models/c#_icon.glb')
+  const { nodes, materials } = useGLTF('/models/csharp_icon.glb')
   return (
     <group {...props} dispose={null}>
       <group scale={0.01}>
@@ -27,5 +27,5 @@ export function Model(props) {
   )
 }
 
-useGLTF.preload('/models/c#_icon.glb')
+useGLTF.preload('/models/csharp_icon.glb')
 
