@@ -45,7 +45,7 @@ const stackItems = [
     viewer: {
       cameraPosition: [0, 0, 5.05],
       fov: 34,
-      scale: 0.40,
+      scale: 0.4,
       position: [-0.1, -0.01, 0],
       rotation: [0.08, -0.42, 0],
       minAzimuthAngle: -0.62,
@@ -63,7 +63,7 @@ const stackItems = [
       cameraPosition: [0, 0, 3.4],
       fov: 34,
       scale: 10.28,
-      position: [0, -0.50, 0],
+      position: [0, -0.5, 0],
       rotation: [0.08, 0.34, 0],
       minAzimuthAngle: -0.5,
       maxAzimuthAngle: 0.5,
@@ -114,8 +114,8 @@ const stackItems = [
       cameraPosition: [0, 0, 4.72],
       fov: 34,
       scale: 0.9,
-      position: [0.40, 0.5, 0],
-      rotation: [1.50, -1.3, -0.15],
+      position: [0.4, 0.5, 0],
+      rotation: [1.5, -1.3, -0.15],
       minAzimuthAngle: -0.42,
       maxAzimuthAngle: 0.42,
       minPolarAngle: Math.PI / 2 - 0.2,
@@ -217,6 +217,7 @@ const stackItems = [
       fov: 34,
       scale: 0.6,
       position: [0, -0.01, 0],
+      frameOffsetY: 72,
       rotation: [1.06, 0, -0.02],
       minAzimuthAngle: -0.4,
       maxAzimuthAngle: 0.4,
@@ -329,90 +330,110 @@ function StackModelCanvas({ item }) {
   }
 
   return (
-    <Canvas
-      dpr={[1, 1.15]}
-      shadows={false}
-      camera={{
-        position: viewer.cameraPosition || [0, 0, 4.2],
-        fov: viewer.fov || 34,
-      }}
-      gl={{
-        alpha: true,
-        antialias: true,
-        powerPreference: "high-performance",
-        preserveDrawingBuffer: false,
-      }}
-      onCreated={({ gl }) => {
-        gl.setClearColor(0x000000, 0);
+    <div
+      className="about__stack-canvas-frame"
+      style={{
+        transform: `translate3d(${viewer.frameOffsetX ?? 0}px, ${
+          viewer.frameOffsetY ?? 0
+        }px, 0)`,
       }}
     >
-      <ambientLight intensity={1.08} />
-      <directionalLight position={[3.2, 3.2, 4]} intensity={1.6} />
-      <directionalLight position={[-3, -2, 3]} intensity={0.72} />
+      <Canvas
+        dpr={[1, 1.15]}
+        shadows={false}
+        camera={{
+          position: viewer.cameraPosition || [0, 0, 4.2],
+          fov: viewer.fov || 34,
+          near: viewer.near ?? 0.01,
+          far: viewer.far ?? 100,
+        }}
+        gl={{
+          alpha: true,
+          antialias: true,
+          powerPreference: "high-performance",
+          preserveDrawingBuffer: false,
+        }}
+        onCreated={({ gl }) => {
+          gl.setClearColor(0x000000, 0);
+        }}
+      >
+        <ambientLight intensity={1.08} />
+        <directionalLight position={[3.2, 3.2, 4]} intensity={1.6} />
+        <directionalLight position={[-3, -2, 3]} intensity={0.72} />
 
-      <Suspense fallback={null}>
-        <group>
-          <ModelComponent
-            scale={viewer.scale ?? 1.08}
-            position={viewer.position ?? [0, -0.12, 0]}
-            rotation={viewer.rotation ?? [0.08, 0.35, 0]}
+        <Suspense fallback={null}>
+          <group>
+            <ModelComponent
+              scale={viewer.scale ?? 1.08}
+              position={viewer.position ?? [0, -0.12, 0]}
+              rotation={viewer.rotation ?? [0.08, 0.35, 0]}
+            />
+          </group>
+
+          <OrbitControls
+            enablePan={false}
+            enableZoom={false}
+            enableDamping
+            dampingFactor={0.08}
+            rotateSpeed={0.78}
+            target={viewer.target ?? viewer.position ?? [0, 0, 0]}
+            minAzimuthAngle={viewer.minAzimuthAngle ?? -0.45}
+            maxAzimuthAngle={viewer.maxAzimuthAngle ?? 0.45}
+            minPolarAngle={viewer.minPolarAngle ?? Math.PI / 2 - 0.26}
+            maxPolarAngle={viewer.maxPolarAngle ?? Math.PI / 2 + 0.18}
           />
-        </group>
-
-        <OrbitControls
-          enablePan={false}
-          enableZoom={false}
-          enableDamping
-          dampingFactor={0.08}
-          rotateSpeed={0.78}
-          minAzimuthAngle={viewer.minAzimuthAngle ?? -0.45}
-          maxAzimuthAngle={viewer.maxAzimuthAngle ?? 0.45}
-          minPolarAngle={viewer.minPolarAngle ?? Math.PI / 2 - 0.26}
-          maxPolarAngle={viewer.maxPolarAngle ?? Math.PI / 2 + 0.18}
-        />
-      </Suspense>
-    </Canvas>
+        </Suspense>
+      </Canvas>
+    </div>
   );
 }
 
-function TechStackCard({ item, scrollRootRef }) {
-  const cardRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
+function getCircularOffset(index, activeIndex, total) {
+  let offset = index - activeIndex;
 
-  useEffect(() => {
-    const element = cardRef.current;
-    const root = scrollRootRef.current;
+  if (offset > total / 2) offset -= total;
+  if (offset < -total / 2) offset += total;
 
-    if (!element || !root) return undefined;
+  return offset;
+}
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsVisible(entry.isIntersecting);
-      },
-      {
-        root,
-        threshold: 0.35,
-        rootMargin: "0px 120px 0px 120px",
-      }
-    );
+function getStackPositionClass(offset) {
+  switch (offset) {
+    case 0:
+      return "is-center";
+    case -1:
+      return "is-near-prev";
+    case 1:
+      return "is-near-next";
+    case -2:
+      return "is-far-prev";
+    case 2:
+      return "is-far-next";
+    default:
+      return "is-hidden";
+  }
+}
 
-    observer.observe(element);
-
-    return () => observer.disconnect();
-  }, [scrollRootRef]);
+function TechStackCard({ item, offset, onSelect }) {
+  const positionClass = getStackPositionClass(offset);
+  const isActive = offset === 0;
 
   return (
     <article
-      ref={cardRef}
-      className={`about__stack-card ${item.proficient ? "is-proficient" : ""}`}
+      className={`about__stack-card ${
+        item.proficient ? "is-proficient" : ""
+      } ${positionClass} ${isActive ? "is-active" : ""}`}
       aria-label={`${item.name} - ${item.category}`}
+      aria-hidden={!isActive}
+      tabIndex={isActive ? 0 : -1}
+      onClick={onSelect}
     >
       <div className="about__stack-card-top">
         <span className="about__stack-category">{item.category}</span>
       </div>
 
       <div className="about__stack-model-shell" aria-hidden="true">
-        {isVisible ? <StackModelCanvas item={item} /> : null}
+        <StackModelCanvas item={item} />
       </div>
 
       <div className="about__stack-card-bottom">
@@ -425,10 +446,22 @@ function TechStackCard({ item, scrollRootRef }) {
 function About() {
   const { t, i18n } = useTranslation();
   const aboutRef = useRef(null);
-  const stackScrollRef = useRef(null);
+
+  const stackGestureRef = useRef({
+    active: false,
+    pointerId: null,
+    startX: 0,
+    lastCommitted: 0,
+    defaultStep: 0,
+    moved: false,
+  });
 
   const [isInView, setIsInView] = useState(false);
   const [activePanel, setActivePanel] = useState(0);
+  const [activeStackIndex, setActiveStackIndex] = useState(2);
+  const [isStackPaused, setIsStackPaused] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
+  const [isStackDragging, setIsStackDragging] = useState(false);
 
   const achievements = useMemo(() => {
     const list = Array.isArray(achievementsData) ? achievementsData : [];
@@ -515,11 +548,117 @@ function About() {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return undefined;
+
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const syncPreference = () => setReduceMotion(mediaQuery.matches);
+
+    syncPreference();
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", syncPreference);
+      return () => mediaQuery.removeEventListener("change", syncPreference);
+    }
+
+    mediaQuery.addListener(syncPreference);
+    return () => mediaQuery.removeListener(syncPreference);
+  }, []);
+
+  useEffect(() => {
+    if (activePanel !== 1 || reduceMotion || isStackPaused) return undefined;
+
+    const intervalId = window.setInterval(() => {
+      setActiveStackIndex((prev) => (prev + 1) % stackItems.length);
+    }, 2600);
+
+    return () => window.clearInterval(intervalId);
+  }, [activePanel, isStackPaused, reduceMotion]);
+
   const handlePanelChange = (direction) => {
     setActivePanel((prev) => {
       const total = carouselItems.length;
       return (prev + direction + total) % total;
     });
+  };
+
+  const handleStackStep = (direction) => {
+    setActiveStackIndex((prev) => {
+      const total = stackItems.length;
+      return (prev + direction + total) % total;
+    });
+  };
+
+  const startStackDrag = (event) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+
+    stackGestureRef.current = {
+      active: true,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      lastCommitted: 0,
+      defaultStep: Number(event.currentTarget.dataset.step || 0),
+      moved: false,
+    };
+
+    setIsStackPaused(true);
+    setIsStackDragging(true);
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+  };
+
+  const moveStackDrag = (event) => {
+    const gesture = stackGestureRef.current;
+
+    if (!gesture.active || gesture.pointerId !== event.pointerId) return;
+
+    const threshold = 88;
+    const deltaX = event.clientX - gesture.startX;
+    let pending = deltaX - gesture.lastCommitted;
+
+    if (Math.abs(deltaX) > 10) {
+      gesture.moved = true;
+    }
+
+    while (pending <= -threshold) {
+      handleStackStep(1);
+      gesture.lastCommitted -= threshold;
+      pending = deltaX - gesture.lastCommitted;
+    }
+
+    while (pending >= threshold) {
+      handleStackStep(-1);
+      gesture.lastCommitted += threshold;
+      pending = deltaX - gesture.lastCommitted;
+    }
+
+    event.preventDefault();
+  };
+
+  const endStackDrag = (event) => {
+    const gesture = stackGestureRef.current;
+
+    if (!gesture.active || gesture.pointerId !== event.pointerId) return;
+
+    if (!gesture.moved && gesture.defaultStep) {
+      handleStackStep(gesture.defaultStep);
+    }
+
+    stackGestureRef.current = {
+      active: false,
+      pointerId: null,
+      startX: 0,
+      lastCommitted: 0,
+      defaultStep: 0,
+      moved: false,
+    };
+
+    setIsStackDragging(false);
+
+    if (event.pointerType !== "mouse") {
+      setIsStackPaused(false);
+    }
+
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
   };
 
   const handleKeyNavigation = (event) => {
@@ -580,25 +719,67 @@ function About() {
             <p className="about__intro">
               {t("about.stackDescription", {
                 defaultValue:
-                  "Role horizontalmente para explorar os cards e arraste cada modelo 3D com liberdade controlada.",
+                  "Carrossel infinito com destaque central, profundidade nas laterais e interação direta nos modelos 3D.",
               })}
             </p>
           </div>
 
           <div
-            ref={stackScrollRef}
-            className="about__stack-carousel"
+            className={`about__stack-carousel ${
+              isStackDragging ? "is-dragging" : ""
+            }`}
             aria-label={t("about.stackAriaLabel", {
-              defaultValue: "Tecnologias em carrossel horizontal",
+              defaultValue: "Tecnologias em carrossel infinito",
             })}
+            onMouseEnter={() => setIsStackPaused(true)}
+            onMouseLeave={() => setIsStackPaused(false)}
+            onFocusCapture={() => setIsStackPaused(true)}
+            onBlurCapture={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) {
+                setIsStackPaused(false);
+              }
+            }}
           >
-            {stackItems.map((item) => (
-              <TechStackCard
-                key={item.name}
-                item={item}
-                scrollRootRef={stackScrollRef}
+            <div className="about__stack-drag-zones" aria-hidden="true">
+              <div
+                className="about__stack-drag-zone about__stack-drag-zone--left"
+                data-step="-1"
+                onPointerDown={startStackDrag}
+                onPointerMove={moveStackDrag}
+                onPointerUp={endStackDrag}
+                onPointerCancel={endStackDrag}
               />
-            ))}
+
+              <div
+                className="about__stack-drag-zone about__stack-drag-zone--right"
+                data-step="1"
+                onPointerDown={startStackDrag}
+                onPointerMove={moveStackDrag}
+                onPointerUp={endStackDrag}
+                onPointerCancel={endStackDrag}
+              />
+            </div>
+
+            <div className="about__stack-carousel-track">
+              {stackItems.map((item, index) => {
+                const offset = getCircularOffset(
+                  index,
+                  activeStackIndex,
+                  stackItems.length
+                );
+
+                if (Math.abs(offset) > 2) return null;
+
+                return (
+                  <TechStackCard
+                    key={item.name}
+                    item={item}
+                    offset={offset}
+                    onSelect={() => setActiveStackIndex(index)}
+                  />
+                );
+              })}
+            </div>
           </div>
         </article>
       );
