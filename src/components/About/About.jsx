@@ -1,12 +1,13 @@
 import React, {
   Suspense,
+  memo,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import achievementsData from "../../data/achivements";
 import "./About.css";
@@ -280,11 +281,7 @@ const stackItems = [
 
 function getDateLocale(language) {
   if (!language) return "en-US";
-
-  const normalized = language.toLowerCase();
-
-  if (normalized.includes("pt")) return "pt-BR";
-  return "en-US";
+  return language.toLowerCase().includes("pt") ? "pt-BR" : "en-US";
 }
 
 function formatDate(value, language) {
@@ -315,10 +312,66 @@ function resolveAchievementImage(imageValue) {
   return `/assets/achivements/${imageValue}`;
 }
 
-function StackModelCanvas({ item }) {
+function FloatingModel({ item, viewer, ModelComponent, reduceMotion = false }) {
+  const groupRef = useRef(null);
+
+  const basePosition = useMemo(
+    () => viewer.position ?? [0, -0.12, 0],
+    [viewer.position]
+  );
+
+  const baseRotation = useMemo(
+    () => viewer.rotation ?? [0.08, 0.35, 0],
+    [viewer.rotation]
+  );
+
+  const seed = useMemo(() => {
+    const key = normalizeLogoKey(item.modelKey || item.name || "model");
+    return key.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  }, [item.modelKey, item.name]);
+
+  const phase = useMemo(() => (seed % 360) * (Math.PI / 180), [seed]);
+
+  useFrame((state) => {
+    if (!groupRef.current) return;
+
+    if (reduceMotion) {
+      groupRef.current.position.set(...basePosition);
+      groupRef.current.rotation.set(...baseRotation);
+      return;
+    }
+
+    const t = state.clock.getElapsedTime();
+    const speed = 0.9 + (seed % 4) * 0.08;
+
+    const swayX = Math.sin(t * speed + phase) * 0.12;
+    const floatY = Math.cos(t * 1.15 + phase) * 0.07;
+    const tiltZ = Math.sin(t * 0.95 + phase) * 0.08;
+    const tiltY = Math.sin(t * 0.7 + phase) * 0.14;
+
+    groupRef.current.position.x = basePosition[0] + swayX;
+    groupRef.current.position.y = basePosition[1] + floatY;
+    groupRef.current.position.z = basePosition[2];
+
+    groupRef.current.rotation.x = baseRotation[0];
+    groupRef.current.rotation.y = baseRotation[1] + tiltY;
+    groupRef.current.rotation.z = baseRotation[2] + tiltZ;
+  });
+
+  return (
+    <group ref={groupRef}>
+      <ModelComponent scale={viewer.scale ?? 1.08} />
+    </group>
+  );
+}
+
+const StackModelCanvas = memo(function StackModelCanvas({
+  item,
+  reduceMotion,
+  isInteractive = true,
+}) {
   const ModelComponent =
     logoRegistry[normalizeLogoKey(item.modelKey || item.name)];
-
   const viewer = item.viewer || {};
 
   if (!ModelComponent) {
@@ -339,7 +392,7 @@ function StackModelCanvas({ item }) {
       }}
     >
       <Canvas
-        dpr={[1, 1.15]}
+        dpr={[1, 1]}
         shadows={false}
         camera={{
           position: viewer.cameraPosition || [0, 0, 4.2],
@@ -363,19 +416,22 @@ function StackModelCanvas({ item }) {
 
         <Suspense fallback={null}>
           <group>
-            <ModelComponent
-              scale={viewer.scale ?? 1.08}
-              position={viewer.position ?? [0, -0.12, 0]}
-              rotation={viewer.rotation ?? [0.08, 0.35, 0]}
+            <FloatingModel
+              item={item}
+              viewer={viewer}
+              ModelComponent={ModelComponent}
+              reduceMotion={reduceMotion}
             />
           </group>
 
           <OrbitControls
+            enabled={isInteractive}
             enablePan={false}
             enableZoom={false}
-            enableDamping
-            dampingFactor={0.08}
-            rotateSpeed={0.78}
+            enableRotate={isInteractive}
+            enableDamping={isInteractive}
+            dampingFactor={0.16}
+            rotateSpeed={0.38}
             target={viewer.target ?? viewer.position ?? [0, 0, 0]}
             minAzimuthAngle={viewer.minAzimuthAngle ?? -0.45}
             maxAzimuthAngle={viewer.maxAzimuthAngle ?? 0.45}
@@ -386,7 +442,7 @@ function StackModelCanvas({ item }) {
       </Canvas>
     </div>
   );
-}
+});
 
 function getCircularOffset(index, activeIndex, total) {
   let offset = index - activeIndex;
@@ -414,7 +470,13 @@ function getStackPositionClass(offset) {
   }
 }
 
-function TechStackCard({ item, offset, onSelect }) {
+const TechStackCard = memo(function TechStackCard({
+  item,
+  offset,
+  onSelect,
+  reduceMotion,
+  renderModel = true,
+}) {
   const positionClass = getStackPositionClass(offset);
   const isActive = offset === 0;
 
@@ -433,7 +495,17 @@ function TechStackCard({ item, offset, onSelect }) {
       </div>
 
       <div className="about__stack-model-shell" aria-hidden="true">
-        <StackModelCanvas item={item} />
+        {renderModel ? (
+          <StackModelCanvas
+            item={item}
+            reduceMotion={reduceMotion}
+            isInteractive={isActive}
+          />
+        ) : (
+          <div className="about__stack-model-fallback">
+            {item.name.slice(0, 2).toUpperCase()}
+          </div>
+        )}
       </div>
 
       <div className="about__stack-card-bottom">
@@ -441,7 +513,7 @@ function TechStackCard({ item, offset, onSelect }) {
       </div>
     </article>
   );
-}
+});
 
 function About() {
   const { t, i18n } = useTranslation();
@@ -454,6 +526,8 @@ function About() {
     lastCommitted: 0,
     defaultStep: 0,
     moved: false,
+    lastStepAt: 0,
+    rafLocked: false,
   });
 
   const [isInView, setIsInView] = useState(false);
@@ -462,6 +536,9 @@ function About() {
   const [isStackPaused, setIsStackPaused] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [isStackDragging, setIsStackDragging] = useState(false);
+  const [hasLoadedStackPanel, setHasLoadedStackPanel] = useState(false);
+
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
   const achievements = useMemo(() => {
     const list = Array.isArray(achievementsData) ? achievementsData : [];
@@ -469,12 +546,19 @@ function About() {
     return [...list]
       .map((achievement, index) => ({
         id: achievement.id || `achievement-${index + 1}`,
-        title: achievement.title || achievement.name || "Conquista sem título",
+        title:
+          achievement.title ||
+          achievement.name ||
+          t("about.achievementUntitled", {
+            defaultValue: "Untitled achievement",
+          }),
         issuer:
           achievement.issuer ||
           achievement.organization ||
           achievement.company ||
-          "Emissor não informado",
+          t("about.achievementUnknownIssuer", {
+            defaultValue: "Issuer not informed",
+          }),
         issuedAt:
           achievement.issuedAt ||
           achievement.issued ||
@@ -502,7 +586,7 @@ function About() {
           "",
       }))
       .sort((a, b) => new Date(b.issuedAt) - new Date(a.issuedAt));
-  }, []);
+  }, [t]);
 
   const featuredAchievements = useMemo(
     () => achievements.slice(0, 4),
@@ -544,7 +628,6 @@ function About() {
     );
 
     observer.observe(element);
-
     return () => observer.disconnect();
   }, []);
 
@@ -566,11 +649,17 @@ function About() {
   }, []);
 
   useEffect(() => {
+    if (activePanel === 1 && !hasLoadedStackPanel) {
+      setHasLoadedStackPanel(true);
+    }
+  }, [activePanel, hasLoadedStackPanel]);
+
+  useEffect(() => {
     if (activePanel !== 1 || reduceMotion || isStackPaused) return undefined;
 
     const intervalId = window.setInterval(() => {
       setActiveStackIndex((prev) => (prev + 1) % stackItems.length);
-    }, 2600);
+    }, 2800);
 
     return () => window.clearInterval(intervalId);
   }, [activePanel, isStackPaused, reduceMotion]);
@@ -599,6 +688,8 @@ function About() {
       lastCommitted: 0,
       defaultStep: Number(event.currentTarget.dataset.step || 0),
       moved: false,
+      lastStepAt: 0,
+      rafLocked: false,
     };
 
     setIsStackPaused(true);
@@ -611,25 +702,41 @@ function About() {
 
     if (!gesture.active || gesture.pointerId !== event.pointerId) return;
 
-    const threshold = 88;
-    const deltaX = event.clientX - gesture.startX;
-    let pending = deltaX - gesture.lastCommitted;
+    const threshold = 92;
+    const maxDragDelta = 140;
+    const stepCooldown = 120;
+
+    const rawDeltaX = event.clientX - gesture.startX;
+    const deltaX = clamp(rawDeltaX, -maxDragDelta, maxDragDelta);
+    const pending = deltaX - gesture.lastCommitted;
+    const now = performance.now();
 
     if (Math.abs(deltaX) > 10) {
       gesture.moved = true;
     }
 
-    while (pending <= -threshold) {
-      handleStackStep(1);
-      gesture.lastCommitted -= threshold;
-      pending = deltaX - gesture.lastCommitted;
+    if (gesture.rafLocked || now - gesture.lastStepAt < stepCooldown) {
+      event.preventDefault();
+      return;
     }
 
-    while (pending >= threshold) {
-      handleStackStep(-1);
-      gesture.lastCommitted += threshold;
-      pending = deltaX - gesture.lastCommitted;
+    let direction = 0;
+    if (pending <= -threshold) direction = 1;
+    if (pending >= threshold) direction = -1;
+
+    if (!direction) {
+      event.preventDefault();
+      return;
     }
+
+    gesture.rafLocked = true;
+
+    requestAnimationFrame(() => {
+      handleStackStep(direction);
+      gesture.lastCommitted += direction === 1 ? -threshold : threshold;
+      gesture.lastStepAt = performance.now();
+      gesture.rafLocked = false;
+    });
 
     event.preventDefault();
   };
@@ -650,13 +757,12 @@ function About() {
       lastCommitted: 0,
       defaultStep: 0,
       moved: false,
+      lastStepAt: 0,
+      rafLocked: false,
     };
 
     setIsStackDragging(false);
-
-    if (event.pointerType !== "mouse") {
-      setIsStackPaused(false);
-    }
+    setIsStackPaused(false);
 
     event.currentTarget.releasePointerCapture?.(event.pointerId);
   };
@@ -673,198 +779,10 @@ function About() {
     }
   };
 
-  const renderPanel = () => {
-    if (activePanel === 0) {
-      return (
-        <article
-          id="about-panel-bio"
-          className="about__panel about__carousel-panel"
-        >
-          <div className="about__panel-head">
-            <span className="about__eyebrow">
-              {t("about.eyebrow", { defaultValue: "About me" })}
-            </span>
-          </div>
-
-          <div className="about__bio-grid">
-            <div className="about__image-wrap">
-              <img
-                src="/assets/socials/foto.jpeg"
-                alt={t("about.photoAlt")}
-                className="about__image"
-              />
-            </div>
-
-            <div className="about__copy">
-              <h3>{t("about.name")}</h3>
-              <p>{t("about.paragraph1")}</p>
-              <p>{t("about.paragraph2")}</p>
-            </div>
-          </div>
-        </article>
-      );
-    }
-
-    if (activePanel === 1) {
-      return (
-        <article
-          id="about-panel-stack"
-          className="about__panel about__carousel-panel"
-        >
-          <div className="about__panel-head">
-            <span className="about__eyebrow">
-              {t("about.stackTitle", { defaultValue: "Tech Stack" })}
-            </span>
-
-            <p className="about__intro">
-              {t("about.stackDescription", {
-                defaultValue:
-                  "Carrossel infinito com destaque central, profundidade nas laterais e interação direta nos modelos 3D.",
-              })}
-            </p>
-          </div>
-
-          <div
-            className={`about__stack-carousel ${
-              isStackDragging ? "is-dragging" : ""
-            }`}
-            aria-label={t("about.stackAriaLabel", {
-              defaultValue: "Tecnologias em carrossel infinito",
-            })}
-            onMouseEnter={() => setIsStackPaused(true)}
-            onMouseLeave={() => setIsStackPaused(false)}
-            onFocusCapture={() => setIsStackPaused(true)}
-            onBlurCapture={(event) => {
-              if (!event.currentTarget.contains(event.relatedTarget)) {
-                setIsStackPaused(false);
-              }
-            }}
-          >
-            <div className="about__stack-drag-zones" aria-hidden="true">
-              <div
-                className="about__stack-drag-zone about__stack-drag-zone--left"
-                data-step="-1"
-                onPointerDown={startStackDrag}
-                onPointerMove={moveStackDrag}
-                onPointerUp={endStackDrag}
-                onPointerCancel={endStackDrag}
-              />
-
-              <div
-                className="about__stack-drag-zone about__stack-drag-zone--right"
-                data-step="1"
-                onPointerDown={startStackDrag}
-                onPointerMove={moveStackDrag}
-                onPointerUp={endStackDrag}
-                onPointerCancel={endStackDrag}
-              />
-            </div>
-
-            <div className="about__stack-carousel-track">
-              {stackItems.map((item, index) => {
-                const offset = getCircularOffset(
-                  index,
-                  activeStackIndex,
-                  stackItems.length
-                );
-
-                if (Math.abs(offset) > 2) return null;
-
-                return (
-                  <TechStackCard
-                    key={item.name}
-                    item={item}
-                    offset={offset}
-                    onSelect={() => setActiveStackIndex(index)}
-                  />
-                );
-              })}
-            </div>
-          </div>
-        </article>
-      );
-    }
-
-    return (
-      <article
-        id="about-panel-achievements"
-        className="about__panel about__carousel-panel"
-      >
-        <div className="about__panel-head">
-          <span className="about__eyebrow">
-            {t("about.achievementsTitle", {
-              defaultValue: "Achievements",
-            })}
-          </span>
-
-          <p className="about__intro">
-            {t("about.achievementsDescription", {
-              defaultValue:
-                "Certificações, badges e marcos que fazem parte da minha trajetória.",
-            })}
-          </p>
-        </div>
-
-        {featuredAchievements.length ? (
-          <div className="about__achievements-grid">
-            {featuredAchievements.map((achievement, index) => (
-              <article key={achievement.id} className="about__achievement">
-                <div className="about__achievement-media">
-                  <img
-                    src={achievement.badgeImage}
-                    alt={achievement.title}
-                    loading="lazy"
-                  />
-                </div>
-
-                <div className="about__achievement-content">
-                  <div className="about__achievement-meta">
-                    <span className="about__achievement-index">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <span className="about__achievement-date">
-                      {formatDate(achievement.issuedAt, i18n.language)}
-                    </span>
-                  </div>
-
-                  <h4>{achievement.title}</h4>
-
-                  <p className="about__achievement-issuer">
-                    {achievement.issuer}
-                  </p>
-
-                  {achievement.description ? (
-                    <p className="about__achievement-description">
-                      {achievement.description}
-                    </p>
-                  ) : null}
-
-                  {achievement.credentialUrl ? (
-                    <a
-                      href={achievement.credentialUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="about__achievement-link"
-                    >
-                      {t("about.viewCredential", {
-                        defaultValue: "View credential",
-                      })}
-                    </a>
-                  ) : null}
-                </div>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <div className="about__empty">
-            {t("about.achievementsEmpty", {
-              defaultValue: "Add achievements to src/data/achivements.js",
-            })}
-          </div>
-        )}
-      </article>
-    );
-  };
+  const getPanelClassName = (index) =>
+    `about__panel about__carousel-panel ${
+      activePanel === index ? "is-active" : "is-inactive"
+    }`;
 
   return (
     <section className="about" id="about">
@@ -883,38 +801,229 @@ function About() {
             onKeyDown={handleKeyNavigation}
           >
             <div className="about__carousel-viewport">
-              <div className="about__carousel-stage">{renderPanel()}</div>
-
-              <div className="about__edge-nav">
-                <button
-                  type="button"
-                  className="about__edge-hit about__edge-hit--prev"
-                  aria-label={t("about.previousPanel", {
-                    defaultValue: "Painel anterior",
-                  })}
-                  onClick={() => handlePanelChange(-1)}
+              <div className="about__carousel-stage">
+                <article
+                  id="about-panel-bio"
+                  className={getPanelClassName(0)}
+                  aria-hidden={activePanel !== 0}
                 >
-                  <span className="about__sr-only">
-                    {t("about.previousPanel", {
-                      defaultValue: "Painel anterior",
-                    })}
-                  </span>
-                </button>
+                  <div className="about__panel-head">
+                    <span className="about__eyebrow">
+                      {t("about.eyebrow", { defaultValue: "About me" })}
+                    </span>
+                  </div>
 
-                <button
-                  type="button"
-                  className="about__edge-hit about__edge-hit--next"
-                  aria-label={t("about.nextPanel", {
-                    defaultValue: "Próximo painel",
-                  })}
-                  onClick={() => handlePanelChange(1)}
+                  <div className="about__bio-grid">
+                    <div className="about__image-wrap">
+                      <img
+                        src="/assets/socials/foto.jpeg"
+                        alt={t("about.photoAlt", {
+                          defaultValue: "Profile photo",
+                        })}
+                        className="about__image"
+                      />
+                    </div>
+
+                    <div className="about__copy">
+                      <h3>{t("about.name", { defaultValue: "Your name" })}</h3>
+                      <p>
+                        {t("about.paragraph1", {
+                          defaultValue:
+                            "Write here the first paragraph about your background, experience and the type of products you like to build.",
+                        })}
+                      </p>
+                      <p>
+                        {t("about.paragraph2", {
+                          defaultValue:
+                            "Use this second paragraph to reinforce your approach, values and the technologies you work with most often.",
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                </article>
+
+                <article
+                  id="about-panel-stack"
+                  className={getPanelClassName(1)}
+                  aria-hidden={activePanel !== 1}
                 >
-                  <span className="about__sr-only">
-                    {t("about.nextPanel", {
-                      defaultValue: "Próximo painel",
+                  <div className="about__panel-head">
+                    <span className="about__eyebrow">
+                      {t("about.stackTitle", { defaultValue: "Tech Stack" })}
+                    </span>
+
+                    <p className="about__intro">
+                      {t("about.stackDescription", {
+                        defaultValue:
+                          "Technologies and tools I have already worked with throughout my projects.",
+                      })}
+                    </p>
+                  </div>
+
+                  <div
+                    className={`about__stack-carousel ${
+                      isStackDragging ? "is-dragging" : ""
+                    }`}
+                    aria-label={t("about.stackAriaLabel", {
+                      defaultValue: "Infinite technology carousel",
                     })}
-                  </span>
-                </button>
+                  >
+                    <div className="about__stack-drag-zones" aria-hidden="true">
+                      <div
+                        className="about__stack-drag-zone about__stack-drag-zone--left"
+                        data-step="-1"
+                        onPointerDown={startStackDrag}
+                        onPointerMove={moveStackDrag}
+                        onPointerUp={endStackDrag}
+                        onPointerCancel={endStackDrag}
+                      />
+
+                      <div
+                        className="about__stack-drag-zone about__stack-drag-zone--right"
+                        data-step="1"
+                        onPointerDown={startStackDrag}
+                        onPointerMove={moveStackDrag}
+                        onPointerUp={endStackDrag}
+                        onPointerCancel={endStackDrag}
+                      />
+                    </div>
+
+                    <div className="about__stack-carousel-track">
+                      {stackItems.map((item, index) => {
+                        const offset = getCircularOffset(
+                          index,
+                          activeStackIndex,
+                          stackItems.length
+                        );
+
+                        if (Math.abs(offset) > 2) return null;
+
+                        return (
+                          <TechStackCard
+                            key={item.name}
+                            item={item}
+                            offset={offset}
+                            onSelect={() => setActiveStackIndex(index)}
+                            reduceMotion={reduceMotion}
+                            renderModel={hasLoadedStackPanel}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                </article>
+
+                <article
+                  id="about-panel-achievements"
+                  className={getPanelClassName(2)}
+                  aria-hidden={activePanel !== 2}
+                >
+                  <div className="about__panel-head">
+                    <span className="about__eyebrow">
+                      {t("about.achievementsTitle", {
+                        defaultValue: "Achievements",
+                      })}
+                    </span>
+
+                    <p className="about__intro">
+                      {t("about.achievementsDescription", {
+                        defaultValue:
+                          "Certifications, badges and milestones that are part of my journey.",
+                      })}
+                    </p>
+                  </div>
+
+                  {featuredAchievements.length ? (
+                    <div className="about__achievements-grid">
+                      {featuredAchievements.map((achievement, index) => (
+                        <article
+                          key={achievement.id}
+                          className="about__achievement"
+                        >
+                          <div className="about__achievement-media">
+                            <img
+                              src={achievement.badgeImage}
+                              alt={achievement.title}
+                              loading="lazy"
+                            />
+                          </div>
+
+                          <div className="about__achievement-content">
+                            <div className="about__achievement-meta">
+                              <span className="about__achievement-index">
+                                {String(index + 1).padStart(2, "0")}
+                              </span>
+                              <span className="about__achievement-date">
+                                {formatDate(achievement.issuedAt, i18n.language)}
+                              </span>
+                            </div>
+
+                            <h4>{achievement.title}</h4>
+
+                            <p className="about__achievement-issuer">
+                              {achievement.issuer}
+                            </p>
+
+                            {achievement.description ? (
+                              <p className="about__achievement-description">
+                                {achievement.description}
+                              </p>
+                            ) : null}
+
+                            {achievement.credentialUrl ? (
+                              <a
+                                href={achievement.credentialUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="about__achievement-link"
+                              >
+                                {t("about.viewCredential", {
+                                  defaultValue: "View credential",
+                                })}
+                              </a>
+                            ) : null}
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="about__empty">
+                      {t("about.achievementsEmpty", {
+                        defaultValue: "Add achievements to src/data/achivements.js",
+                      })}
+                    </div>
+                  )}
+                </article>
+              </div>
+
+              <div
+                className="about__carousel-dots"
+                role="tablist"
+                aria-label={t("about.carouselPagination", {
+                  defaultValue: "Panel navigation",
+                })}
+              >
+                {carouselItems.map((item, index) => {
+                  const isActive = activePanel === index;
+
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      role="tab"
+                      className={`about__carousel-dot ${
+                        isActive ? "is-active" : ""
+                      }`}
+                      aria-selected={isActive}
+                      aria-controls={`about-panel-${item.id}`}
+                      aria-label={item.label}
+                      tabIndex={isActive ? 0 : -1}
+                      onClick={() => setActivePanel(index)}
+                    >
+                      <span className="about__sr-only">{item.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
