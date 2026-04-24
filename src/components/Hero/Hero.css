@@ -1,27 +1,4 @@
 /* src/components/Hero/Hero.css */
-:root {
-  --hero-bg-image: url("/assets/theme/light.jpg");
-  --hero-text-color: var(--text);
-  --hero-text-soft-color: color-mix(in srgb, var(--text) 76%, var(--secondary));
-  --hero-muted-color: var(--text-muted);
-  --hero-accent-color: var(--primary);
-}
-
-html.dark {
-  --hero-bg-image: url("/assets/theme/desert.jpg");
-  --hero-text-color: #f4e4c8;
-  --hero-text-soft-color: #e8d3af;
-  --hero-muted-color: #d8c199;
-  --hero-accent-color: #cf6a36;
-}
-
-html.light {
-  --hero-bg-image: url("/assets/theme/light.jpg");
-  --hero-text-color: #3f3a34;
-  --hero-text-soft-color: #6b6257;
-  --hero-muted-color: #6d675f;
-  --hero-accent-color: #a35a37;
-}
 
 .hero {
   --hero-top-offset: 96px;
@@ -40,12 +17,16 @@ html.light {
   display: flex;
   align-items: stretch;
   background:
-    radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.025), transparent 26%),
+    radial-gradient(
+      circle at 50% 10%,
+      color-mix(in srgb, var(--color-primary) 10%, transparent),
+      transparent 26%
+    ),
     linear-gradient(
       180deg,
-      rgba(8, 8, 8, 0.04) 0%,
-      rgba(8, 8, 8, 0.08) 52%,
-      rgba(8, 8, 8, 0.14) 100%
+      color-mix(in srgb, var(--color-black) 4%, transparent) 0%,
+      color-mix(in srgb, var(--color-black) 8%, transparent) 52%,
+      color-mix(in srgb, var(--color-black) 14%, transparent) 100%
     );
   isolation: isolate;
 }
@@ -55,21 +36,37 @@ html.light {
   inset: 0;
   z-index: 0;
   overflow: hidden;
+  pointer-events: none;
+
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  contain: paint;
 }
 
 .hero__backdrop::before {
   content: "";
   position: absolute;
   inset: -3%;
-  background-image: var(--hero-bg-image);
+
+  background-image: url("/assets/theme/desert.jpg");
   background-repeat: no-repeat;
   background-position: center top;
   background-size: cover;
+
   opacity: 1;
+
   transform: translate3d(0, calc(var(--hero-parallax-bg) * -1), 0) scale(1.08);
   transform-origin: center top;
-  filter: saturate(0.95) contrast(1.04) brightness(0.92);
+
+  /*
+    Evite filter direto na imagem de fundo.
+    Em abas em segundo plano, alguns navegadores podem voltar com a camada borrada.
+  */
+  filter: none;
+
   will-change: transform;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
 }
 
 .hero__backdrop::after {
@@ -79,9 +76,9 @@ html.light {
   background:
     radial-gradient(
       circle at 62% 18%,
-      rgba(255, 186, 116, calc(var(--hero-parallax-glow-opacity) * 1)) 0%,
-      rgba(255, 154, 76, calc(var(--hero-parallax-glow-opacity) * 0.55)) 14%,
-      rgba(255, 132, 54, calc(var(--hero-parallax-glow-opacity) * 0.12)) 28%,
+      color-mix(in srgb, var(--color-primary-strong) 24%, transparent) 0%,
+      color-mix(in srgb, var(--color-primary-strong) 14%, transparent) 14%,
+      color-mix(in srgb, var(--color-primary) 8%, transparent) 28%,
       transparent 48%
     ),
     radial-gradient(
@@ -89,9 +86,19 @@ html.light {
       rgba(0, 0, 0, 0.08) 0%,
       rgba(0, 0, 0, 0.2) 48%,
       rgba(0, 0, 0, 0.4) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.04) 0%,
+      rgba(0, 0, 0, 0.08) 52%,
+      rgba(0, 0, 0, 0.16) 100%
     );
   mix-blend-mode: screen;
+  opacity: var(--hero-parallax-glow-opacity);
   pointer-events: none;
+
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .hero__overlay {
@@ -118,14 +125,11 @@ html.light {
       rgba(0, 0, 0, 0.18) 100%
     );
   pointer-events: none;
+
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
-.hero__backdrop,
-.hero__overlay {
-  pointer-events: none;
-}
-
-/* conteúdo acima do canvas visualmente, mas sem bloquear os cliques do 3D */
 .hero__container {
   position: relative;
   z-index: 4;
@@ -167,6 +171,7 @@ html.light {
   pointer-events: none;
   transform: translate3d(0, calc(var(--hero-parallax-content) * -1), 0);
   will-change: transform;
+  backface-visibility: hidden;
 }
 
 .hero__eyebrow {
@@ -176,15 +181,15 @@ html.light {
   margin: 0 0 1.35rem 0;
   padding: 0;
   border-radius: 0;
-  color: color-mix(in srgb, var(--hero-text-color) 94%, white 6%);
-  background: transparent;
+  color: color-mix(in srgb, var(--hero-text-color) 94%, var(--color-white) 6%);
+  background: var(--color-transparent);
   border: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   font-size: clamp(0.9rem, 2.1vw, 2.35rem);
-  font-weight: 400;
+  font-weight: var(--font-weight-regular);
   line-height: 1;
-  letter-spacing: -0.04em;
+  letter-spacing: var(--tracking-tight);
   width: fit-content;
   box-shadow: none;
   text-shadow:
@@ -202,7 +207,7 @@ html.light {
   font-size: clamp(1.9rem, 3.1vw, 3.35rem);
   line-height: 0.96;
   letter-spacing: -0.055em;
-  font-weight: 400;
+  font-weight: var(--font-weight-regular);
   color: var(--hero-text-color);
   text-shadow:
     0 4px 12px rgba(0, 0, 0, 0.14),
@@ -248,7 +253,7 @@ html.light {
   min-width: 7ch;
   line-height: 1;
   font-size: clamp(2.5rem, 4.4vw, 4.6rem);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   padding: 0;
   flex: 0 0 auto;
 }
@@ -319,9 +324,9 @@ html.light {
   pointer-events: auto;
   text-decoration: none;
   padding: 0.95rem 1.35rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 0.94rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   transition:
     transform 0.24s ease,
     opacity 0.24s ease,
@@ -333,22 +338,18 @@ html.light {
 }
 
 .hero__primary {
-  color: var(--secondary);
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--primary) 96%, white 4%),
-    color-mix(in srgb, var(--primary) 72%, var(--surface))
-  );
-  border: 1px solid color-mix(in srgb, var(--primary) 34%, transparent);
+  color: var(--color-secondary);
+  background: var(--gradient-button-primary);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 34%, transparent);
   box-shadow:
-    0 14px 28px color-mix(in srgb, var(--primary) 18%, transparent),
+    0 14px 28px color-mix(in srgb, var(--color-primary) 18%, transparent),
     0 0 0 1px rgba(255, 255, 255, 0.03) inset;
 }
 
 .hero__secondary {
-  color: var(--text);
-  background: color-mix(in srgb, var(--surface) 66%, transparent);
-  border: 1px solid var(--border);
+  color: var(--color-text);
+  background: color-mix(in srgb, var(--color-surface) 66%, transparent);
+  border: 1px solid var(--color-border);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -359,10 +360,9 @@ html.light {
 }
 
 .hero__secondary:hover {
-  background: color-mix(in srgb, var(--primary) 10%, var(--surface));
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
 }
 
-/* canvas como camada absoluta no hero inteiro */
 .hero__canvas-zone {
   position: absolute;
   inset: 0;
@@ -380,6 +380,7 @@ html.light {
   overflow: hidden;
   transform: translate3d(0, calc(var(--hero-parallax-canvas) * -1), 0);
   will-change: transform;
+  backface-visibility: hidden;
 }
 
 .hero__canvas-shell::before {
@@ -394,7 +395,7 @@ html.light {
   max-width: none;
   overflow: hidden;
   pointer-events: auto;
-  cursor: grab;
+  cursor: default;
   touch-action: none;
 }
 
@@ -404,7 +405,11 @@ html.light {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 50% 58%, rgba(255, 160, 74, 0.06), transparent 22%),
+    radial-gradient(
+      circle at 50% 58%,
+      color-mix(in srgb, var(--color-primary-strong) 12%, transparent),
+      transparent 22%
+    ),
     linear-gradient(
       to bottom,
       rgba(255, 255, 255, 0) 0%,
@@ -414,18 +419,14 @@ html.light {
   mix-blend-mode: screen;
 }
 
-.hero__canvas:active {
-  cursor: grabbing;
-}
-
 .hero__canvas canvas {
   display: block;
   width: 100% !important;
   height: 100% !important;
   pointer-events: auto !important;
+  cursor: default;
 }
 
-/* pequeno fade para a transição com a próxima seção */
 .hero::after {
   content: "";
   position: absolute;
@@ -443,7 +444,7 @@ html.light {
     rgba(17, 11, 8, 0.26) 50%,
     rgba(17, 11, 8, 0.42) 68%,
     rgba(17, 11, 8, 0.7) 84%,
-    #110b08 100%
+    var(--color-bg-warm-1) 100%
   );
 }
 
@@ -459,7 +460,7 @@ html.light {
     background-position: center top;
     background-size: cover;
     transform: translate3d(0, calc(var(--hero-parallax-bg) * -1), 0) scale(1.06);
-    filter: saturate(0.96) contrast(1.02) brightness(0.93);
+    filter: none;
   }
 
   .hero__overlay {
@@ -567,8 +568,8 @@ html.light {
     background:
       radial-gradient(
         circle at 58% 14%,
-        rgba(255, 186, 116, 0.12) 0%,
-        rgba(255, 154, 76, 0.08) 16%,
+        color-mix(in srgb, var(--color-primary-strong) 18%, transparent) 0%,
+        color-mix(in srgb, var(--color-primary-strong) 10%, transparent) 16%,
         transparent 42%
       ),
       radial-gradient(
@@ -588,19 +589,19 @@ html.light {
   width: min(320px, calc(100vw - 24px));
   padding: 0.9rem;
   border-radius: 16px;
-  background: rgba(20, 18, 18, 0.72);
-  border: 1px solid color-mix(in srgb, var(--secondary) 12%, transparent);
+  background: color-mix(in srgb, var(--color-bg-warm-3) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-secondary) 12%, transparent);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
-  color: var(--text);
+  color: var(--color-text);
 }
 
 .hero-debug__title {
   margin: 0 0 0.75rem;
   font-size: 0.92rem;
-  font-weight: 700;
-  color: var(--secondary);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
 }
 
 .hero-debug__field {
@@ -619,17 +620,17 @@ html.light {
   justify-content: space-between;
   gap: 0.75rem;
   font-size: 0.82rem;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
 }
 
 .hero-debug__top strong {
-  color: var(--secondary);
+  color: var(--color-secondary);
   font-size: 0.8rem;
 }
 
 .hero-debug input[type="range"] {
   width: 100%;
-  accent-color: var(--primary);
+  accent-color: var(--color-primary);
 }
 
 @media (max-width: 640px) {
@@ -640,12 +641,6 @@ html.light {
     max-height: 50vh;
     overflow: auto;
   }
-}
-
-.hero__canvas,
-.hero__canvas:active,
-.hero__canvas canvas {
-  cursor: default;
 }
 
 @media (prefers-reduced-motion: reduce) {

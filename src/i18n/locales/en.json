@@ -25,38 +25,121 @@
     "photoAlt": "Profile photo of João",
     "eyebrow": "About me",
     "name": "João Santos",
-    "paragraph1": "I’m a full-stack developer currently completing my degree in Systems Analysis and Development, with experience across the entire software development lifecycle. My work spans from gathering requirements and understanding business needs to system design, logic implementation, interface design, development, testing, deployment, and user training support.",
-"paragraph2": "I focus on building complete, scalable, and secure applications, always aiming to combine technical excellence with a modern and intuitive user experience.",
-    "stackTitle": "Tech Stack",
-    "stackDescription": "Technologies and tools I have already worked with throughout my projects.",
+    "paragraph1": "I’m a full-stack developer currently completing my degree in Systems Analysis and Development, with experience across the entire software development lifecycle. My work spans from requirements gathering and understanding the problem to system modeling, logic creation, interface design, development, testing, deployment, and user training support.",
+    "paragraph2": "My focus is on building complete, scalable, and secure applications, always seeking to align technical quality with a modern and intuitive experience.",
+    "stackTitle": "Technologies",
+    "stackDescription": "Technologies and tools I have worked with throughout my projects.",
+    "stackCategories": {
+      "frontend": "Front-end",
+      "backend": "Back-end",
+      "database": "Database",
+      "versioning": "Version control",
+      "containers": "Containerization",
+      "devops": "DevOps",
+      "cloud": "Cloud",
+      "design": "Design"
+    },
     "achievementsTitle": "Achievements",
     "achievementsDescription": "Certifications and achievements that are part of my journey.",
     "viewCredential": "View credential",
     "achievementsEmpty": "Add achievements to src/data/achivements.js",
     "stackAriaLabel": "Animated technologies list",
     "socialsAriaLabel": "Social media links",
-    "carouselAriaLabel": "About section carousel",
-    "carouselDotsAriaLabel": "Navigation between about panels",
-    "socials": {
-      "linkedin": {
-        "label": "LinkedIn",
-        "description": "Connect with me"
+    "carouselAriaLabel": "About me section carousel",
+    "carouselDotsAriaLabel": "Navigation between about me section panels",
+    "stackFeaturedTooltip": "Frequently used technology in my projects",
+    "stackFeaturedAriaLabel": "{{stack}} is a frequently used technology in my projects"
+  },
+  "work": {
+    "projectTypes": {
+      "corporate": "Corporate project",
+      "authorial": "Authorial project",
+      "productEvolution": "Product evolution"
+    },
+    "projectStatus": {
+      "delivered": "Delivered",
+      "inDevelopment": "In development",
+      "inProgress": "In progress"
+    },
+    "projectVisibility": {
+      "private": "Private project"
+    },
+    "projectTags": {
+      "aiChat": "AI Chat",
+      "geminiApi": "Gemini API",
+      "generativeAi": "Generative AI",
+      "imageGeneration": "Image generation",
+      "auth0": "Auth0",
+      "adminDashboards": "Admin dashboards",
+      "reactJsx": "React JSX",
+      "reactTsx": "React TSX",
+      "fastapi": "FastAPI",
+      "python": "Python",
+      "mysql": "MySQL",
+      "restApi": "REST API",
+      "customerPortal": "Customer portal",
+      "erpIntegration": "ERP integration",
+      "roleBasedAccess": "Role-based access",
+      "docker": "Docker",
+      "digitalOcean": "DigitalOcean",
+      "microservices": "Microservices",
+      "calendarSync": "Calendar sync",
+      "googleApis": "Google APIs",
+      "microsoftApis": "Microsoft APIs",
+      "multiTenant": "Multi-tenant",
+      "productivity": "Productivity",
+      "pdfAutomation": "PDF automation",
+      "dataExtraction": "Data extraction",
+      "productEvolution": "Product evolution",
+      "catalogIntegration": "Catalog integration",
+      "csharp": "C#",
+      "localCache": "Local cache",
+      "azure": "Azure"
+    },
+    "projects": {
+      "kodaAi": {
+        "title": "Koda AI",
+        "role": "Full-stack development of a corporate AI platform",
+        "description": "An artificial intelligence chat platform built for corporate use, integrating with the Gemini API, Auth0 authentication, MySQL database, and features for text generation, image generation, and internal automation. The platform also includes specialized scripts designed for different team needs and administrative dashboards to monitor employee usage.",
+        "highlights": [
+          "Integration with generative AI models and image generation through API.",
+          "User management and centralized authentication with Auth0.",
+          "Internal scripts created for specific needs across different teams.",
+          "Administrative dashboards for usage analysis and platform monitoring."
+        ]
       },
-      "github": {
-        "label": "GitHub",
-        "description": "See my projects"
+      "clientPortal": {
+        "title": "Client Portal",
+        "role": "Full-stack development and architecture of a corporate client platform",
+        "description": "A corporate portal created to centralize the relationship between company and clients, bringing together projects, products, attachments, responsible users, permissions, dashboards, and ERP integrations in a single platform. The application uses React, FastAPI, MySQL, Auth0, and a Docker-based container architecture hosted on DigitalOcean.",
+        "highlights": [
+          "Complete hub for centralizing projects, products, and strategic information for clients.",
+          "ERP integration and project organization by clients, teams, and categories.",
+          "Access control with multiple roles, such as administrator, manager, leader, editor, and client.",
+          "Architecture separated into containers for front-end, back-end, database, and microservices."
+        ]
       },
-      "instagram": {
-        "label": "Instagram",
-        "description": "Content and behind the scenes"
+      "vilmora": {
+        "title": "Vilmora",
+        "role": "Full-stack development of an authorial calendar integration product",
+        "description": "A web platform in development to centralize and synchronize calendars from different accounts and digital platforms. Its purpose is to reduce scheduling conflicts, rework, and manual checking by providing a unified view of appointments and automatic blocking between connected accounts.",
+        "highlights": [
+          "Centralization of calendars from different accounts into a single experience.",
+          "Synchronization and automatic blocking to reduce scheduling conflicts.",
+          "Architecture planned for integration with Google and Microsoft ecosystems.",
+          "Application designed for productivity, routine organization, and availability management."
+        ]
       },
-      "email": {
-        "label": "Email",
-        "description": "Contact me directly"
-      },
-      "behance": {
-        "label": "Behance",
-        "description": "Visual portfolio"
+      "pdfExtractor": {
+        "title": "PDF Extractor",
+        "role": "Technical evolution and functional expansion of an existing tool",
+        "description": "A corporate tool for extracting and processing information from PDFs, initially created with basic features and later evolved into a more complete solution. The project was developed with React TSX on the front-end and C# on the back-end, using local cache and integration with an established online catalog system.",
+        "highlights": [
+          "Evolution from a simple initial version into a more complete tool aligned with real team usage.",
+          "PDF processing without the need for a database, using local cache.",
+          "Integration with an external online catalog system.",
+          "Structure prepared for future hosting on Azure servers."
+        ]
       }
     }
   }

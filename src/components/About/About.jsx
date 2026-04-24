@@ -1,3 +1,4 @@
+// src/components/About/About.jsx
 import React, {
   Suspense,
   memo,
@@ -41,14 +42,14 @@ const stackItems = [
   {
     name: "React",
     modelKey: "React",
-    category: "Front-end",
+    categoryKey: "frontend",
     proficient: true,
     viewer: {
       cameraPosition: [0, 0, 5.05],
       fov: 34,
       scale: 0.4,
       position: [-0.1, -0.01, 0],
-      rotation: [0.08, -0.42, 0],
+      rotation: [0.08, -0.2, 0],
       minAzimuthAngle: -0.62,
       maxAzimuthAngle: 0.38,
       minPolarAngle: Math.PI / 2 - 0.28,
@@ -58,14 +59,15 @@ const stackItems = [
   {
     name: "JavaScript",
     modelKey: "Javascript",
-    category: "Front-end",
+    categoryKey: "frontend",
     proficient: true,
     viewer: {
-      cameraPosition: [0, 0, 3.4],
+      cameraPosition: [0, 0, 3.35],
       fov: 34,
-      scale: 10.28,
-      position: [0, -0.5, 0],
-      rotation: [0.08, 0.34, 0],
+      scale: 10.2,
+      position: [0, -0.55, 0],
+      rotation: [0.08, 0, 0],
+      target: [0, 0, 0],
       minAzimuthAngle: -0.5,
       maxAzimuthAngle: 0.5,
       minPolarAngle: Math.PI / 2 - 0.24,
@@ -75,14 +77,14 @@ const stackItems = [
   {
     name: "TypeScript",
     modelKey: "Typescript",
-    category: "Front-end",
-    proficient: true,
+    categoryKey: "frontend",
+    proficient: false,
     viewer: {
       cameraPosition: [0, 0, 3.42],
       fov: 34,
       scale: 10.22,
       position: [0, -0.02, 0],
-      rotation: [0.08, 0.34, 0],
+      rotation: [0.08, 0, 0],
       minAzimuthAngle: -0.5,
       maxAzimuthAngle: 0.5,
       minPolarAngle: Math.PI / 2 - 0.24,
@@ -92,7 +94,7 @@ const stackItems = [
   {
     name: "Python",
     modelKey: "Python",
-    category: "Back-end",
+    categoryKey: "backend",
     proficient: true,
     viewer: {
       cameraPosition: [0, 0, 5.2],
@@ -109,14 +111,17 @@ const stackItems = [
   {
     name: "FastAPI",
     modelKey: "Fastapi",
-    category: "Back-end",
+    categoryKey: "backend",
     proficient: true,
     viewer: {
       cameraPosition: [0, 0, 4.72],
       fov: 34,
-      scale: 0.9,
-      position: [0.4, 0.5, 0],
-      rotation: [1.5, -1.3, -0.15],
+      scale: 0.52,
+      position: [0, 0.08, 0],
+      target: [0, 0, 0],
+      rotation: [1.5, 0.05, -0.08],
+      spinAxis: "z",
+      spinAmplitude: 0.18,
       minAzimuthAngle: -0.42,
       maxAzimuthAngle: 0.42,
       minPolarAngle: Math.PI / 2 - 0.2,
@@ -126,7 +131,7 @@ const stackItems = [
   {
     name: "Java",
     modelKey: "Java",
-    category: "Back-end",
+    categoryKey: "backend",
     proficient: false,
     viewer: {
       cameraPosition: [0, 0, 5.02],
@@ -143,7 +148,7 @@ const stackItems = [
   {
     name: "C#",
     modelKey: "CSharp",
-    category: "Back-end",
+    categoryKey: "backend",
     proficient: false,
     viewer: {
       cameraPosition: [0, 0, 4.88],
@@ -160,7 +165,7 @@ const stackItems = [
   {
     name: "MySQL",
     modelKey: "Mysql",
-    category: "Banco de dados",
+    categoryKey: "database",
     proficient: true,
     viewer: {
       cameraPosition: [0, 0, 5.15],
@@ -177,7 +182,7 @@ const stackItems = [
   {
     name: "Git",
     modelKey: "Git",
-    category: "Versionamento",
+    categoryKey: "versioning",
     proficient: true,
     viewer: {
       cameraPosition: [0, 0, 4.28],
@@ -185,6 +190,7 @@ const stackItems = [
       scale: 0.96,
       position: [0, -0.02, 0],
       rotation: [1.5, 0, -0.04],
+      spinAxis: "z",
       minAzimuthAngle: -0.44,
       maxAzimuthAngle: 0.44,
       minPolarAngle: Math.PI / 2 - 0.2,
@@ -194,7 +200,7 @@ const stackItems = [
   {
     name: "Docker",
     modelKey: "Docker",
-    category: "DevOps",
+    categoryKey: "containers",
     proficient: true,
     viewer: {
       cameraPosition: [0, 0, 3.18],
@@ -211,15 +217,17 @@ const stackItems = [
   {
     name: "Azure DevOps",
     modelKey: "Devops",
-    category: "DevOps",
-    proficient: false,
+    categoryKey: "devops",
+    proficient: true,
     viewer: {
-      cameraPosition: [0, 0, 5.08],
+      cameraPosition: [0, 0, 3.15],
       fov: 34,
-      scale: 0.6,
-      position: [0, -0.01, 0],
-      frameOffsetY: 72,
-      rotation: [1.06, 0, -0.02],
+      scale: 0.37,
+      position: [0, -0.02, 0],
+      target: [0, 0, 0],
+      rotation: [1.4, 0, -0.02],
+      spinAxis: "z",
+      spinAmplitude: 0.18,
       minAzimuthAngle: -0.4,
       maxAzimuthAngle: 0.4,
       minPolarAngle: Math.PI / 2 - 0.18,
@@ -229,14 +237,17 @@ const stackItems = [
   {
     name: "DigitalOcean",
     modelKey: "DigitalOcean",
-    category: "Cloud",
-    proficient: false,
+    categoryKey: "cloud",
+    proficient: true,
     viewer: {
       cameraPosition: [0, 0, 5.42],
       fov: 34,
-      scale: 0.36,
-      position: [-0.1, -0.3, 0],
+      scale: 0.32,
+      position: [0, -0.02, 0],
+      target: [0, 0, 0],
       rotation: [1.4, 0, -0.02],
+      spinAxis: "z",
+      spinAmplitude: 0.18,
       minAzimuthAngle: -0.4,
       maxAzimuthAngle: 0.4,
       minPolarAngle: Math.PI / 2 - 0.18,
@@ -246,14 +257,17 @@ const stackItems = [
   {
     name: "Figma",
     modelKey: "Figma",
-    category: "Design",
-    proficient: true,
+    categoryKey: "design",
+    proficient: false,
     viewer: {
       cameraPosition: [0, 0, 5.08],
       fov: 34,
-      scale: 0.66,
-      position: [0, -0.01, 0],
-      rotation: [0.86, 0.18, -0.04],
+      scale: 0.52,
+      position: [0, -0.02, 0],
+      target: [0, 0, 0],
+      rotation: [1.4, 0, -0.02],
+      spinAxis: "z",
+      spinAmplitude: 0.18,
       minAzimuthAngle: -0.42,
       maxAzimuthAngle: 0.42,
       minPolarAngle: Math.PI / 2 - 0.18,
@@ -263,14 +277,14 @@ const stackItems = [
   {
     name: "Illustrator",
     modelKey: "Illustrator",
-    category: "Design",
+    categoryKey: "design",
     proficient: false,
     viewer: {
       cameraPosition: [0, 0, 5.02],
       fov: 34,
       scale: 0.74,
       position: [0, -0.04, 0],
-      rotation: [0.08, -0.3, 0],
+      rotation: [0.08, -1.4, 0],
       minAzimuthAngle: -0.42,
       maxAzimuthAngle: 0.42,
       minPolarAngle: Math.PI / 2 - 0.2,
@@ -313,7 +327,8 @@ function resolveAchievementImage(imageValue) {
 }
 
 function FloatingModel({ item, viewer, ModelComponent, reduceMotion = false }) {
-  const groupRef = useRef(null);
+  const rootRef = useRef(null);
+  const spinRef = useRef(null);
 
   const basePosition = useMemo(
     () => viewer.position ?? [0, -0.12, 0],
@@ -333,34 +348,42 @@ function FloatingModel({ item, viewer, ModelComponent, reduceMotion = false }) {
   const phase = useMemo(() => (seed % 360) * (Math.PI / 180), [seed]);
 
   useFrame((state) => {
-    if (!groupRef.current) return;
+    const root = rootRef.current;
+    const spin = spinRef.current;
 
-    if (reduceMotion) {
-      groupRef.current.position.set(...basePosition);
-      groupRef.current.rotation.set(...baseRotation);
+    if (!root || !spin) return;
+
+    root.position.set(...basePosition);
+    root.rotation.set(...baseRotation);
+
+    spin.rotation.set(0, 0, 0);
+
+    if (reduceMotion) return;
+
+    const t = state.clock.getElapsedTime();
+    const speed = 0.72 + (seed % 4) * 0.05;
+    const spinAmplitude = viewer.spinAmplitude ?? viewer.yawAmplitude ?? 0.34;
+    const spinValue = Math.sin(t * speed + phase) * spinAmplitude;
+    const spinAxis = viewer.spinAxis ?? "y";
+
+    if (spinAxis === "x") {
+      spin.rotation.x = spinValue;
       return;
     }
 
-    const t = state.clock.getElapsedTime();
-    const speed = 0.9 + (seed % 4) * 0.08;
+    if (spinAxis === "z") {
+      spin.rotation.z = spinValue;
+      return;
+    }
 
-    const swayX = Math.sin(t * speed + phase) * 0.12;
-    const floatY = Math.cos(t * 1.15 + phase) * 0.07;
-    const tiltZ = Math.sin(t * 0.95 + phase) * 0.08;
-    const tiltY = Math.sin(t * 0.7 + phase) * 0.14;
-
-    groupRef.current.position.x = basePosition[0] + swayX;
-    groupRef.current.position.y = basePosition[1] + floatY;
-    groupRef.current.position.z = basePosition[2];
-
-    groupRef.current.rotation.x = baseRotation[0];
-    groupRef.current.rotation.y = baseRotation[1] + tiltY;
-    groupRef.current.rotation.z = baseRotation[2] + tiltZ;
+    spin.rotation.y = spinValue;
   });
 
   return (
-    <group ref={groupRef}>
-      <ModelComponent scale={viewer.scale ?? 1.08} />
+    <group ref={rootRef}>
+      <group ref={spinRef}>
+        <ModelComponent scale={viewer.scale ?? 1.08} />
+      </group>
     </group>
   );
 }
@@ -372,6 +395,7 @@ const StackModelCanvas = memo(function StackModelCanvas({
 }) {
   const ModelComponent =
     logoRegistry[normalizeLogoKey(item.modelKey || item.name)];
+
   const viewer = item.viewer || {};
 
   if (!ModelComponent) {
@@ -394,6 +418,7 @@ const StackModelCanvas = memo(function StackModelCanvas({
       <Canvas
         dpr={[1, 1]}
         shadows={false}
+        frameloop={isInteractive && !reduceMotion ? "always" : "demand"}
         camera={{
           position: viewer.cameraPosition || [0, 0, 4.2],
           fov: viewer.fov || 34,
@@ -420,7 +445,7 @@ const StackModelCanvas = memo(function StackModelCanvas({
               item={item}
               viewer={viewer}
               ModelComponent={ModelComponent}
-              reduceMotion={reduceMotion}
+              reduceMotion={reduceMotion || !isInteractive}
             />
           </group>
 
@@ -461,10 +486,6 @@ function getStackPositionClass(offset) {
       return "is-near-prev";
     case 1:
       return "is-near-next";
-    case -2:
-      return "is-far-prev";
-    case 2:
-      return "is-far-next";
     default:
       return "is-hidden";
   }
@@ -476,22 +497,90 @@ const TechStackCard = memo(function TechStackCard({
   onSelect,
   reduceMotion,
   renderModel = true,
+  onInteractionStart,
+  onInteractionEnd,
 }) {
+  const { t } = useTranslation();
   const positionClass = getStackPositionClass(offset);
   const isActive = offset === 0;
+
+  const categoryLabel = t(`about.stackCategories.${item.categoryKey}`, {
+    defaultValue: item.categoryKey,
+  });
+
+  const featuredLabel = t("about.stackFeaturedAriaLabel", {
+    stack: item.name,
+    defaultValue:
+      "{{stack}} é uma tecnologia de uso recorrente nos meus projetos",
+  });
+
+  const featuredTooltip = t("about.stackFeaturedTooltip", {
+    defaultValue: "Tecnologia de uso recorrente nos meus projetos",
+  });
+
+  const handleBadgePointerLeave = (event) => {
+    event.stopPropagation();
+
+    if (!isActive) {
+      onInteractionEnd?.();
+    }
+  };
+
+  const handleBadgeBlur = (event) => {
+    event.stopPropagation();
+
+    if (!isActive) {
+      onInteractionEnd?.();
+    }
+  };
 
   return (
     <article
       className={`about__stack-card ${
         item.proficient ? "is-proficient" : ""
       } ${positionClass} ${isActive ? "is-active" : ""}`}
-      aria-label={`${item.name} - ${item.category}`}
+      aria-label={`${item.name} - ${categoryLabel}`}
       aria-hidden={!isActive}
       tabIndex={isActive ? 0 : -1}
       onClick={onSelect}
+      onPointerEnter={isActive ? onInteractionStart : undefined}
+      onPointerLeave={isActive ? onInteractionEnd : undefined}
+      onPointerDown={isActive ? onInteractionStart : undefined}
+      onPointerUp={isActive ? onInteractionEnd : undefined}
+      onPointerCancel={isActive ? onInteractionEnd : undefined}
+      onFocus={isActive ? onInteractionStart : undefined}
+      onBlur={isActive ? onInteractionEnd : undefined}
     >
+      {item.proficient ? (
+        <span
+          className="about__stack-featured-badge"
+          role="img"
+          aria-label={featuredLabel}
+          tabIndex={isActive ? 0 : -1}
+          onClick={(event) => event.stopPropagation()}
+          onPointerEnter={(event) => {
+            event.stopPropagation();
+            onInteractionStart?.();
+          }}
+          onPointerLeave={handleBadgePointerLeave}
+          onFocus={(event) => {
+            event.stopPropagation();
+            onInteractionStart?.();
+          }}
+          onBlur={handleBadgeBlur}
+        >
+          <span className="about__stack-featured-icon" aria-hidden="true">
+            ★
+          </span>
+
+          <span className="about__stack-featured-tooltip" role="tooltip">
+            {featuredTooltip}
+          </span>
+        </span>
+      ) : null}
+
       <div className="about__stack-card-top">
-        <span className="about__stack-category">{item.category}</span>
+        <span className="about__stack-category">{categoryLabel}</span>
       </div>
 
       <div className="about__stack-model-shell" aria-hidden="true">
@@ -523,22 +612,19 @@ function About() {
     active: false,
     pointerId: null,
     startX: 0,
-    lastCommitted: 0,
+    deltaX: 0,
     defaultStep: 0,
     moved: false,
-    lastStepAt: 0,
-    rafLocked: false,
   });
 
   const [isInView, setIsInView] = useState(false);
   const [activePanel, setActivePanel] = useState(0);
   const [activeStackIndex, setActiveStackIndex] = useState(2);
   const [isStackPaused, setIsStackPaused] = useState(false);
+  const [isStackInteracting, setIsStackInteracting] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [isStackDragging, setIsStackDragging] = useState(false);
   const [hasLoadedStackPanel, setHasLoadedStackPanel] = useState(false);
-
-  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
   const achievements = useMemo(() => {
     const list = Array.isArray(achievementsData) ? achievementsData : [];
@@ -649,20 +735,27 @@ function About() {
   }, []);
 
   useEffect(() => {
-    if (activePanel === 1 && !hasLoadedStackPanel) {
+    if ((activePanel === 1 || isInView) && !hasLoadedStackPanel) {
       setHasLoadedStackPanel(true);
     }
-  }, [activePanel, hasLoadedStackPanel]);
+  }, [activePanel, isInView, hasLoadedStackPanel]);
 
   useEffect(() => {
-    if (activePanel !== 1 || reduceMotion || isStackPaused) return undefined;
+    if (
+      activePanel !== 1 ||
+      reduceMotion ||
+      isStackPaused ||
+      isStackInteracting
+    ) {
+      return undefined;
+    }
 
     const intervalId = window.setInterval(() => {
       setActiveStackIndex((prev) => (prev + 1) % stackItems.length);
-    }, 2800);
+    }, 3000);
 
     return () => window.clearInterval(intervalId);
-  }, [activePanel, isStackPaused, reduceMotion]);
+  }, [activePanel, isStackPaused, isStackInteracting, reduceMotion]);
 
   const handlePanelChange = (direction) => {
     setActivePanel((prev) => {
@@ -678,6 +771,14 @@ function About() {
     });
   };
 
+  const handleStackInteractionStart = () => {
+    setIsStackInteracting(true);
+  };
+
+  const handleStackInteractionEnd = () => {
+    setIsStackInteracting(false);
+  };
+
   const startStackDrag = (event) => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
 
@@ -685,11 +786,9 @@ function About() {
       active: true,
       pointerId: event.pointerId,
       startX: event.clientX,
-      lastCommitted: 0,
+      deltaX: 0,
       defaultStep: Number(event.currentTarget.dataset.step || 0),
       moved: false,
-      lastStepAt: 0,
-      rafLocked: false,
     };
 
     setIsStackPaused(true);
@@ -702,41 +801,11 @@ function About() {
 
     if (!gesture.active || gesture.pointerId !== event.pointerId) return;
 
-    const threshold = 92;
-    const maxDragDelta = 140;
-    const stepCooldown = 120;
+    gesture.deltaX = event.clientX - gesture.startX;
 
-    const rawDeltaX = event.clientX - gesture.startX;
-    const deltaX = clamp(rawDeltaX, -maxDragDelta, maxDragDelta);
-    const pending = deltaX - gesture.lastCommitted;
-    const now = performance.now();
-
-    if (Math.abs(deltaX) > 10) {
+    if (Math.abs(gesture.deltaX) > 10) {
       gesture.moved = true;
     }
-
-    if (gesture.rafLocked || now - gesture.lastStepAt < stepCooldown) {
-      event.preventDefault();
-      return;
-    }
-
-    let direction = 0;
-    if (pending <= -threshold) direction = 1;
-    if (pending >= threshold) direction = -1;
-
-    if (!direction) {
-      event.preventDefault();
-      return;
-    }
-
-    gesture.rafLocked = true;
-
-    requestAnimationFrame(() => {
-      handleStackStep(direction);
-      gesture.lastCommitted += direction === 1 ? -threshold : threshold;
-      gesture.lastStepAt = performance.now();
-      gesture.rafLocked = false;
-    });
 
     event.preventDefault();
   };
@@ -746,7 +815,17 @@ function About() {
 
     if (!gesture.active || gesture.pointerId !== event.pointerId) return;
 
-    if (!gesture.moved && gesture.defaultStep) {
+    const threshold = 64;
+
+    if (gesture.moved) {
+      if (gesture.deltaX <= -threshold) {
+        handleStackStep(1);
+      }
+
+      if (gesture.deltaX >= threshold) {
+        handleStackStep(-1);
+      }
+    } else if (gesture.defaultStep) {
       handleStackStep(gesture.defaultStep);
     }
 
@@ -754,11 +833,9 @@ function About() {
       active: false,
       pointerId: null,
       startX: 0,
-      lastCommitted: 0,
+      deltaX: 0,
       defaultStep: 0,
       moved: false,
-      lastStepAt: 0,
-      rafLocked: false,
     };
 
     setIsStackDragging(false);
@@ -826,12 +903,14 @@ function About() {
 
                     <div className="about__copy">
                       <h3>{t("about.name", { defaultValue: "Your name" })}</h3>
+
                       <p>
                         {t("about.paragraph1", {
                           defaultValue:
                             "Write here the first paragraph about your background, experience and the type of products you like to build.",
                         })}
                       </p>
+
                       <p>
                         {t("about.paragraph2", {
                           defaultValue:
@@ -896,7 +975,7 @@ function About() {
                           stackItems.length
                         );
 
-                        if (Math.abs(offset) > 2) return null;
+                        if (Math.abs(offset) > 1) return null;
 
                         return (
                           <TechStackCard
@@ -906,6 +985,8 @@ function About() {
                             onSelect={() => setActiveStackIndex(index)}
                             reduceMotion={reduceMotion}
                             renderModel={hasLoadedStackPanel}
+                            onInteractionStart={handleStackInteractionStart}
+                            onInteractionEnd={handleStackInteractionEnd}
                           />
                         );
                       })}
@@ -953,8 +1034,12 @@ function About() {
                               <span className="about__achievement-index">
                                 {String(index + 1).padStart(2, "0")}
                               </span>
+
                               <span className="about__achievement-date">
-                                {formatDate(achievement.issuedAt, i18n.language)}
+                                {formatDate(
+                                  achievement.issuedAt,
+                                  i18n.language
+                                )}
                               </span>
                             </div>
 
@@ -989,7 +1074,8 @@ function About() {
                   ) : (
                     <div className="about__empty">
                       {t("about.achievementsEmpty", {
-                        defaultValue: "Add achievements to src/data/achivements.js",
+                        defaultValue:
+                          "Add achievements to src/data/achivements.js",
                       })}
                     </div>
                   )}

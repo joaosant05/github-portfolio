@@ -9,34 +9,20 @@ export function Model(props) {
   const { nodes, materials } = useGLTF('/models/fastapi_icon.glb')
   return (
     <group {...props} dispose={null}>
-      <group position={[0.461, 0.156, 0.58]}>
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Cilindro_1.geometry}
-          material={materials.Materiais}
-        />
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Cilindro_2.geometry}
-          material={materials['Materiais.001']}
-        />
-      </group>
-      <group position={[0.451, 0.587, 0.607]}>
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Mesh.geometry}
-          material={materials.Material}
-        />
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.Mesh_1.geometry}
-          material={materials['Materiais.002']}
-        />
-      </group>
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.Plano.geometry}
+        material={materials.Material}
+      />
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.Círculo.geometry}
+        material={materials['Material.001']}
+        position={[0.113, 0, 0]}
+        scale={1.603}
+      />
     </group>
   )
 }

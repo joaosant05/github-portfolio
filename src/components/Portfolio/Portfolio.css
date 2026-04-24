@@ -1,3 +1,4 @@
+/* src/components/Portfolio/Portfolio.css */
 /* ==========================================================================
    PORTFOLIO
    ========================================================================== */
@@ -7,22 +8,38 @@
   isolation: isolate;
   overflow: hidden;
   margin-top: 0;
-  padding-block: clamp(4.5rem, 8vh, 6.5rem);
-  background: #000000;
   min-height: auto;
+  padding-block: clamp(4.5rem, 8vh, 6.5rem);
+  background: var(--color-bg-deep);
 }
 
-.portfolio::before,
+.portfolio::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 9rem;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    var(--color-bg-deep) 0%,
+    color-mix(in srgb, var(--color-bg-deep) 94%, transparent) 42%,
+    var(--color-transparent) 100%
+  );
+}
+
 .portfolio::after {
   content: none;
 }
 
 .portfolio .c-space {
   position: relative;
-  z-index: 1;
+  z-index: 3;
 }
 
 .portfolio__shell {
+  position: relative;
+  z-index: 3;
   width: min(100%, 1320px);
   margin-inline: auto;
 }
@@ -32,24 +49,26 @@
    ========================================================================== */
 
 .portfolio__heading {
+  position: relative;
+  z-index: 3;
   margin-bottom: clamp(2rem, 4vw, 3rem);
 }
 
 .portfolio__eyebrow {
   display: inline-block;
   margin: 0;
-  color: color-mix(in srgb, var(--secondary) 72%, var(--text) 28%);
+  color: color-mix(in srgb, var(--color-secondary) 72%, var(--color-text) 28%);
   font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.18em;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-ultra);
   text-transform: uppercase;
 }
 
 .portfolio__title-main {
   margin: 0.85rem 0 0;
-  color: rgba(255, 255, 255, 0.94);
+  color: var(--color-text-strong);
   font-size: clamp(2.1rem, 4vw, 4rem);
-  font-weight: 400;
+  font-weight: var(--font-weight-regular);
   line-height: 0.96;
   letter-spacing: -0.06em;
 }
@@ -57,7 +76,7 @@
 .portfolio__intro {
   max-width: 52rem;
   margin: 1rem 0 0;
-  color: rgba(255, 255, 255, 0.62);
+  color: var(--color-text-faint);
   font-size: clamp(0.96rem, 1.02vw, 1rem);
   line-height: 1.8;
 }
@@ -68,17 +87,38 @@
 
 .portfolio__list {
   position: relative;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  z-index: 3;
+  border-top: 1px solid var(--color-border-soft);
+}
+
+.portfolio__list::before {
+  content: "";
+  position: absolute;
+  inset: -5rem 0 -4rem 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 50% 18%,
+      color-mix(in srgb, var(--color-white) 2%, transparent),
+      var(--color-transparent) 24%
+    ),
+    radial-gradient(
+      circle at 50% 52%,
+      color-mix(in srgb, var(--color-primary) 6%, transparent),
+      var(--color-transparent) 40%
+    );
 }
 
 .portfolio__item {
   position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: clamp(1.5rem, 3vw, 2.25rem);
   align-items: center;
   padding: clamp(1.5rem, 2.6vw, 2rem) 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--color-border-soft);
   transform: translate3d(0, 0, 0);
   transition:
     border-color 0.28s ease,
@@ -93,16 +133,31 @@
   pointer-events: none;
   background: linear-gradient(
     90deg,
-    rgba(217, 107, 43, 0.045) 0%,
-    rgba(217, 107, 43, 0.016) 18%,
-    transparent 46%
+    color-mix(in srgb, var(--color-primary) 4.5%, transparent) 0%,
+    color-mix(in srgb, var(--color-primary) 1.6%, transparent) 18%,
+    var(--color-transparent) 46%
   );
   transition: opacity 0.28s ease;
 }
 
+.portfolio__item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.62;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-black) 18%, transparent) 0%,
+    color-mix(in srgb, var(--color-black) 8%, transparent) 36%,
+    var(--color-transparent) 100%
+  );
+}
+
 .portfolio__item:hover,
 .portfolio__item:focus-within {
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--color-border);
   transform: translate3d(0, -2px, 0);
 }
 
@@ -124,18 +179,18 @@
 }
 
 .portfolio__index {
-  color: rgba(255, 255, 255, 0.34);
+  color: var(--color-text-subtle);
   font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
 }
 
 .portfolio__item-title {
   margin: 0;
-  color: rgba(255, 255, 255, 0.94);
+  color: var(--color-text-strong);
   font-size: clamp(1.45rem, 2vw, 2rem);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   line-height: 1.08;
   letter-spacing: -0.04em;
 }
@@ -152,23 +207,19 @@
   align-items: center;
   min-height: 1.9rem;
   padding: 0.34rem 0.72rem;
-  border-radius: 999px;
-  border: 1px solid rgba(217, 107, 43, 0.2);
-  background: linear-gradient(
-    180deg,
-    rgba(217, 107, 43, 0.09),
-    rgba(217, 107, 43, 0.035)
-  );
-  color: color-mix(in srgb, var(--secondary) 72%, var(--text) 28%);
+  border-radius: var(--radius-pill);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+  background: var(--gradient-button-soft);
+  color: color-mix(in srgb, var(--color-secondary) 72%, var(--color-text) 28%);
   font-size: 0.76rem;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: 0.04em;
 }
 
 .portfolio__description {
   max-width: 720px;
   margin: 1rem 0 0;
-  color: rgba(255, 255, 255, 0.58);
+  color: var(--color-text-faint);
   font-size: clamp(0.95rem, 1vw, 1rem);
   line-height: 1.72;
 }
@@ -179,10 +230,10 @@
   align-items: center;
   gap: 0.5rem;
   align-self: center;
-  color: rgba(255, 255, 255, 0.92);
+  color: color-mix(in srgb, var(--color-white) 92%, transparent);
   text-decoration: none;
   font-size: 0.96rem;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   white-space: nowrap;
   transform: translate3d(0, 0, 0);
   transition:
@@ -199,7 +250,7 @@
 
 .portfolio__readmore:hover,
 .portfolio__readmore:focus-visible {
-  color: color-mix(in srgb, var(--secondary) 84%, white 16%);
+  color: color-mix(in srgb, var(--color-secondary) 84%, var(--color-white) 16%);
   transform: translate3d(0, -1px, 0);
   outline: none;
 }
@@ -223,13 +274,13 @@
   z-index: 60;
   border-radius: 1.15rem;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(8, 8, 10, 0.94);
+  border: 1px solid var(--color-border);
+  background: var(--glass-bg);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   box-shadow:
-    0 24px 70px rgba(0, 0, 0, 0.42),
-    0 0 0 1px rgba(217, 107, 43, 0.03);
+    0 24px 70px color-mix(in srgb, var(--color-black) 42%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--color-primary) 3%, transparent);
   transform-origin: center center;
 }
 
@@ -245,8 +296,8 @@
   height: 36%;
   background: linear-gradient(
     180deg,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.32) 100%
+    var(--color-transparent) 0%,
+    color-mix(in srgb, var(--color-black) 32%, transparent) 100%
   );
   pointer-events: none;
 }
@@ -266,17 +317,17 @@
 }
 
 .portfolio__preview-label {
-  color: rgba(255, 255, 255, 0.42);
+  color: var(--color-text-subtle);
   font-size: 0.68rem;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
 .portfolio__preview-title {
-  color: rgba(255, 255, 255, 0.92);
+  color: color-mix(in srgb, var(--color-white) 92%, transparent);
   font-size: 0.98rem;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   line-height: 1.4;
 }
 
@@ -298,7 +349,12 @@
 .portfolio div,
 .portfolio article,
 .portfolio svg {
-  transition-property: background-color, color, border-color, box-shadow, opacity,
+  transition-property:
+    background-color,
+    color,
+    border-color,
+    box-shadow,
+    opacity,
     transform;
 }
 

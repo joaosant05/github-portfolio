@@ -4,7 +4,7 @@ function Footer() {
   return (
     <footer className="footer" id="footer">
       <div className="c-space footer__container">
-        <div>
+        <div className="footer__content">
           <h3 className="footer__brand">Lorem Ipsum</h3>
           <p className="footer__text">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
@@ -12,7 +12,7 @@ function Footer() {
           </p>
         </div>
 
-        <div className="footer__links">
+        <nav className="footer__links" aria-label="Links do rodapé">
           <a href="https://github.com" target="_blank" rel="noreferrer">
             GitHub
           </a>
@@ -20,7 +20,7 @@ function Footer() {
             LinkedIn
           </a>
           <a href="mailto:email@email.com">Email</a>
-        </div>
+        </nav>
       </div>
     </footer>
   );

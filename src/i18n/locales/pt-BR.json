@@ -29,6 +29,16 @@
     "paragraph2": "Tenho como foco o desenvolvimento de aplicações completas, escaláveis e seguras, sempre buscando alinhar qualidade técnica com uma experiência moderna e intuitiva.",
     "stackTitle": "Tecnologias",
     "stackDescription": "Tecnologias e ferramentas com as quais já trabalhei ao longo dos projetos.",
+    "stackCategories": {
+      "frontend": "Front-end",
+      "backend": "Back-end",
+      "database": "Banco de dados",
+      "versioning": "Versionamento",
+      "containers": "Containerização",
+      "devops": "DevOps",
+      "cloud": "Cloud",
+      "design": "Design"
+    },
     "achievementsTitle": "Conquistas",
     "achievementsDescription": "Certificações e conquistas que fazem parte da minha trajetória.",
     "viewCredential": "Ver credencial",
@@ -37,26 +47,99 @@
     "socialsAriaLabel": "Links de redes sociais",
     "carouselAriaLabel": "Carrossel da seção sobre mim",
     "carouselDotsAriaLabel": "Navegação entre os painéis da seção sobre mim",
-    "socials": {
-      "linkedin": {
-        "label": "LinkedIn",
-        "description": "Conecte-se comigo"
+    "stackFeaturedTooltip": "Tecnologia de uso recorrente nos meus projetos",
+    "stackFeaturedAriaLabel": "{{stack}} é uma tecnologia de uso recorrente nos meus projetos"
+  },
+  "work": {
+    "projectTypes": {
+      "corporate": "Projeto corporativo",
+      "authorial": "Projeto autoral",
+      "productEvolution": "Evolução de produto"
+    },
+    "projectStatus": {
+      "delivered": "Entregue",
+      "inDevelopment": "Em desenvolvimento",
+      "inProgress": "Em evolução"
+    },
+    "projectVisibility": {
+      "private": "Projeto privado"
+    },
+    "projectTags": {
+      "aiChat": "Chat de IA",
+      "geminiApi": "Gemini API",
+      "generativeAi": "IA generativa",
+      "imageGeneration": "Geração de imagem",
+      "auth0": "Auth0",
+      "adminDashboards": "Dashboards admin",
+      "reactJsx": "React JSX",
+      "reactTsx": "React TSX",
+      "fastapi": "FastAPI",
+      "python": "Python",
+      "mysql": "MySQL",
+      "restApi": "API REST",
+      "customerPortal": "Portal do cliente",
+      "erpIntegration": "Integração ERP",
+      "roleBasedAccess": "Permissões por perfil",
+      "docker": "Docker",
+      "digitalOcean": "DigitalOcean",
+      "microservices": "Microserviços",
+      "calendarSync": "Sincronização de agendas",
+      "googleApis": "Google APIs",
+      "microsoftApis": "Microsoft APIs",
+      "multiTenant": "Multi-tenant",
+      "productivity": "Produtividade",
+      "pdfAutomation": "Automação PDF",
+      "dataExtraction": "Extração de dados",
+      "productEvolution": "Evolução de produto",
+      "catalogIntegration": "Integração com catálogos",
+      "csharp": "C#",
+      "localCache": "Cache local",
+      "azure": "Azure"
+    },
+    "projects": {
+      "kodaAi": {
+        "title": "Koda AI",
+        "role": "Desenvolvimento full stack de uma plataforma corporativa de IA",
+        "description": "Chat de inteligência artificial desenvolvido para uso corporativo, com integração à API do Gemini, autenticação com Auth0, banco de dados MySQL e recursos para geração de texto, imagens e automações internas. A plataforma também conta com scripts especializados para diferentes demandas de times e dashboards administrativos para acompanhamento de uso pelos colaboradores.",
+        "highlights": [
+          "Integração com modelos de IA generativa e geração de imagens por API.",
+          "Gerenciamento de usuários e autenticação centralizada com Auth0.",
+          "Conjunto de scripts internos criados para necessidades específicas de diferentes times.",
+          "Dashboards administrativos para análise de utilização e acompanhamento da plataforma."
+        ]
       },
-      "github": {
-        "label": "GitHub",
-        "description": "Veja meus projetos"
+      "clientPortal": {
+        "title": "Portal do Cliente",
+        "role": "Desenvolvimento full stack e estruturação de uma plataforma corporativa para clientes",
+        "description": "Portal corporativo criado para centralizar o relacionamento entre empresa e clientes, reunindo projetos, produtos, anexos, responsáveis, permissões, dashboards e integrações com ERP em uma única plataforma. A aplicação utiliza React, FastAPI, MySQL, Auth0 e uma arquitetura baseada em containers Docker hospedados na DigitalOcean.",
+        "highlights": [
+          "Hub completo para centralizar projetos, produtos e informações estratégicas para clientes.",
+          "Integração com ERP e organização de projetos por clientes, times e categorias.",
+          "Controle de acesso com múltiplos perfis, como administrador, gerente, líder, editor e cliente.",
+          "Arquitetura separada em containers para front-end, back-end, banco de dados e microserviços."
+        ]
       },
-      "instagram": {
-        "label": "Instagram",
-        "description": "Conteúdo e bastidores"
+      "vilmora": {
+        "title": "Vilmora",
+        "role": "Desenvolvimento full stack de um produto autoral para integração de agendas",
+        "description": "Plataforma web em desenvolvimento para centralizar e sincronizar agendas de diferentes contas e plataformas digitais. A proposta é reduzir conflitos de horário, retrabalho e conferências manuais por meio de uma visão unificada de compromissos e bloqueios automáticos entre contas conectadas.",
+        "highlights": [
+          "Centralização de agendas de diferentes contas em uma experiência única.",
+          "Sincronização e bloqueios automáticos para reduzir conflitos de horário.",
+          "Arquitetura planejada para integração com ecossistemas Google e Microsoft.",
+          "Aplicação pensada para produtividade, organização de rotina e gestão de disponibilidade."
+        ]
       },
-      "email": {
-        "label": "Email",
-        "description": "Entre em contato diretamente"
-      },
-      "behance": {
-        "label": "Behance",
-        "description": "Portfólio visual"
+      "pdfExtractor": {
+        "title": "PDF Extractor",
+        "role": "Evolução técnica e expansão funcional de uma ferramenta existente",
+        "description": "Ferramenta corporativa para extração e processamento de informações em PDFs, inicialmente criada com recursos básicos e posteriormente evoluída para uma solução mais completa. O projeto foi desenvolvido com React TSX no front-end e C# no back-end, utilizando cache local e integração com um sistema de catálogos online já consolidado no mercado.",
+        "highlights": [
+          "Evolução de uma versão inicial simples para uma ferramenta mais completa e alinhada ao uso real do time.",
+          "Processamento de PDFs sem necessidade de banco de dados, utilizando cache local.",
+          "Integração com sistema externo de catálogos online.",
+          "Estrutura preparada para futura hospedagem em servidores Azure."
+        ]
       }
     }
   }

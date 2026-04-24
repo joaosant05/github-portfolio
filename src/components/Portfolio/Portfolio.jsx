@@ -6,8 +6,8 @@ import {
   useReducedMotion,
   useSpring,
 } from "motion/react";
-import { FiArrowUpRight } from "react-icons/fi";
 import { portfolioProjects } from "../../data/portfolioData";
+import { FiArrowUpRight } from "react-icons/fi";
 import "./Portfolio.css";
 
 function Portfolio() {
