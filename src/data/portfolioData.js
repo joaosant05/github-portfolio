@@ -8,7 +8,7 @@ export const portfolioProjects = [
     descriptionKey: "work.projects.kodaAi.description",
     roleKey: "work.projects.kodaAi.role",
     typeKey: "work.projectTypes.corporate",
-    statusKey: "work.projectStatus.delivered",
+    statusKey: "work.projectStatus.production",
     visibilityKey: "work.projectVisibility.private",
     tagKeys: [
       "aiChat",
@@ -39,7 +39,7 @@ export const portfolioProjects = [
     descriptionKey: "work.projects.clientPortal.description",
     roleKey: "work.projects.clientPortal.role",
     typeKey: "work.projectTypes.corporate",
-    statusKey: "work.projectStatus.delivered",
+    statusKey: "work.projectStatus.production",
     visibilityKey: "work.projectVisibility.private",
     tagKeys: [
       "customerPortal",
@@ -102,7 +102,7 @@ export const portfolioProjects = [
     descriptionKey: "work.projects.pdfExtractor.description",
     roleKey: "work.projects.pdfExtractor.role",
     typeKey: "work.projectTypes.productEvolution",
-    statusKey: "work.projectStatus.inProgress",
+    statusKey: "work.projectStatus.inDevelopment",
     visibilityKey: "work.projectVisibility.private",
     tagKeys: [
       "pdfAutomation",

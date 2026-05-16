@@ -57,9 +57,8 @@
       "productEvolution": "Product evolution"
     },
     "projectStatus": {
-      "delivered": "Delivered",
-      "inDevelopment": "In development",
-      "inProgress": "In progress"
+      "production": "In production",
+      "inDevelopment": "In development"
     },
     "projectVisibility": {
       "private": "Private project"
