@@ -6,7 +6,7 @@ Source: https://sketchfab.com/3d-models/javascript-logo-3d-model-792093fab435419
 Title: JavaScript Logo – 3D Model
 */
 
-import React, { useRef } from 'react'
+import React from 'react'
 import { useGLTF } from '@react-three/drei'
 
 export function Model(props) {

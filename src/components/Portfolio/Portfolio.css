@@ -147,17 +147,19 @@
 }
 
 .portfolio__item {
+  --portfolio-card-accent: var(--color-primary);
+
   position: relative;
   z-index: 1;
   isolation: isolate;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: clamp(1.4rem, 3vw, 2.75rem);
+  grid-template-columns: minmax(13rem, 22rem) minmax(0, 1fr) auto;
+  gap: clamp(1rem, 2.4vw, 2.2rem);
   align-items: center;
   overflow: hidden;
-  padding: clamp(1.45rem, 2.8vw, 2.35rem);
+  padding: clamp(1rem, 2vw, 1.45rem);
   border: 1px solid color-mix(in srgb, var(--color-white) 8%, transparent);
-  border-radius: clamp(1.2rem, 2vw, 1.65rem);
+  border-radius: 1.15rem;
   background:
     linear-gradient(
       135deg,
@@ -177,6 +179,18 @@
     transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.portfolio__item:nth-child(2) {
+  --portfolio-card-accent: #67d6c0;
+}
+
+.portfolio__item:nth-child(3) {
+  --portfolio-card-accent: #9fb7ff;
+}
+
+.portfolio__item:nth-child(4) {
+  --portfolio-card-accent: #f2d8ba;
+}
+
 .portfolio__item::before {
   content: "";
   position: absolute;
@@ -193,13 +207,13 @@
     ),
     radial-gradient(
       circle at 82% 56%,
-      color-mix(in srgb, var(--color-primary) 17%, transparent),
+      color-mix(in srgb, var(--portfolio-card-accent) 17%, transparent),
       transparent 34%
     ),
     linear-gradient(
       135deg,
       color-mix(in srgb, var(--color-secondary) 22%, transparent),
-      color-mix(in srgb, var(--color-primary) 10%, transparent) 48%,
+      color-mix(in srgb, var(--portfolio-card-accent) 10%, transparent) 48%,
       transparent 82%
     );
   transition: opacity 0.42s ease;
@@ -211,7 +225,7 @@
   inset: 1px;
   z-index: -1;
   pointer-events: none;
-  border-radius: calc(clamp(1.2rem, 2vw, 1.65rem) - 1px);
+  border-radius: calc(1.15rem - 1px);
   background:
     linear-gradient(
       90deg,
@@ -223,7 +237,7 @@
       135deg,
       color-mix(in srgb, var(--color-white) 5%, transparent),
       transparent 36%,
-      color-mix(in srgb, var(--color-primary) 5%, transparent)
+      color-mix(in srgb, var(--portfolio-card-accent) 5%, transparent)
     );
 }
 
@@ -234,7 +248,7 @@
   box-shadow:
     0 1px 0 color-mix(in srgb, var(--color-white) 9%, transparent) inset,
     0 30px 90px color-mix(in srgb, var(--color-black) 34%, transparent),
-    0 0 46px color-mix(in srgb, var(--color-primary) 8%, transparent);
+    0 0 46px color-mix(in srgb, var(--portfolio-card-accent) 8%, transparent);
 }
 
 .portfolio__item:hover::before,
@@ -250,6 +264,56 @@
 .portfolio__item:hover .portfolio__description,
 .portfolio__item:focus-within .portfolio__description {
   color: color-mix(in srgb, var(--color-text) 72%, var(--color-white) 28%);
+}
+
+.portfolio__media {
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  border-radius: 0.95rem;
+  border: 1px solid color-mix(in srgb, var(--color-white) 9%, transparent);
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      color-mix(in srgb, var(--portfolio-card-accent) 16%, transparent),
+      transparent 62%
+    ),
+    color-mix(in srgb, var(--color-black) 24%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--color-white) 7%, transparent),
+    0 18px 45px color-mix(in srgb, var(--color-black) 18%, transparent);
+}
+
+.portfolio__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-white) 10%, transparent),
+      transparent 34%,
+      color-mix(in srgb, var(--color-black) 18%, transparent)
+    );
+}
+
+.portfolio__media-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  opacity: 0.94;
+  transform: scale(1.01);
+  transition:
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.28s ease;
+}
+
+.portfolio__item:hover .portfolio__media-image,
+.portfolio__item:focus-within .portfolio__media-image {
+  opacity: 1;
+  transform: scale(1.045);
 }
 
 .portfolio__content {
@@ -268,6 +332,7 @@
 }
 
 .portfolio__index,
+.portfolio__type,
 .portfolio__status {
   font-size: 0.72rem;
   font-weight: var(--font-weight-medium);
@@ -284,6 +349,7 @@
   color: color-mix(in srgb, var(--color-white) 44%, transparent);
 }
 
+.portfolio__type,
 .portfolio__status {
   display: inline-flex;
   align-items: center;
@@ -294,6 +360,12 @@
   color: color-mix(in srgb, var(--color-secondary) 82%, var(--color-text) 18%);
   background: color-mix(in srgb, var(--color-secondary) 7%, transparent);
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-white) 7%, transparent);
+}
+
+.portfolio__type {
+  border-color: color-mix(in srgb, var(--portfolio-card-accent) 26%, transparent);
+  color: color-mix(in srgb, var(--color-white) 72%, var(--portfolio-card-accent) 28%);
+  background: color-mix(in srgb, var(--portfolio-card-accent) 8%, transparent);
 }
 
 .portfolio__status.is-production {
@@ -1011,13 +1083,26 @@
   }
 
   .portfolio__item {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(11rem, 15rem) minmax(0, 1fr);
+    grid-template-areas:
+      "media content"
+      "actions actions";
     gap: 1.25rem;
     align-items: flex-start;
     padding: 1.35rem;
   }
 
+  .portfolio__media {
+    grid-area: media;
+    width: 100%;
+  }
+
+  .portfolio__content {
+    grid-area: content;
+  }
+
   .portfolio__actions {
+    grid-area: actions;
     width: 100%;
     justify-content: flex-start;
   }
@@ -1086,12 +1171,22 @@
   }
 
   .portfolio__item {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "media"
+      "content"
+      "actions";
+    gap: 1rem;
     padding: 1.2rem;
     border-radius: 1.15rem;
   }
 
+  .portfolio__media {
+    border-radius: 0.9rem;
+  }
+
   .portfolio__item-title {
-    font-size: clamp(1.55rem, 8vw, 2.2rem);
+    font-size: 1.65rem;
   }
 
   .portfolio__tags {
@@ -1100,6 +1195,8 @@
 
   .portfolio__tag {
     font-size: 0.72rem;
+    min-height: 1.75rem;
+    padding: 0.3rem 0.6rem;
   }
 
   .portfolio__description {

@@ -6,7 +6,7 @@ Source: https://sketchfab.com/3d-models/git-logo-01e9bc6656f0423bb4c68bff7aae4b9
 Title: Git logo
 */
 
-import React, { useRef } from 'react'
+import React from 'react'
 import { useGLTF } from '@react-three/drei'
 
 export function Model(props) {

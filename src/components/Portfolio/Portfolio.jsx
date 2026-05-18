@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   AnimatePresence,
@@ -10,6 +10,8 @@ import {
 import { FiArrowUpRight, FiExternalLink, FiX } from "react-icons/fi";
 import { portfolioProjects } from "../../data/portfolioData";
 import "./Portfolio.css";
+
+const Motion = motion;
 
 const revealViewport = {
   once: false,
@@ -136,21 +138,10 @@ function getProjectHighlights(t, project) {
   return project.highlights || [];
 }
 
-function getTranslatedValue(t, key, fallback = "") {
-  if (!key) return fallback;
-
-  return t(key, {
-    defaultValue: fallback,
-  });
-}
-
 function PortfolioModal({ project, onClose, shouldReduceMotion }) {
   const { t } = useTranslation();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-
-  useEffect(() => {
-    setActiveImageIndex(0);
-  }, [project?.id]);
+  const closeButtonRef = useRef(null);
 
   useEffect(() => {
     if (!project) return undefined;
@@ -163,6 +154,7 @@ function PortfolioModal({ project, onClose, shouldReduceMotion }) {
 
     document.addEventListener("keydown", handleKeyDown);
     document.body.classList.add("portfolio-modal-open");
+    closeButtonRef.current?.focus();
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
@@ -179,14 +171,10 @@ function PortfolioModal({ project, onClose, shouldReduceMotion }) {
   const highlights = getProjectHighlights(t, project).filter(Boolean);
   const images = getProjectImages(project);
 
-  const projectType = getTranslatedValue(t, project.typeKey);
-  const projectStatus = getTranslatedValue(t, project.statusKey);
-  const projectVisibility = getTranslatedValue(t, project.visibilityKey);
-
   const hasExternalLink = project.link && project.link !== "#";
 
   return (
-    <motion.div
+    <Motion.div
       className="portfolio__modal-backdrop"
       role="presentation"
       initial={shouldReduceMotion ? false : { opacity: 0 }}
@@ -195,7 +183,7 @@ function PortfolioModal({ project, onClose, shouldReduceMotion }) {
       transition={{ duration: 0.22 }}
       onMouseDown={onClose}
     >
-      <motion.article
+      <Motion.article
         className="portfolio__modal"
         role="dialog"
         aria-modal="true"
@@ -210,6 +198,7 @@ function PortfolioModal({ project, onClose, shouldReduceMotion }) {
         onMouseDown={(event) => event.stopPropagation()}
       >
         <button
+          ref={closeButtonRef}
           type="button"
           className="portfolio__modal-close"
           aria-label={t("work.closeProjectModal", {
@@ -238,7 +227,7 @@ function PortfolioModal({ project, onClose, shouldReduceMotion }) {
           <div className="portfolio__modal-grid">
             <div className="portfolio__modal-media">
               <div className="portfolio__modal-main-image">
-                <img src={images[activeImageIndex]} alt={title} />
+                <img src={images[activeImageIndex]} alt={title} loading="lazy" />
               </div>
 
               {images.length > 1 ? (
@@ -256,7 +245,7 @@ function PortfolioModal({ project, onClose, shouldReduceMotion }) {
                         defaultValue: `View image ${index + 1}`,
                       })}
                     >
-                      <img src={image} alt="" aria-hidden="true" />
+                      <img src={image} alt="" aria-hidden="true" loading="lazy" />
                     </button>
                   ))}
                 </div>
@@ -264,26 +253,6 @@ function PortfolioModal({ project, onClose, shouldReduceMotion }) {
             </div>
 
             <div className="portfolio__modal-content">
-              <div className="portfolio__modal-meta">
-                {projectType ? (
-                  <span className="portfolio__modal-meta-card">
-                    {projectType}
-                  </span>
-                ) : null}
-
-                {projectStatus ? (
-                  <span className="portfolio__modal-meta-card">
-                    {projectStatus}
-                  </span>
-                ) : null}
-
-                {projectVisibility ? (
-                  <span className="portfolio__modal-meta-card">
-                    {projectVisibility}
-                  </span>
-                ) : null}
-              </div>
-
               {description ? (
                 <section className="portfolio__modal-section">
                   <h4>
@@ -359,8 +328,8 @@ function PortfolioModal({ project, onClose, shouldReduceMotion }) {
             </div>
           </div>
         </div>
-      </motion.article>
-    </motion.div>
+      </Motion.article>
+    </Motion.div>
   );
 }
 
@@ -418,7 +387,7 @@ function Portfolio() {
     <section className="portfolio" id="portfolio">
       <div className="c-space">
         <div className="portfolio__shell">
-          <motion.div
+          <Motion.div
             className="portfolio__heading"
             variants={headingRevealVariants}
             initial={shouldReduceMotion ? false : "hidden"}
@@ -443,7 +412,7 @@ function Portfolio() {
                   "Uma seleção de projetos com foco em produto, interface, lógica de negócio e experiência visual.",
               })}
             </p>
-          </motion.div>
+          </Motion.div>
 
           <div
             className="portfolio__list"
@@ -455,9 +424,10 @@ function Portfolio() {
               const description = getProjectDescription(t, project);
               const role = getProjectRole(t, project);
               const tags = getProjectTags(t, project);
+              const images = getProjectImages(project);
 
               return (
-                <motion.article
+                <Motion.article
                   key={project.id}
                   className="portfolio__item"
                   custom={index}
@@ -478,31 +448,20 @@ function Portfolio() {
                   }
                   onMouseEnter={() => handlePreviewEnter(project)}
                 >
+                  <div className="portfolio__media" aria-hidden="true">
+                    <img
+                      src={images[0]}
+                      alt=""
+                      loading="lazy"
+                      className="portfolio__media-image"
+                    />
+                  </div>
+
                   <div className="portfolio__content">
                     <div className="portfolio__meta">
                       <span className="portfolio__index">
                         {String(index + 1).padStart(2, "0")}
                       </span>
-
-                      {/* {project.statusKey ? (
-                        <span
-                          className={`portfolio__status ${
-                            project.statusKey
-                              ?.toLowerCase()
-                              .includes("production")
-                              ? "is-production"
-                              : project.statusKey
-                                    ?.toLowerCase()
-                                    .includes("development")
-                                ? "is-development"
-                                : ""
-                          }`}
-                        >
-                          {t(project.statusKey, {
-                            defaultValue: "",
-                          })}
-                        </span>
-                      ) : null} */}
                     </div>
 
                     <h3 className="portfolio__item-title">{title}</h3>
@@ -545,13 +504,13 @@ function Portfolio() {
                       <FiArrowUpRight aria-hidden="true" />
                     </button>
                   </div>
-                </motion.article>
+                </Motion.article>
               );
             })}
 
             <AnimatePresence>
               {preview && !shouldReduceMotion && !selectedProject && (
-                <motion.div
+                <Motion.div
                   className="portfolio__preview"
                   style={{ x: springX, y: springY }}
                   initial={{ opacity: 0, scale: 0.96 }}
@@ -581,7 +540,7 @@ function Portfolio() {
                       {getProjectTitle(t, preview)}
                     </strong>
                   </div>
-                </motion.div>
+                </Motion.div>
               )}
             </AnimatePresence>
           </div>
@@ -591,6 +550,7 @@ function Portfolio() {
       <AnimatePresence>
         {selectedProject ? (
           <PortfolioModal
+            key={selectedProject.id}
             project={selectedProject}
             onClose={handleCloseProject}
             shouldReduceMotion={shouldReduceMotion}

@@ -17,6 +17,8 @@ import { BB8 } from "../models/BB8";
 import "./Hero.css";
 import * as THREE from "three";
 
+const Motion = motion;
+
 const clamp01 = (value) => Math.min(1, Math.max(0, value));
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -34,11 +36,9 @@ function AnimatedWord() {
   const words = useMemo(() => {
     const value = t("hero.rotatingWords", { returnObjects: true });
     return Array.isArray(value) ? value.map(String) : [];
-  }, [t, i18n.resolvedLanguage]);
+  }, [t]);
 
-  useEffect(() => {
-    setIndex(0);
-  }, [words]);
+  const activeIndex = words.length ? index % words.length : 0;
 
   useEffect(() => {
     if (!words.length || shouldReduceMotion) return;
@@ -77,7 +77,7 @@ function AnimatedWord() {
       cancelAnimationFrame(frame);
       resizeObserver.disconnect();
     };
-  }, [words, i18n.resolvedLanguage]);
+  }, [words]);
 
   if (!words.length) return null;
 
@@ -90,35 +90,39 @@ function AnimatedWord() {
   }
 
   return (
-    <span
-      className="hero__word-wrap"
-      aria-hidden="true"
-      style={wrapWidth ? { width: `${wrapWidth}px` } : undefined}
-    >
-      <span ref={sizerRef} className="hero__word-sizer" aria-hidden="true">
-        {words.map((word, wordIndex) => (
-          <span key={`${word}-${wordIndex}`} data-word-sizer>
-            {word}
-          </span>
-        ))}
-      </span>
+    <>
+      <span className="hero__sr-only">{words[0]}</span>
 
-      <AnimatePresence initial={false} mode="wait">
-        <motion.span
-          key={`${i18n.resolvedLanguage}-${index}-${words[index]}`}
-          className="hero__word"
-          initial={{ opacity: 0, y: 18, filter: "blur(6px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          exit={{ opacity: 0, y: -18, filter: "blur(4px)" }}
-          transition={{
-            duration: 0.42,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-        >
-          {words[index]}
-        </motion.span>
-      </AnimatePresence>
-    </span>
+      <span
+        className="hero__word-wrap"
+        aria-hidden="true"
+        style={wrapWidth ? { width: `${wrapWidth}px` } : undefined}
+      >
+        <span ref={sizerRef} className="hero__word-sizer" aria-hidden="true">
+          {words.map((word, wordIndex) => (
+            <span key={`${word}-${wordIndex}`} data-word-sizer>
+              {word}
+            </span>
+          ))}
+        </span>
+
+        <AnimatePresence initial={false} mode="wait">
+          <Motion.span
+            key={`${i18n.resolvedLanguage}-${activeIndex}-${words[activeIndex]}`}
+            className="hero__word"
+            initial={{ opacity: 0, y: 18, filter: "blur(6px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -18, filter: "blur(4px)" }}
+            transition={{
+              duration: 0.42,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            {words[activeIndex]}
+          </Motion.span>
+        </AnimatePresence>
+      </span>
+    </>
   );
 }
 
@@ -143,12 +147,12 @@ function BB8Runner({ isMobile, controlsRef }) {
     () => ({
       totalFrames: 299,
       moveStartFrame: 230,
-      baseX: isMobile ? -0.9 : 1.3,
-      baseY: isMobile ? -1.4 : -2.34,
-      baseZ: -0.5,
+      baseX: isMobile ? 0.54 : 1.3,
+      baseY: isMobile ? -1.05 : -2.34,
+      baseZ: isMobile ? 0 : -0.5,
       reentryZOffset: -1.3,
-      wrapPadding: isMobile ? 0.52 : 0.68,
-      scale: isMobile ? 1 : 2.2,
+      wrapPadding: isMobile ? 0.78 : 0.68,
+      scale: isMobile ? 1.7 : 2.2,
       dragRotateSpeedX: 0.0035,
       dragRotateSpeedY: 0.0085,
       maxDragTiltX: 0.35,
@@ -261,6 +265,8 @@ function BB8Runner({ isMobile, controlsRef }) {
   }, []);
 
   useEffect(() => {
+    const controls = controlsRef?.current;
+
     const handlePointerMove = (e) => {
       const drag = dragRef.current;
       if (!drag.active) return;
@@ -302,8 +308,8 @@ function BB8Runner({ isMobile, controlsRef }) {
       window.removeEventListener("pointerup", handleWindowPointerUp);
       window.removeEventListener("pointercancel", handleWindowPointerUp);
 
-      if (controlsRef?.current) {
-        controlsRef.current.enabled = true;
+      if (controls) {
+        controls.enabled = true;
       }
 
       document.body.style.cursor = "";
@@ -409,8 +415,8 @@ function BB8Runner({ isMobile, controlsRef }) {
     <group ref={rootRef}>
       <mesh
         rotation={[-Math.PI / 2, 0, 0]}
-        position={[-0.17, isMobile ? -1.08 : 0, 0.127]}
-        scale={isMobile ? [1.15, 1, 0.95] : [1.45, 1, 1.16]}
+        position={[-0.18, isMobile ? 0.04 : 0, 0.127]}
+        scale={isMobile ? [1.45, 1, 0.84] : [1.45, 1, 1.16]}
         renderOrder={-1}
       >
         <planeGeometry args={[1, 1]} />
@@ -431,6 +437,70 @@ function BB8Runner({ isMobile, controlsRef }) {
           rotation={[0, 0, 0]}
         />
       </group>
+    </group>
+  );
+}
+
+function BB8LoadingFallback({ isMobile }) {
+  const rootRef = useRef(null);
+
+  useFrame((state) => {
+    const root = rootRef.current;
+    if (!root || !isMobile) return;
+
+    const viewport = state.viewport.getCurrentViewport(state.camera, [0, 0, 0]);
+    const travel = viewport.width / 2 + 0.9;
+    const progress = (Math.sin(state.clock.elapsedTime * 0.34) + 1) / 2;
+    const eased = easeOutCubic(progress);
+    root.position.x = lerp(-travel, 0.54, eased);
+  });
+
+  return (
+    <group
+      ref={rootRef}
+      position={isMobile ? [0.54, -1.04, 0] : [1.3, -2.34, -0.5]}
+      scale={isMobile ? 0.72 : 1.25}
+      rotation={[0, -0.18, 0]}
+    >
+      <mesh
+        position={[0, -0.66, -0.08]}
+        scale={[1.55, 0.38, 1]}
+        renderOrder={1}
+      >
+        <circleGeometry args={[0.58, 48]} />
+        <meshBasicMaterial
+          color="#000000"
+          transparent
+          opacity={0.42}
+          depthTest={false}
+          depthWrite={false}
+        />
+      </mesh>
+
+      <mesh position={[0, 0, 0]}>
+        <sphereGeometry args={[0.38, 36, 36]} />
+        <meshBasicMaterial color="#f3e6d2" />
+      </mesh>
+
+      <mesh position={[0.08, 0.03, 0.34]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.18, 0.026, 16, 48]} />
+        <meshBasicMaterial color="#d96b2b" />
+      </mesh>
+
+      <mesh position={[0, 0.43, 0]} scale={[1, 0.62, 1]}>
+        <sphereGeometry args={[0.25, 32, 32]} />
+        <meshBasicMaterial color="#f6ead8" />
+      </mesh>
+
+      <mesh position={[0.08, 0.47, 0.22]}>
+        <sphereGeometry args={[0.052, 18, 18]} />
+        <meshBasicMaterial color="#17100c" />
+      </mesh>
+
+      <mesh position={[0.05, 0.63, 0]} rotation={[0.18, 0, -0.18]}>
+        <cylinderGeometry args={[0.01, 0.01, 0.36, 8]} />
+        <meshBasicMaterial color="#f2d8ba" />
+      </mesh>
     </group>
   );
 }
@@ -494,10 +564,10 @@ function Hero() {
   }, [isMobile, shouldReduceMotion]);
 
   const cameraSettings = isMobile
-    ? { position: [0, 0.2, 6], fov: 34 }
+    ? { position: [0, 0.18, 5.25], fov: 31 }
     : { position: [0, 0.35, 5.9], fov: 32 };
 
-  const orbitTarget = isMobile ? [0, -1.38, 0] : [0, -1.5, 0];
+  const orbitTarget = isMobile ? [0, -0.9, 0] : [0, -1.5, 0];
 
   return (
     <section ref={heroRef} className="hero" id="home">
@@ -506,7 +576,7 @@ function Hero() {
       </div>
 
       <div className="hero__canvas-zone">
-        <motion.figure
+        <Motion.figure
           className="hero__canvas-shell"
           aria-hidden="true"
           initial={{ opacity: 0, y: 30, scale: 0.98 }}
@@ -530,39 +600,39 @@ function Hero() {
                 target={orbitTarget}
               />
 
-              <Suspense fallback={null}>
-                <ambientLight intensity={1.18} />
+              <ambientLight intensity={1.18} />
 
-                <directionalLight
-                  position={[6, 3, 1]}
-                  intensity={1.30}
-                />
+              <directionalLight
+                position={[6, 3, 1]}
+                intensity={1.30}
+              />
 
+              <Suspense fallback={<BB8LoadingFallback isMobile={isMobile} />}>
                 <BB8Runner isMobile={isMobile} controlsRef={controlsRef} />
               </Suspense>
             </Canvas>
           </div>
-        </motion.figure>
+        </Motion.figure>
       </div>
 
       <div className="c-space hero__container">
         <div className="hero__content-zone">
-          <motion.div
+          <Motion.div
             className="hero__content"
             initial={{ opacity: 0, y: 26 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, ease: "easeOut" }}
           >
-            <motion.p
+            <Motion.p
               className="hero__eyebrow"
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.08, duration: 0.5 }}
             >
               {t("hero.eyebrow")}
-            </motion.p>
+            </Motion.p>
 
-            <motion.h1
+            <Motion.h1
               className="hero__title hero__title--stacked"
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
@@ -578,15 +648,9 @@ function Hero() {
               <span className="hero__line hero__line--solution">
                 <span className="hero__title-soft">{t("hero.titleLine4")}</span>
               </span>
-            </motion.h1>
+            </Motion.h1>
 
-            <motion.div
-              className="hero__actions"
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.55 }}
-            />
-          </motion.div>
+          </Motion.div>
         </div>
       </div>
     </section>

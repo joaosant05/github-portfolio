@@ -6,7 +6,7 @@ Source: https://sketchfab.com/3d-models/docker-logo-606f87d0394248b1bf488dcba121
 Title: Docker Logo
 */
 
-import React, { useRef } from 'react'
+import React from 'react'
 import { useGLTF } from '@react-three/drei'
 
 export function Model(props) {

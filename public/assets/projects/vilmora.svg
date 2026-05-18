@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" role="img" aria-labelledby="title desc">
+  <title id="title">Vilmora calendar product preview</title>
+  <desc id="desc">Calendar synchronization product with connected schedule blocks.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#120d15"/>
+      <stop offset="0.5" stop-color="#060504"/>
+      <stop offset="1" stop-color="#201007"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f2d8ba"/>
+      <stop offset="1" stop-color="#d96b2b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="750" fill="url(#bg)"/>
+  <rect x="128" y="92" width="944" height="566" rx="34" fill="#080605" stroke="#ffffff" stroke-opacity="0.08"/>
+  <rect x="176" y="148" width="848" height="72" rx="24" fill="#ffffff" fill-opacity="0.045"/>
+  <rect x="208" y="176" width="132" height="16" rx="8" fill="url(#accent)"/>
+  <g opacity="0.9">
+    <rect x="176" y="270" width="188" height="104" rx="22" fill="#ffffff" fill-opacity="0.045"/>
+    <rect x="396" y="270" width="188" height="104" rx="22" fill="#d96b2b" opacity="0.13"/>
+    <rect x="616" y="270" width="188" height="104" rx="22" fill="#ffffff" fill-opacity="0.045"/>
+    <rect x="836" y="270" width="188" height="104" rx="22" fill="#ffffff" fill-opacity="0.045"/>
+    <rect x="176" y="414" width="188" height="104" rx="22" fill="#d96b2b" opacity="0.12"/>
+    <rect x="396" y="414" width="188" height="104" rx="22" fill="#ffffff" fill-opacity="0.045"/>
+    <rect x="616" y="414" width="188" height="104" rx="22" fill="#d96b2b" opacity="0.14"/>
+    <rect x="836" y="414" width="188" height="104" rx="22" fill="#ffffff" fill-opacity="0.045"/>
+  </g>
+  <path d="M270 322h246c34 0 34 144 68 144h126" fill="none" stroke="url(#accent)" stroke-width="10" stroke-linecap="round"/>
+  <path d="M710 466h84c34 0 34-144 68-144h66" fill="none" stroke="#f2d8ba" stroke-opacity="0.48" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="270" cy="322" r="16" fill="#f2d8ba"/>
+  <circle cx="584" cy="466" r="16" fill="#d96b2b"/>
+  <circle cx="928" cy="322" r="16" fill="#f2d8ba"/>
+  <path d="M216 306h92M216 342h62M438 306h86M438 342h104M658 306h72M658 342h106M878 306h74M878 342h88" stroke="#f2d8ba" stroke-opacity="0.32" stroke-width="10" stroke-linecap="round"/>
+</svg>

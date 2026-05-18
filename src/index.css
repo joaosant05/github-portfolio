@@ -270,6 +270,7 @@ html.light {
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5.75rem;
   background: var(--gradient-app-bg);
   font-family: var(--font-family-base);
   text-size-adjust: 100%;
@@ -305,6 +306,11 @@ body {
 button,
 a {
   -webkit-tap-highlight-color: transparent;
+}
+
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 72%, var(--color-white) 28%);
+  outline-offset: 3px;
 }
 
 img {
@@ -618,6 +624,10 @@ p {
    ========================================================================== */
 
 @media (max-width: 640px) {
+  html {
+    scroll-padding-top: 5rem;
+  }
+
   html,
   body,
   #root {
@@ -632,5 +642,20 @@ p {
 
   .subtext {
     @apply text-base;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }

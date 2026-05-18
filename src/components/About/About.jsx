@@ -776,11 +776,29 @@ function About() {
     return () => window.clearInterval(intervalId);
   }, [activePanel, isStackPaused, isStackInteracting, reduceMotion]);
 
+  const keepCarouselInView = () => {
+    if (typeof window === "undefined") return;
+    if (!window.matchMedia("(max-width: 980px)").matches) return;
+
+    window.requestAnimationFrame(() => {
+      aboutRef.current?.scrollIntoView({
+        block: "start",
+        behavior: "auto",
+      });
+    });
+  };
+
+  const selectPanel = (index) => {
+    setActivePanel(index);
+    keepCarouselInView();
+  };
+
   const handlePanelChange = (direction) => {
     setActivePanel((prev) => {
       const total = carouselItems.length;
       return (prev + direction + total) % total;
     });
+    keepCarouselInView();
   };
 
   const handleStackStep = (direction) => {
@@ -901,6 +919,8 @@ function About() {
                 <article
                   id="about-panel-bio"
                   className={getPanelClassName(0)}
+                  role="tabpanel"
+                  aria-labelledby="about-tab-bio"
                   aria-hidden={activePanel !== 0}
                 >
                   <div className="about__panel-head">
@@ -974,6 +994,8 @@ function About() {
                 <article
                   id="about-panel-stack"
                   className={getPanelClassName(1)}
+                  role="tabpanel"
+                  aria-labelledby="about-tab-stack"
                   aria-hidden={activePanel !== 1}
                 >
                   <div className="about__panel-head">
@@ -1047,6 +1069,8 @@ function About() {
                 <article
                   id="about-panel-achievements"
                   className={getPanelClassName(2)}
+                  role="tabpanel"
+                  aria-labelledby="about-tab-achievements"
                   aria-hidden={activePanel !== 2}
                 >
                   <div className="about__panel-head">
@@ -1145,6 +1169,7 @@ function About() {
                   return (
                     <button
                       key={item.id}
+                      id={`about-tab-${item.id}`}
                       type="button"
                       role="tab"
                       className={`about__carousel-dot ${
@@ -1154,7 +1179,7 @@ function About() {
                       aria-controls={`about-panel-${item.id}`}
                       aria-label={item.label}
                       tabIndex={isActive ? 0 : -1}
-                      onClick={() => setActivePanel(index)}
+                      onClick={() => selectPanel(index)}
                     >
                       <span className="about__sr-only">{item.label}</span>
                     </button>

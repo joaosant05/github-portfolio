@@ -6,7 +6,7 @@ Source: https://sketchfab.com/3d-models/c-e3a5d3e564a64fb0ab39665f44632520
 Title: C#
 */
 
-import React, { useRef } from 'react'
+import React from 'react'
 import { useGLTF } from '@react-three/drei'
 
 export function Model(props) {

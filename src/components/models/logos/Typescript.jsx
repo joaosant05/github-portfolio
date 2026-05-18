@@ -6,7 +6,7 @@ Source: https://sketchfab.com/3d-models/typescript-logo-3d-model-84af2099cb85425
 Title: TypeScript Logo – 3D Model
 */
 
-import React, { useRef } from 'react'
+import React from 'react'
 import { useGLTF } from '@react-three/drei'
 
 export function Model(props) {

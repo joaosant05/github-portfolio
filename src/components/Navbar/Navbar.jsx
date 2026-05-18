@@ -1,18 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslation } from "react-i18next";
-import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi2";
 import { LuLanguages } from "react-icons/lu";
 import { FiMenu, FiX } from "react-icons/fi";
-import { useTheme } from "../../contexts/ThemeContext";
 import "./Navbar.css";
+
+const Motion = motion;
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("#home");
 
   const { t, i18n } = useTranslation();
-  const { theme, toggleTheme } = useTheme();
 
   const navItems = useMemo(
     () => [
@@ -75,6 +74,29 @@ function Navbar() {
     };
   }, [navItems]);
 
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    const closeOnScrollIntent = () => setIsOpen(false);
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener("scroll", closeOnScrollIntent, { passive: true });
+    window.addEventListener("wheel", closeOnScrollIntent, { passive: true });
+    window.addEventListener("touchmove", closeOnScrollIntent, { passive: true });
+    document.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      window.removeEventListener("scroll", closeOnScrollIntent);
+      window.removeEventListener("wheel", closeOnScrollIntent);
+      window.removeEventListener("touchmove", closeOnScrollIntent);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [isOpen]);
+
   const closeMenu = () => setIsOpen(false);
 
   const toggleLanguage = () => {
@@ -88,7 +110,7 @@ function Navbar() {
       : t("navbar.languageShort.enUs");
 
   return (
-    <motion.header
+    <Motion.header
       className="navbar"
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
@@ -96,6 +118,11 @@ function Navbar() {
     >
       <div className="c-space">
         <div className="navbar__shell">
+          <a className="navbar__brand" href="#home" onClick={closeMenu}>
+            <span className="navbar__brand-dot" aria-hidden="true" />
+            <span className="navbar__brand-text">{t("navbar.brand")}</span>
+          </a>
+
           <nav
             className="navbar__desktop"
             aria-label={t("navbar.primaryNavigation")}
@@ -109,11 +136,12 @@ function Navbar() {
                     <a
                       href={item.href}
                       className={`navbar__link ${isActive ? "is-active" : ""}`}
+                      aria-current={isActive ? "page" : undefined}
                     >
                       <span>{item.label}</span>
 
                       {isActive && (
-                        <motion.span
+                        <Motion.span
                           layoutId="navbar-active-pill"
                           className="navbar__active-pill"
                           transition={{
@@ -131,10 +159,10 @@ function Navbar() {
           </nav>
 
           <div className="navbar__actions">
-            <motion.button
+            <Motion.button
               whileTap={{ scale: 0.96 }}
               whileHover={{ y: -1 }}
-              className="navbar__action-btn"
+              className="navbar__action-btn navbar__language-btn navbar__language-btn--desktop"
               type="button"
               onClick={toggleLanguage}
               aria-label={t("navbar.changeLanguage")}
@@ -142,34 +170,14 @@ function Navbar() {
             >
               <LuLanguages size={18} />
               <span>{currentLanguageLabel}</span>
-            </motion.button>
-
-            {/* <motion.button
-              whileTap={{ scale: 0.96 }}
-              whileHover={{ y: -1 }}
-              className="navbar__theme-btn"
-              type="button"
-              onClick={toggleTheme}
-              aria-label={t("navbar.changeTheme")}
-              title={t("navbar.changeTheme")}
-            >
-              <motion.div
-                className="navbar__theme-thumb"
-                animate={{ x: theme === "dark" ? 0 : 26 }}
-                transition={{ type: "spring", stiffness: 320, damping: 22 }}
-              >
-                {theme === "dark" ? (
-                  <HiOutlineMoon size={14} />
-                ) : (
-                  <HiOutlineSun size={14} />
-                )}
-              </motion.div>
-            </motion.button> */}
+            </Motion.button>
 
             <button
               className="navbar__toggle"
               type="button"
               aria-label={isOpen ? t("navbar.closeMenu") : t("navbar.openMenu")}
+              aria-expanded={isOpen}
+              aria-controls="navbar-mobile-menu"
               onClick={() => setIsOpen((prev) => !prev)}
             >
               {isOpen ? <FiX size={20} /> : <FiMenu size={20} />}
@@ -179,38 +187,49 @@ function Navbar() {
 
         <AnimatePresence>
           {isOpen && (
-            <motion.div
+            <Motion.div
+              id="navbar-mobile-menu"
               className="navbar__mobile"
+              role="dialog"
+              aria-modal="false"
+              aria-label={t("navbar.primaryNavigation")}
               initial={{ opacity: 0, y: -14, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.98 }}
               transition={{ duration: 0.22, ease: "easeOut" }}
             >
-              <ul className="navbar__mobile-list">
-                {navItems.map((item, index) => (
-                  <motion.li
-                    key={item.key}
-                    initial={{ opacity: 0, x: -14 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    transition={{ delay: index * 0.04 }}
-                  >
-                    <a
-                      href={item.href}
-                      className={`navbar__mobile-link ${
-                        activeSection === item.href ? "is-active" : ""
-                      }`}
-                      onClick={closeMenu}
-                    >
-                      {item.label}
-                    </a>
-                  </motion.li>
-                ))}
-              </ul>
+              <nav aria-label={t("navbar.primaryNavigation")}>
+                <ul className="navbar__mobile-list">
+                  {navItems.map((item, index) => {
+                    const isActive = activeSection === item.href;
+
+                    return (
+                  <Motion.li
+                        key={item.key}
+                        initial={{ opacity: 0, x: -14 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        transition={{ delay: index * 0.04 }}
+                      >
+                        <a
+                          href={item.href}
+                          className={`navbar__mobile-link ${
+                            isActive ? "is-active" : ""
+                          }`}
+                          aria-current={isActive ? "page" : undefined}
+                          onClick={closeMenu}
+                        >
+                          <span>{item.label}</span>
+                        </a>
+                  </Motion.li>
+                    );
+                  })}
+                </ul>
+              </nav>
 
               <div className="navbar__mobile-actions">
                 <button
-                  className="navbar__action-btn"
+                  className="navbar__action-btn navbar__language-btn"
                   type="button"
                   onClick={toggleLanguage}
                   aria-label={t("navbar.changeLanguage")}
@@ -218,30 +237,12 @@ function Navbar() {
                   <LuLanguages size={18} />
                   <span>{currentLanguageLabel}</span>
                 </button>
-
-                <button
-                  className="navbar__action-btn"
-                  type="button"
-                  onClick={toggleTheme}
-                  aria-label={t("navbar.changeTheme")}
-                >
-                  {theme === "dark" ? (
-                    <HiOutlineMoon size={18} />
-                  ) : (
-                    <HiOutlineSun size={18} />
-                  )}
-                  <span>
-                    {theme === "dark"
-                      ? t("navbar.dark")
-                      : t("navbar.light")}
-                  </span>
-                </button>
               </div>
-            </motion.div>
+            </Motion.div>
           )}
         </AnimatePresence>
       </div>
-    </motion.header>
+    </Motion.header>
   );
 }
 

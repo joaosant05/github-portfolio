@@ -6,7 +6,7 @@ Source: https://sketchfab.com/3d-models/figma-5a66a770e9864e50870e5d5f17c4b211
 Title: Figma
 */
 
-import React, { useRef } from 'react'
+import React from 'react'
 import { useGLTF } from '@react-three/drei'
 
 export function Model(props) {
