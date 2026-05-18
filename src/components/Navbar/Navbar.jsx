@@ -19,7 +19,7 @@ function Navbar() {
       { key: "home", href: "#home", label: t("navbar.home") },
       { key: "about", href: "#about", label: t("navbar.about") },
       { key: "work", href: "#portfolio", label: t("navbar.work") },
-      { key: "contact", href: "#footer", label: t("navbar.contact") },
+      { key: "contact", href: "#contact", label: t("navbar.contact") },
     ],
     [t]
   );
@@ -58,7 +58,7 @@ function Navbar() {
         document.documentElement.scrollHeight - 10;
 
       if (pageBottom) {
-        currentSection = "#footer";
+        currentSection = navItems[navItems.length - 1]?.href || "#contact";
       }
 
       setActiveSection(currentSection);
@@ -82,7 +82,10 @@ function Navbar() {
     i18n.changeLanguage(nextLanguage);
   };
 
-  const currentLanguageLabel = i18n.language === "pt-BR" ? "PT" : "EN";
+  const currentLanguageLabel =
+    i18n.language === "pt-BR"
+      ? t("navbar.languageShort.ptBr")
+      : t("navbar.languageShort.enUs");
 
   return (
     <motion.header
@@ -93,7 +96,10 @@ function Navbar() {
     >
       <div className="c-space">
         <div className="navbar__shell">
-          <nav className="navbar__desktop" aria-label="Primary">
+          <nav
+            className="navbar__desktop"
+            aria-label={t("navbar.primaryNavigation")}
+          >
             <ul className="navbar__list">
               {navItems.map((item) => {
                 const isActive = activeSection === item.href;

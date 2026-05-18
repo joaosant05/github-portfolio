@@ -44,7 +44,6 @@
   transition:
     opacity 0.9s ease,
     transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform;
 }
 
 .about__reveal.is-visible {
@@ -76,7 +75,6 @@
 
 .about__carousel-panel {
   animation: none;
-  will-change: opacity, transform;
 }
 
 /* ==========================================================================
@@ -283,7 +281,7 @@
   font-size: clamp(2.2rem, 4.2vw, 4.2rem);
   font-weight: var(--font-weight-regular);
   line-height: 0.94;
-  letter-spacing: -0.07em;
+  letter-spacing: 0;
 }
 
 .about__copy p {
@@ -299,13 +297,112 @@
   margin-top: 0.9rem;
 }
 
+.about__social-block {
+  position: relative;
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1.35rem;
+  padding: 1rem 0 0 1rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-secondary) 9%, var(--color-border-soft));
+}
+
+.about__social-block::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1rem;
+  bottom: 0.15rem;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-primary) 54%, transparent),
+    transparent
+  );
+  opacity: 0.72;
+}
+
+.about__social-title {
+  color: color-mix(in srgb, var(--color-secondary) 62%, var(--color-text-subtle));
+  font-size: 0.72rem;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-ultra);
+  text-transform: uppercase;
+}
+
+.about__social-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.about__social-link {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 38px;
+  padding: 0.58rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--color-secondary) 10%, var(--color-border-soft));
+  border-radius: var(--radius-pill);
+  color: color-mix(in srgb, var(--color-text-dim) 88%, var(--color-secondary) 12%);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-white) 4.5%, transparent),
+      color-mix(in srgb, var(--color-primary) 3%, transparent)
+    ),
+    color-mix(in srgb, var(--color-black) 16%, transparent);
+  text-decoration: none;
+  font-size: 0.88rem;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-white) 4%, transparent);
+}
+
+.about__social-link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-primary) 14%, transparent),
+    transparent 48%
+  );
+  opacity: 0;
+}
+
+.about__social-link svg {
+  position: relative;
+  z-index: 1;
+  color: color-mix(in srgb, var(--color-primary) 68%, var(--color-white) 32%);
+}
+
+.about__social-link span {
+  position: relative;
+  z-index: 1;
+}
+
+.about__social-link:hover,
+.about__social-link:focus-visible {
+  color: var(--color-text-strong);
+  border-color: color-mix(in srgb, var(--color-primary) 34%, transparent);
+  background: color-mix(in srgb, var(--color-primary) 7%, var(--color-panel));
+  transform: translate3d(0, -2px, 0);
+  outline: none;
+}
+
+.about__social-link:hover::before,
+.about__social-link:focus-visible::before {
+  opacity: 1;
+}
+
 /* ==========================================================================
    STACK
    ========================================================================== */
 
 .about__stack-carousel {
   position: relative;
-  min-height: clamp(30rem, 58vw, 36rem);
+  min-height: clamp(32rem, 60vw, 38rem);
   padding:
     clamp(1.15rem, 2vw, 1.55rem)
     clamp(1.2rem, 3vw, 2.5rem)
@@ -377,7 +474,7 @@
 .about__stack-carousel-track {
   position: relative;
   width: 100%;
-  min-height: clamp(28.6rem, 53vw, 32.6rem);
+  min-height: clamp(27.4rem, 50vw, 31.4rem);
   padding-top: 0.5rem;
   perspective: 1400px;
   transform-style: preserve-3d;
@@ -404,13 +501,10 @@
   backface-visibility: hidden;
   transform-style: preserve-3d;
   contain: layout paint;
-  will-change: transform, opacity;
 
   transition:
-    transform 0.72s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.42s ease,
-    box-shadow 0.42s ease,
-    border-color 0.42s ease;
+    transform 0.64s cubic-bezier(0.2, 0.86, 0.26, 1),
+    opacity 0.34s ease-out;
 }
 
 .about__stack-card::before {
@@ -441,7 +535,9 @@
 
 .about__stack-card.is-center,
 .about__stack-card.is-near-prev,
-.about__stack-card.is-near-next {
+.about__stack-card.is-near-next,
+.about__stack-card.is-far-prev,
+.about__stack-card.is-far-next {
   opacity: 1;
 }
 
@@ -475,7 +571,9 @@
 }
 
 .about__stack-card.is-near-prev,
-.about__stack-card.is-near-next {
+.about__stack-card.is-near-next,
+.about__stack-card.is-far-prev,
+.about__stack-card.is-far-next {
   z-index: 4;
   pointer-events: auto;
   opacity: 0.5;
@@ -488,6 +586,20 @@
 
 .about__stack-card.is-near-next {
   transform: translate3d(calc(-50% + 12.8rem), 1rem, -105px) scale(0.915);
+}
+
+.about__stack-card.is-far-prev,
+.about__stack-card.is-far-next {
+  z-index: 2;
+  opacity: 0.22;
+}
+
+.about__stack-card.is-far-prev {
+  transform: translate3d(calc(-50% - 23.4rem), 2rem, -220px) scale(0.78);
+}
+
+.about__stack-card.is-far-next {
+  transform: translate3d(calc(-50% + 23.4rem), 2rem, -220px) scale(0.78);
 }
 
 .about__stack-card.is-hidden {
@@ -708,7 +820,6 @@
 .about__stack-canvas-frame {
   position: absolute;
   inset: 0;
-  will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
   contain: paint;
@@ -723,6 +834,7 @@
 
 .about__stack-model-shell canvas {
   cursor: grab;
+  filter: sepia(0.18) saturate(0.92) hue-rotate(-12deg) contrast(1.04);
 }
 
 .about__stack-model-shell canvas:active {
@@ -754,6 +866,69 @@
   line-height: 1.4;
   letter-spacing: var(--tracking-soft);
   text-align: center;
+}
+
+.about__stack-rail {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  max-width: 980px;
+  margin: -0.4rem auto 0;
+  padding-inline: 0.4rem;
+}
+
+.about__stack-rail-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0.34rem 0.68rem;
+  border: 1px solid color-mix(in srgb, var(--color-secondary) 12%, transparent);
+  border-radius: var(--radius-pill);
+  color: color-mix(in srgb, var(--color-text-dim) 86%, var(--color-secondary) 14%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-white) 3.5%, transparent),
+      color-mix(in srgb, var(--color-black) 14%, transparent)
+    ),
+    color-mix(in srgb, var(--color-bg-warm-2) 72%, transparent);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-white) 5%, transparent);
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.about__stack-rail-item:hover,
+.about__stack-rail-item:focus-visible,
+.about__stack-rail-item.is-active {
+  color: var(--color-text-strong);
+  border-color: color-mix(in srgb, var(--color-primary) 36%, transparent);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-primary) 18%, transparent),
+      color-mix(in srgb, var(--color-secondary) 7%, transparent)
+    ),
+    color-mix(in srgb, var(--color-bg-warm-1) 84%, transparent);
+  outline: none;
+}
+
+.about__stack-rail-item:hover,
+.about__stack-rail-item:focus-visible {
+  transform: translate3d(0, -1px, 0);
 }
 
 /* ==========================================================================
@@ -917,6 +1092,14 @@
   .about__stack-card.is-near-next {
     transform: translate3d(calc(-50% + 10.8rem), 1.15rem, -110px) scale(0.9);
   }
+
+  .about__stack-card.is-far-prev {
+    transform: translate3d(calc(-50% - 19.8rem), 2.1rem, -215px) scale(0.76);
+  }
+
+  .about__stack-card.is-far-next {
+    transform: translate3d(calc(-50% + 19.8rem), 2.1rem, -215px) scale(0.76);
+  }
 }
 
 @media (max-width: 980px) {
@@ -930,21 +1113,31 @@
     min-height: auto;
   }
 
-  .about__carousel-stage {
-    min-height: 34rem;
+  .about__panel {
+    position: relative;
+    inset: auto;
+    height: auto;
+    min-height: 0;
+    padding: 1.25rem;
+    overflow: visible;
   }
 
-  .about__panel {
-    padding: 1.25rem;
+  .about__panel.is-inactive {
+    display: none;
+  }
+
+  .about__carousel-stage {
+    min-height: 0;
   }
 
   .about__bio-grid {
     grid-template-columns: 1fr;
     gap: 1.4rem;
+    height: auto;
   }
 
   .about__image-wrap {
-    max-width: 22rem;
+    width: min(100%, 18rem);
   }
 
   .about__achievements-grid {
@@ -953,11 +1146,11 @@
   }
 
   .about__stack-carousel {
-    min-height: 26rem;
+    min-height: 28.2rem;
   }
 
   .about__stack-carousel-track {
-    min-height: 24.3rem;
+    min-height: 23.8rem;
     padding-top: 0.45rem;
   }
 
@@ -981,18 +1174,28 @@
     opacity: 0.36;
   }
 
+  .about__stack-card.is-far-prev {
+    transform: translate3d(calc(-50% - 14.8rem), 1.95rem, -180px) scale(0.7);
+    opacity: 0.16;
+  }
+
+  .about__stack-card.is-far-next {
+    transform: translate3d(calc(-50% + 14.8rem), 1.95rem, -180px) scale(0.7);
+    opacity: 0.16;
+  }
+
   .about__stack-drag-zone {
     width: clamp(6rem, 18vw, 11rem);
+  }
+
+  .about__stack-rail {
+    margin-top: 0.1rem;
   }
 }
 
 @media (max-width: 640px) {
   .about {
     padding-block: 2.8rem 3.6rem;
-  }
-
-  .about__carousel-stage {
-    min-height: 31rem;
   }
 
   .about__copy h3 {
@@ -1004,13 +1207,21 @@
     font-size: 0.95rem;
   }
 
+  .about__copy p {
+    text-align: left;
+  }
+
+  .about__image-wrap {
+    width: min(100%, 14.5rem);
+  }
+
   .about__stack-carousel {
-    min-height: 23.8rem;
+    min-height: 26.4rem;
     padding-bottom: 1rem;
   }
 
   .about__stack-carousel-track {
-    min-height: 22.25rem;
+    min-height: 21.8rem;
     padding-top: 0.4rem;
   }
 
@@ -1033,6 +1244,13 @@
   .about__stack-card.is-near-next {
     transform: translate3d(calc(-50% + 5.8rem), 0.95rem, -82px) scale(0.82);
     opacity: 0.28;
+  }
+
+  .about__stack-card.is-far-prev,
+  .about__stack-card.is-far-next {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
   }
 
   .about__stack-model-shell {
@@ -1070,6 +1288,24 @@
     max-width: 12rem;
     font-size: 0.66rem;
   }
+
+  .about__stack-rail {
+    justify-content: flex-start;
+    max-height: 5.4rem;
+    overflow: auto;
+    padding: 0.15rem 0.2rem 0.35rem;
+    scrollbar-width: none;
+  }
+
+  .about__stack-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .about__stack-rail-item {
+    min-height: 1.9rem;
+    padding: 0.3rem 0.58rem;
+    font-size: 0.68rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1079,7 +1315,8 @@
   .about__carousel-dot,
   .about__achievement-link::after,
   .about__stack-featured-badge,
-  .about__stack-featured-tooltip {
+  .about__stack-featured-tooltip,
+  .about__stack-rail-item {
     transition: none !important;
     animation: none !important;
   }
@@ -1103,7 +1340,6 @@
 
   .about__stack-card {
     transform-style: flat;
-    will-change: transform, opacity;
     transition:
       transform 0.48s cubic-bezier(0.22, 1, 0.36, 1),
       opacity 0.32s ease;
@@ -1130,12 +1366,16 @@
     transform: translate3d(calc(-50% + 12.2rem), 0.8rem, 0) scale(0.9);
   }
 
-  .about__stack-model-shell::after {
-    display: none;
+  .about__stack-card.is-far-prev {
+    transform: translate3d(calc(-50% - 22rem), 1.65rem, 0) scale(0.76);
   }
 
-  .about__stack-canvas-frame {
-    will-change: auto;
+  .about__stack-card.is-far-next {
+    transform: translate3d(calc(-50% + 22rem), 1.65rem, 0) scale(0.76);
+  }
+
+  .about__stack-model-shell::after {
+    display: none;
   }
 }
 
@@ -1148,6 +1388,14 @@
     .about__stack-card.is-near-next {
       transform: translate3d(calc(-50% + 10.3rem), 1rem, 0) scale(0.88);
     }
+
+    .about__stack-card.is-far-prev {
+      transform: translate3d(calc(-50% - 18.8rem), 1.8rem, 0) scale(0.74);
+    }
+
+    .about__stack-card.is-far-next {
+      transform: translate3d(calc(-50% + 18.8rem), 1.8rem, 0) scale(0.74);
+    }
   }
 
   @media (max-width: 980px) {
@@ -1157,6 +1405,14 @@
 
     .about__stack-card.is-near-next {
       transform: translate3d(calc(-50% + 7.8rem), 1rem, 0) scale(0.84);
+    }
+
+    .about__stack-card.is-far-prev {
+      transform: translate3d(calc(-50% - 14rem), 1.75rem, 0) scale(0.7);
+    }
+
+    .about__stack-card.is-far-next {
+      transform: translate3d(calc(-50% + 14rem), 1.75rem, 0) scale(0.7);
     }
   }
 

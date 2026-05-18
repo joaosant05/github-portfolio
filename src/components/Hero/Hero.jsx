@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, ContactShadows } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import { useMediaQuery } from "react-responsive";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { useTranslation } from "react-i18next";
@@ -254,8 +254,8 @@ function BB8Runner({ isMobile, controlsRef }) {
 
     visualRef.current.traverse((obj) => {
       if (obj.isMesh) {
-        obj.castShadow = true;
-        obj.receiveShadow = true;
+        obj.castShadow = false;
+        obj.receiveShadow = false;
       }
     });
   }, []);
@@ -514,7 +514,7 @@ function Hero() {
           transition={{ delay: 0.2, duration: 0.75, ease: "easeOut" }}
         >
           <div className="hero__canvas">
-            <Canvas camera={cameraSettings} shadows dpr={[1, 2]}>
+            <Canvas camera={cameraSettings} dpr={[1, 1.5]}>
               <OrbitControls
                 ref={controlsRef}
                 makeDefault
@@ -536,17 +536,6 @@ function Hero() {
                 <directionalLight
                   position={[6, 3, 1]}
                   intensity={1.30}
-                  castShadow
-                  shadow-mapSize-width={2048}
-                  shadow-mapSize-height={2048}
-                  shadow-bias={-0.00008}
-                  shadow-normalBias={0.02}
-                  shadow-camera-near={0.5}
-                  shadow-camera-far={20}
-                  shadow-camera-left={-4}
-                  shadow-camera-right={4}
-                  shadow-camera-top={4}
-                  shadow-camera-bottom={-4}
                 />
 
                 <BB8Runner isMobile={isMobile} controlsRef={controlsRef} />

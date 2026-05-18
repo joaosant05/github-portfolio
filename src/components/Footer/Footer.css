@@ -2,86 +2,55 @@
 
 .footer {
   position: relative;
-  padding: 3rem 0;
-  border-top: 1px solid var(--color-border-soft);
+  overflow: hidden;
+  padding: 1.35rem 0 1.55rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-secondary) 9%, var(--color-border-soft));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-panel) 28%, var(--color-bg-deep) 72%),
+      var(--color-bg-deep)
+    );
+}
+
+.footer::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
   background: linear-gradient(
-    180deg,
-    var(--color-transparent) 0%,
-    color-mix(in srgb, var(--color-bg) 82%, transparent) 100%
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-primary) 42%, transparent),
+    transparent
   );
+  opacity: 0.85;
 }
 
 .footer__container {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 1320px);
+  margin-inline: auto;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 2rem;
-}
-
-.footer__content {
-  min-width: 0;
-}
-
-.footer__brand {
-  margin: 0;
-  color: var(--color-text-strong);
-  font-size: 1.5rem;
-  font-weight: var(--font-weight-bold);
-  line-height: 1.1;
-  letter-spacing: var(--tracking-soft);
-}
-
-.footer__text {
-  margin: 0.7rem 0 0;
-  max-width: 520px;
-  color: var(--color-text-dim);
-  line-height: 1.65;
-}
-
-.footer__links {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.footer__links a {
-  display: inline-flex;
-  align-items: center;
   justify-content: center;
-  min-height: 44px;
-  padding: 0.8rem 1rem;
-  text-decoration: none;
-  color: var(--color-text-strong);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  background: color-mix(in srgb, var(--color-white) 3%, transparent);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition:
-    color var(--ease-standard),
-    background-color var(--ease-standard),
-    border-color var(--ease-standard),
-    transform var(--ease-standard);
+  align-items: center;
 }
 
-.footer__links a:hover,
-.footer__links a:focus-visible {
-  color: var(--color-primary);
-  border-color: color-mix(in srgb, var(--color-primary) 26%, transparent);
-  background: color-mix(in srgb, var(--color-white) 6%, transparent);
-  transform: translateY(-1px);
-  outline: none;
+.footer__copy {
+  margin: 0;
+  color: var(--color-text-subtle);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  text-align: center;
 }
 
 @media (max-width: 760px) {
   .footer__container {
-    flex-direction: column;
-    align-items: flex-start;
+    justify-content: flex-start;
   }
 
-  .footer__links {
-    justify-content: flex-start;
+  .footer__copy {
+    text-align: left;
   }
 }

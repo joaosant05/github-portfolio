@@ -305,11 +305,23 @@
     display: none;
   }
 
+  .navbar__mobile-actions .navbar__action-btn span {
+    display: inline;
+  }
+
   .navbar__mobile-actions {
     flex-direction: column;
   }
 
   .navbar__mobile-actions .navbar__action-btn {
     justify-content: center;
+    min-height: 42px;
+    border: 1px solid var(--color-border-soft);
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .navbar {
+    background: rgba(3, 5, 10, 0.96);
   }
 }

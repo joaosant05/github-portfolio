@@ -484,7 +484,7 @@ function Portfolio() {
                         {String(index + 1).padStart(2, "0")}
                       </span>
 
-                      {project.statusKey ? (
+                      {/* {project.statusKey ? (
                         <span
                           className={`portfolio__status ${
                             project.statusKey
@@ -502,7 +502,7 @@ function Portfolio() {
                             defaultValue: "",
                           })}
                         </span>
-                      ) : null}
+                      ) : null} */}
                     </div>
 
                     <h3 className="portfolio__item-title">{title}</h3>

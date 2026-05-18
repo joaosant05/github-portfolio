@@ -12,6 +12,9 @@
   height: 100svh;
   min-height: 100svh;
   max-height: 100svh;
+  height: 100dvh;
+  min-height: 100dvh;
+  max-height: 100dvh;
   overflow: hidden;
   padding-top: var(--hero-top-offset);
   display: flex;
@@ -48,7 +51,7 @@
   position: absolute;
   inset: -3%;
 
-  background-image: url("/assets/theme/desert.jpg");
+  background-image: var(--hero-bg-image);
   background-repeat: no-repeat;
   background-position: center top;
   background-size: cover;
@@ -64,7 +67,6 @@
   */
   filter: none;
 
-  will-change: transform;
   backface-visibility: hidden;
   transform-style: preserve-3d;
 }
@@ -134,9 +136,9 @@
   position: relative;
   z-index: 4;
   width: 100%;
-  height: calc(100svh - var(--hero-top-offset));
-  min-height: calc(100svh - var(--hero-top-offset));
-  max-height: calc(100svh - var(--hero-top-offset));
+  height: calc(100dvh - var(--hero-top-offset));
+  min-height: calc(100dvh - var(--hero-top-offset));
+  max-height: calc(100dvh - var(--hero-top-offset));
   display: flex;
   align-items: center;
   padding-top: clamp(0.45rem, 1vh, 0.95rem);
@@ -170,7 +172,6 @@
   text-align: left;
   pointer-events: none;
   transform: translate3d(0, calc(var(--hero-parallax-content) * -1), 0);
-  will-change: transform;
   backface-visibility: hidden;
 }
 
@@ -206,7 +207,7 @@
   max-width: none;
   font-size: clamp(1.9rem, 3.1vw, 3.35rem);
   line-height: 0.96;
-  letter-spacing: -0.055em;
+  letter-spacing: 0;
   font-weight: var(--font-weight-regular);
   color: var(--hero-text-color);
   text-shadow:
@@ -276,7 +277,6 @@
   position: absolute;
   inset: 0 auto auto 0;
   white-space: nowrap;
-  will-change: transform, opacity;
   transform-origin: left center;
   backface-visibility: hidden;
   color: var(--hero-accent-color);
@@ -379,7 +379,6 @@
   pointer-events: auto;
   overflow: hidden;
   transform: translate3d(0, calc(var(--hero-parallax-canvas) * -1), 0);
-  will-change: transform;
   backface-visibility: hidden;
 }
 
@@ -468,9 +467,9 @@
   }
 
   .hero__container {
-    height: calc(100svh - var(--hero-top-offset));
-    min-height: calc(100svh - var(--hero-top-offset));
-    max-height: calc(100svh - var(--hero-top-offset));
+    height: calc(100dvh - var(--hero-top-offset));
+    min-height: calc(100dvh - var(--hero-top-offset));
+    max-height: calc(100dvh - var(--hero-top-offset));
     padding-top: 0.35rem;
     padding-bottom: 0.5rem;
   }
@@ -655,6 +654,23 @@
   .hero__canvas-shell,
   .hero__content {
     transform: none !important;
-    will-change: auto;
+  }
+}
+
+@media (max-height: 700px) {
+  .hero {
+    --hero-top-offset: 70px;
+  }
+
+  .hero__eyebrow {
+    margin-bottom: 0.7rem;
+  }
+
+  .hero__title {
+    font-size: clamp(1.75rem, 5vw, 2.65rem);
+  }
+
+  .hero__word-wrap {
+    font-size: clamp(2.1rem, 6vw, 3.35rem);
   }
 }

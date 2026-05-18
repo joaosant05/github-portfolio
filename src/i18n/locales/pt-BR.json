@@ -1,6 +1,6 @@
 {
   "navbar": {
-    "brand": "Ali",
+    "brand": "João Santos",
     "home": "Início",
     "about": "Sobre",
     "work": "Projetos",
@@ -10,16 +10,21 @@
     "closeMenu": "Fechar menu",
     "changeTheme": "Alternar tema",
     "changeLanguage": "Alterar idioma",
-    "light": "Light",
-    "dark": "Dark"
+    "light": "Claro",
+    "dark": "Escuro",
+    "primaryNavigation": "Navegação principal",
+    "languageShort": {
+      "ptBr": "PT",
+      "enUs": "EN"
+    }
   },
   "hero": {
     "eyebrow": "Oi, eu sou João Santos",
     "titleLine1": "Um desenvolvedor",
-    "titleLine2": "dedicado a criar soluções",
-    "titleLine4": "",
+    "titleLine2": "dedicado a criar",
+    "titleLine4": "soluções",
     "rotatingWords": ["Robustas", "Escaláveis", "Confiáveis", "Modernas"],
-    "subtitle": "Desenvolvo aplicações de ponta a ponta, com foco na experiência do usuário, código limpo, APIs bem estruturadas e sistemas pensados para evoluir."
+    "subtitle": "Desenvolvo aplicações de ponta a ponta, com foco em experiência do usuário, código limpo, APIs bem estruturadas e sistemas pensados para evoluir."
   },
   "about": {
     "photoAlt": "Foto de perfil de João",
@@ -27,6 +32,9 @@
     "name": "João Santos",
     "paragraph1": "Sou desenvolvedor full stack, em processo de finalização da minha formação em Análise e Desenvolvimento de Sistemas, com experiência em todo o ciclo de vida de projetos de software. Atuo desde o levantamento de requisitos e entendimento do problema até a modelagem do sistema, criação de lógicas, design de interfaces, desenvolvimento, testes, deploy e apoio na capacitação de usuários.",
     "paragraph2": "Tenho como foco o desenvolvimento de aplicações completas, escaláveis e seguras, sempre buscando alinhar qualidade técnica com uma experiência moderna e intuitiva.",
+    "connectTitle": "Links",
+    "connectDescription": "Perfis técnicos e profissionais.",
+    "socialLinkAriaLabel": "Abrir perfil de {{label}}",
     "stackTitle": "Tecnologias",
     "stackDescription": "Tecnologias e ferramentas com as quais já trabalhei ao longo dos projetos.",
     "stackCategories": {
@@ -34,7 +42,7 @@
       "backend": "Back-end",
       "database": "Banco de dados",
       "versioning": "Versionamento",
-      "containers": "Containerização",
+      "containers": "Conteinerização",
       "devops": "DevOps",
       "cloud": "Cloud",
       "design": "Design"
@@ -43,14 +51,31 @@
     "achievementsDescription": "Certificações e conquistas que fazem parte da minha trajetória.",
     "viewCredential": "Ver credencial",
     "achievementsEmpty": "Adicione conquistas em src/data/achivements.js",
+    "achievementUntitled": "Conquista sem título",
+    "achievementUnknownIssuer": "Emissor não informado",
     "stackAriaLabel": "Lista animada de tecnologias",
     "socialsAriaLabel": "Links de redes sociais",
     "carouselAriaLabel": "Carrossel da seção sobre mim",
     "carouselDotsAriaLabel": "Navegação entre os painéis da seção sobre mim",
+    "carouselPagination": "Navegação dos painéis",
     "stackFeaturedTooltip": "Tecnologia de uso recorrente nos meus projetos",
     "stackFeaturedAriaLabel": "{{stack}} é uma tecnologia de uso recorrente nos meus projetos"
   },
   "work": {
+    "eyebrow": "Portfólio",
+    "title": "Projetos selecionados",
+    "description": "Uma seleção de projetos com foco em produto, interface, lógica de negócio e experiência visual.",
+    "projectDetails": "Detalhes do projeto",
+    "closeProjectModal": "Fechar detalhes do projeto",
+    "viewProjectImage": "Ver imagem {{index}} do projeto",
+    "overviewTitle": "Visão geral",
+    "highlightsTitle": "Destaques",
+    "technologiesTitle": "Tecnologias e foco",
+    "openProject": "Abrir projeto",
+    "privateProjectNote": "Este projeto é privado, então o acesso público não está disponível.",
+    "readMore": "Ver detalhes",
+    "readMoreProjectAria": "Abrir detalhes de {{project}}",
+    "previewLabel": "Prévia",
     "projectTypes": {
       "corporate": "Projeto corporativo",
       "authorial": "Projeto autoral",
@@ -81,7 +106,7 @@
       "roleBasedAccess": "Permissões por perfil",
       "docker": "Docker",
       "digitalOcean": "DigitalOcean",
-      "microservices": "Microserviços",
+      "microservices": "Microsserviços",
       "calendarSync": "Sincronização de agendas",
       "googleApis": "Google APIs",
       "microsoftApis": "Microsoft APIs",
@@ -115,7 +140,7 @@
           "Hub completo para centralizar projetos, produtos e informações estratégicas para clientes.",
           "Integração com ERP e organização de projetos por clientes, times e categorias.",
           "Controle de acesso com múltiplos perfis, como administrador, gerente, líder, editor e cliente.",
-          "Arquitetura separada em containers para front-end, back-end, banco de dados e microserviços."
+          "Arquitetura separada em containers para front-end, back-end, banco de dados e microsserviços."
         ]
       },
       "vilmora": {
@@ -141,5 +166,19 @@
         ]
       }
     }
+  },
+  "contact": {
+    "eyebrow": "Contato",
+    "title": "Vamos conversar",
+    "description": "Entre em contato para falar sobre projetos, interfaces, automações ou oportunidades de colaboração.",
+    "cardsAriaLabel": "Canais diretos de contato",
+    "socialsAriaLabel": "Links sociais da seção de contato",
+    "emailCardLabel": "Email",
+    "whatsappCardLabel": "WhatsApp",
+    "note": "Respondo por email ou WhatsApp e posso continuar a conversa pelo canal que fizer mais sentido."
+  },
+  "footer": {
+    "navigationAriaLabel": "Links do rodapé",
+    "rights": "© {{year}} João Santos. Todos os direitos reservados."
   }
 }

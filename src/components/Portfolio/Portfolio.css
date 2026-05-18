@@ -9,7 +9,7 @@
   overflow: hidden;
   margin-top: 0;
   min-height: auto;
-  padding-block: clamp(4.5rem, 8vh, 6.5rem);
+  padding-block: clamp(4.5rem, 8vh, 6.5rem) clamp(3.2rem, 6vh, 4.8rem);
   background:
     radial-gradient(
       circle at 12% 14%,
@@ -21,7 +21,12 @@
       color-mix(in srgb, var(--color-secondary) 5%, transparent),
       transparent 32rem
     ),
-    var(--color-bg-deep);
+    linear-gradient(
+      180deg,
+      var(--color-bg-deep) 0%,
+      color-mix(in srgb, var(--color-bg-deep) 94%, var(--color-bg-warm-1) 6%) 58%,
+      var(--color-bg-deep) 100%
+    );
 }
 
 .portfolio::before {
@@ -42,16 +47,22 @@
 .portfolio::after {
   content: "";
   position: absolute;
-  inset: auto -20% -18rem -20%;
-  height: 28rem;
+  inset: auto 0 0;
+  height: clamp(12rem, 24vh, 20rem);
   z-index: 0;
   pointer-events: none;
-  background: radial-gradient(
-    ellipse at 50% 50%,
-    color-mix(in srgb, var(--color-primary) 7%, transparent),
-    transparent 68%
-  );
-  filter: blur(22px);
+  background:
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      color-mix(in srgb, var(--color-bg-deep) 34%, transparent) 42%,
+      var(--color-bg-deep) 100%
+    ),
+    radial-gradient(
+      ellipse at 50% 100%,
+      color-mix(in srgb, var(--color-primary) 4%, transparent),
+      transparent 64%
+    );
 }
 
 .portfolio .c-space {
@@ -92,7 +103,7 @@
   font-size: clamp(2.1rem, 4vw, 4rem);
   font-weight: var(--font-weight-regular);
   line-height: 0.96;
-  letter-spacing: -0.06em;
+  letter-spacing: 0;
 }
 
 .portfolio__intro {
@@ -286,33 +297,33 @@
 }
 
 .portfolio__status.is-production {
-  border-color: color-mix(in srgb, #35f28f 34%, transparent);
-  color: color-mix(in srgb, #7dffb6 86%, var(--color-white) 14%);
+  border-color: color-mix(in srgb, #d89a4a 42%, transparent);
+  color: color-mix(in srgb, #f6c783 88%, var(--color-white) 12%);
   background:
     radial-gradient(
       circle at 18% 50%,
-      color-mix(in srgb, #35f28f 18%, transparent),
+      color-mix(in srgb, #d89a4a 18%, transparent),
       transparent 62%
     ),
-    color-mix(in srgb, #35f28f 8%, transparent);
+    color-mix(in srgb, #d89a4a 9%, transparent);
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--color-white) 8%, transparent),
-    0 0 22px color-mix(in srgb, #35f28f 10%, transparent);
+    0 0 22px color-mix(in srgb, #d89a4a 10%, transparent);
 }
 
 .portfolio__status.is-development {
-  border-color: color-mix(in srgb, #4ea8ff 36%, transparent);
-  color: color-mix(in srgb, #9dccff 86%, var(--color-white) 14%);
+  border-color: color-mix(in srgb, #b85a2a 42%, transparent);
+  color: color-mix(in srgb, #f08a45 86%, var(--color-white) 14%);
   background:
     radial-gradient(
       circle at 18% 50%,
-      color-mix(in srgb, #4ea8ff 18%, transparent),
+      color-mix(in srgb, #b85a2a 20%, transparent),
       transparent 62%
     ),
-    color-mix(in srgb, #4ea8ff 8%, transparent);
+    color-mix(in srgb, #b85a2a 10%, transparent);
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--color-white) 8%, transparent),
-    0 0 22px color-mix(in srgb, #4ea8ff 10%, transparent);
+    0 0 22px color-mix(in srgb, #b85a2a 10%, transparent);
 }
 
 .portfolio__item-title {
@@ -321,7 +332,7 @@
   font-size: clamp(1.65rem, 2.35vw, 2.45rem);
   font-weight: var(--font-weight-medium);
   line-height: 1.04;
-  letter-spacing: -0.055em;
+  letter-spacing: 0;
   transition:
     color 0.28s ease,
     transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
@@ -748,7 +759,7 @@
   font-size: clamp(2rem, 4vw, 4rem);
   font-weight: var(--font-weight-regular);
   line-height: 0.96;
-  letter-spacing: -0.06em;
+  letter-spacing: 0;
 }
 
 .portfolio__modal-role {
@@ -1019,6 +1030,13 @@
     align-self: flex-start;
   }
 
+  .portfolio__description {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
   .portfolio__preview {
     display: none;
   }
@@ -1084,8 +1102,32 @@
     font-size: 0.72rem;
   }
 
+  .portfolio__description {
+    -webkit-line-clamp: 3;
+  }
+
+  .portfolio__readmore {
+    width: 100%;
+  }
+
   .portfolio__modal-title {
     font-size: clamp(1.9rem, 11vw, 3rem);
+  }
+
+  .portfolio__modal-scroll {
+    padding: 1rem;
+  }
+
+  .portfolio__modal-main-image,
+  .portfolio__modal-thumb {
+    border-radius: 0.85rem;
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .portfolio__preview,
+  .portfolio__modal-backdrop {
+    background-color: rgba(3, 5, 10, 0.92);
   }
 }
 
@@ -1110,11 +1152,6 @@
 /* ==========================================================================
    SCROLL REVEAL SUPPORT
    ========================================================================== */
-
-.portfolio__heading,
-.portfolio__item {
-  will-change: opacity, transform, filter;
-}
 
 @media (prefers-reduced-motion: reduce) {
   .portfolio__heading,

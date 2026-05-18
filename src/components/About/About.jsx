@@ -11,11 +11,23 @@ import { useTranslation } from "react-i18next";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import achievementsData from "../../data/achivements";
+import { profileConfig } from "../../data/siteConfig";
+import { socialIconMap } from "../../utils/socialIcons";
+import { Model as CSharpLogo } from "../models/logos/CSharp";
+import { Model as DevopsLogo } from "../models/logos/Devops";
+import { Model as DigitalOceanLogo } from "../models/logos/DigitalOcean";
+import { Model as DockerLogo } from "../models/logos/Docker";
+import { Model as FastapiLogo } from "../models/logos/Fastapi";
+import { Model as FigmaLogo } from "../models/logos/Figma";
+import { Model as GitLogo } from "../models/logos/Git";
+import { Model as IllustratorLogo } from "../models/logos/Illustrator";
+import { Model as JavaLogo } from "../models/logos/Java";
+import { Model as JavascriptLogo } from "../models/logos/Javascript";
+import { Model as MysqlLogo } from "../models/logos/Mysql";
+import { Model as PythonLogo } from "../models/logos/Python";
+import { Model as ReactLogo } from "../models/logos/React";
+import { Model as TypescriptLogo } from "../models/logos/Typescript";
 import "./About.css";
-
-const logoModules = import.meta.glob("../../components/models/logos/*.jsx", {
-  eager: true,
-});
 
 function normalizeLogoKey(value = "") {
   return value
@@ -25,18 +37,22 @@ function normalizeLogoKey(value = "") {
     .replace(/[^a-z0-9]/g, "");
 }
 
-const logoRegistry = Object.entries(logoModules).reduce((acc, [path, mod]) => {
-  const fileName = path.split("/").pop()?.replace(".jsx", "") || "";
-  const component =
-    mod.default ||
-    Object.values(mod).find((value) => typeof value === "function");
-
-  if (component) {
-    acc[normalizeLogoKey(fileName)] = component;
-  }
-
-  return acc;
-}, {});
+const logoRegistry = {
+  csharp: CSharpLogo,
+  devops: DevopsLogo,
+  digitalocean: DigitalOceanLogo,
+  docker: DockerLogo,
+  fastapi: FastapiLogo,
+  figma: FigmaLogo,
+  git: GitLogo,
+  illustrator: IllustratorLogo,
+  java: JavaLogo,
+  javascript: JavascriptLogo,
+  mysql: MysqlLogo,
+  python: PythonLogo,
+  react: ReactLogo,
+  typescript: TypescriptLogo,
+};
 
 const stackItems = [
   {
@@ -293,6 +309,8 @@ const stackItems = [
   },
 ];
 
+const aboutSocialLinks = profileConfig.socialLinks;
+
 function getDateLocale(language) {
   if (!language) return "en-US";
   return language.toLowerCase().includes("pt") ? "pt-BR" : "en-US";
@@ -329,6 +347,7 @@ function resolveAchievementImage(imageValue) {
 function FloatingModel({ item, viewer, ModelComponent, reduceMotion = false }) {
   const rootRef = useRef(null);
   const spinRef = useRef(null);
+  const StackLogo = ModelComponent;
 
   const basePosition = useMemo(
     () => viewer.position ?? [0, -0.12, 0],
@@ -347,7 +366,7 @@ function FloatingModel({ item, viewer, ModelComponent, reduceMotion = false }) {
 
   const phase = useMemo(() => (seed % 360) * (Math.PI / 180), [seed]);
 
-  useFrame((state) => {
+  useFrame(() => {
     const root = rootRef.current;
     const spin = spinRef.current;
 
@@ -360,7 +379,7 @@ function FloatingModel({ item, viewer, ModelComponent, reduceMotion = false }) {
 
     if (reduceMotion) return;
 
-    const t = state.clock.getElapsedTime();
+    const t = performance.now() / 1000;
     const speed = 0.72 + (seed % 4) * 0.05;
     const spinAmplitude = viewer.spinAmplitude ?? viewer.yawAmplitude ?? 0.34;
     const spinValue = Math.sin(t * speed + phase) * spinAmplitude;
@@ -382,7 +401,7 @@ function FloatingModel({ item, viewer, ModelComponent, reduceMotion = false }) {
   return (
     <group ref={rootRef}>
       <group ref={spinRef}>
-        <ModelComponent scale={viewer.scale ?? 1.08} />
+        <StackLogo scale={viewer.scale ?? 1.08} />
       </group>
     </group>
   );
@@ -392,6 +411,7 @@ const StackModelCanvas = memo(function StackModelCanvas({
   item,
   reduceMotion,
   isInteractive = true,
+  animateModel = true,
 }) {
   const ModelComponent =
     logoRegistry[normalizeLogoKey(item.modelKey || item.name)];
@@ -416,9 +436,9 @@ const StackModelCanvas = memo(function StackModelCanvas({
       }}
     >
       <Canvas
-        dpr={[1, 1]}
+        dpr={animateModel ? [1, 1.35] : 1}
         shadows={false}
-        frameloop={isInteractive && !reduceMotion ? "always" : "demand"}
+        frameloop={animateModel && !reduceMotion ? "always" : "demand"}
         camera={{
           position: viewer.cameraPosition || [0, 0, 4.2],
           fov: viewer.fov || 34,
@@ -445,7 +465,7 @@ const StackModelCanvas = memo(function StackModelCanvas({
               item={item}
               viewer={viewer}
               ModelComponent={ModelComponent}
-              reduceMotion={reduceMotion || !isInteractive}
+              reduceMotion={reduceMotion || !animateModel}
             />
           </group>
 
@@ -486,6 +506,10 @@ function getStackPositionClass(offset) {
       return "is-near-prev";
     case 1:
       return "is-near-next";
+    case -2:
+      return "is-far-prev";
+    case 2:
+      return "is-far-next";
     default:
       return "is-hidden";
   }
@@ -589,6 +613,7 @@ const TechStackCard = memo(function TechStackCard({
             item={item}
             reduceMotion={reduceMotion}
             isInteractive={isActive}
+            animateModel={isActive}
           />
         ) : (
           <div className="about__stack-model-fallback">
@@ -624,7 +649,7 @@ function About() {
   const [isStackInteracting, setIsStackInteracting] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [isStackDragging, setIsStackDragging] = useState(false);
-  const [hasLoadedStackPanel, setHasLoadedStackPanel] = useState(false);
+  const shouldRenderStackModel = activePanel === 1;
 
   const achievements = useMemo(() => {
     const list = Array.isArray(achievementsData) ? achievementsData : [];
@@ -675,7 +700,7 @@ function About() {
   }, [t]);
 
   const featuredAchievements = useMemo(
-    () => achievements.slice(0, 4),
+    () => achievements,
     [achievements]
   );
 
@@ -733,12 +758,6 @@ function About() {
     mediaQuery.addListener(syncPreference);
     return () => mediaQuery.removeListener(syncPreference);
   }, []);
-
-  useEffect(() => {
-    if ((activePanel === 1 || isInView) && !hasLoadedStackPanel) {
-      setHasLoadedStackPanel(true);
-    }
-  }, [activePanel, isInView, hasLoadedStackPanel]);
 
   useEffect(() => {
     if (
@@ -917,6 +936,37 @@ function About() {
                             "Use this second paragraph to reinforce your approach, values and the technologies you work with most often.",
                         })}
                       </p>
+
+                      <div
+                        className="about__social-block"
+                        aria-label={t("about.socialsAriaLabel")}
+                      >
+                        <span className="about__social-title">
+                          {t("about.connectTitle")}
+                        </span>
+
+                        <div className="about__social-links">
+                          {aboutSocialLinks.map((link) => {
+                            const Icon = socialIconMap[link.icon];
+
+                            return (
+                              <a
+                                key={link.id}
+                                href={link.href}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="about__social-link"
+                                aria-label={t("about.socialLinkAriaLabel", {
+                                  label: link.label,
+                                })}
+                              >
+                                {Icon ? <Icon aria-hidden="true" /> : null}
+                                <span>{link.label}</span>
+                              </a>
+                            );
+                          })}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </article>
@@ -975,7 +1025,7 @@ function About() {
                           stackItems.length
                         );
 
-                        if (Math.abs(offset) > 1) return null;
+                        if (Math.abs(offset) > 2) return null;
 
                         return (
                           <TechStackCard
@@ -984,7 +1034,7 @@ function About() {
                             offset={offset}
                             onSelect={() => setActiveStackIndex(index)}
                             reduceMotion={reduceMotion}
-                            renderModel={hasLoadedStackPanel}
+                            renderModel={shouldRenderStackModel}
                             onInteractionStart={handleStackInteractionStart}
                             onInteractionEnd={handleStackInteractionEnd}
                           />

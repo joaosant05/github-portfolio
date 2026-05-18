@@ -9,12 +9,30 @@ const achievements = [
     credentialUrl: "", // cole aqui o link da badge da Credly se quiser
   },
   {
+    id: "fortinet-nse2",
+    title: "Technical Introduction to Cybersecurity 3.0",
+    issuer: "Fortinet",
+    issuedAt: "2026-05-17",
+    description: "Badge da Credly referente ao exame NSE 2 / Getting Started in Cybersecurity 3.0.",
+    badgeImage: "/assets/achivements/nse2.png",
+    credentialUrl: "", // cole aqui o link da badge da Credly se quiser
+  },
+  {
     id: "cisco-intro-cybersecurity",
     title: "Introduction to Cybersecurity",
     issuer: "Cisco",
     issuedAt: "2026-03-27",
     description: "Badge da Credly do curso Introduction to Cybersecurity.",
     badgeImage: "/assets/achivements/cisco_networkin_academy.png",
+    credentialUrl: "",
+  },
+  {
+    id: "cisco-a-thon",
+    title: "Cisco Networking Academy Learn-A-Thon 2026",
+    issuer: "Cisco",
+    issuedAt: "2026-03-29",
+    description: "Badge da Credly do curso Introduction to Cybersecurity.",
+    badgeImage: "/assets/achivements/cisco-a-thon.png",
     credentialUrl: "",
   },
   {

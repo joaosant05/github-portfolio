@@ -4,14 +4,19 @@ import { initReactI18next } from "react-i18next";
 import ptBR from "./locales/pt-BR.json";
 import en from "./locales/en.json";
 
-const savedLanguage = localStorage.getItem("language") || "pt-BR";
+const normalizeLanguage = (value) => {
+  if (value === "en" || value === "en-US") return "en-US";
+  return "pt-BR";
+};
+
+const savedLanguage = normalizeLanguage(localStorage.getItem("language"));
 
 i18n.use(initReactI18next).init({
   resources: {
     "pt-BR": {
       translation: ptBR,
     },
-    en: {
+    "en-US": {
       translation: en,
     },
   },

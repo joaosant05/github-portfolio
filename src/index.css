@@ -66,8 +66,8 @@
   --font-weight-bold: 700;
   --font-weight-extrabold: 800;
 
-  --tracking-tight: -0.04em;
-  --tracking-soft: -0.02em;
+  --tracking-tight: 0;
+  --tracking-soft: 0;
   --tracking-wide: 0.08em;
   --tracking-wider: 0.14em;
   --tracking-ultra: 0.18em;
@@ -80,42 +80,42 @@
   --color-black: #000000;
 
   --color-primary: #d96b2b;
-  --color-primary-strong: #ff9c5c;
-  --color-primary-soft: rgba(217, 107, 43, 0.12);
-  --color-primary-faint: rgba(217, 107, 43, 0.06);
+  --color-primary-strong: #f08a45;
+  --color-primary-soft: rgba(217, 107, 43, 0.14);
+  --color-primary-faint: rgba(217, 107, 43, 0.07);
 
-  --color-secondary: #f3d9bf;
-  --color-secondary-soft: rgba(243, 217, 191, 0.72);
+  --color-secondary: #f2d8ba;
+  --color-secondary-soft: rgba(242, 216, 186, 0.72);
 
   /* ==========================================================================
      BACKGROUNDS / SUPERFÍCIES
      ========================================================================== */
-  --color-bg: #05070d;
-  --color-bg-soft: #0a0f18;
-  --color-bg-elevated: #0e141f;
-  --color-surface: #101827;
-  --color-surface-soft: #131b29;
-  --color-panel: #0b111b;
-  --color-panel-2: #111827;
+  --color-bg: #070403;
+  --color-bg-soft: #100906;
+  --color-bg-elevated: #180f0a;
+  --color-surface: #1b120d;
+  --color-surface-soft: #24170f;
+  --color-panel: #120b08;
+  --color-panel-2: #1a100b;
 
   /* escuros de transição para hero/about/section fade */
-  --color-bg-warm-1: #110b08;
-  --color-bg-warm-2: #0e0907;
-  --color-bg-warm-3: #080605;
+  --color-bg-warm-1: #170d08;
+  --color-bg-warm-2: #120906;
+  --color-bg-warm-3: #0a0504;
   --color-bg-warm-4: #030303;
   --color-bg-deep: #000000;
 
   /* ==========================================================================
      TEXTO
      ========================================================================== */
-  --color-text: #f5eadb;
-  --color-text-strong: rgba(255, 255, 255, 0.94);
-  --color-text-soft: rgba(255, 255, 255, 0.84);
-  --color-text-muted: rgba(243, 217, 191, 0.72);
-  --color-text-dim: rgba(255, 255, 255, 0.66);
-  --color-text-faint: rgba(255, 255, 255, 0.58);
-  --color-text-subtle: rgba(255, 255, 255, 0.42);
-  --color-text-disabled: rgba(255, 255, 255, 0.28);
+  --color-text: #f6ead8;
+  --color-text-strong: rgba(255, 246, 232, 0.96);
+  --color-text-soft: rgba(248, 226, 198, 0.86);
+  --color-text-muted: rgba(232, 205, 171, 0.74);
+  --color-text-dim: rgba(232, 205, 171, 0.66);
+  --color-text-faint: rgba(232, 205, 171, 0.58);
+  --color-text-subtle: rgba(232, 205, 171, 0.42);
+  --color-text-disabled: rgba(232, 205, 171, 0.28);
 
   /* ==========================================================================
      BORDAS / RINGS
@@ -207,12 +207,12 @@
      ========================================================================== */
   --gradient-app-bg:
     radial-gradient(circle at top, rgba(217, 107, 43, 0.08), transparent 26%),
-    radial-gradient(circle at 80% 12%, rgba(255, 255, 255, 0.05), transparent 18%),
-    linear-gradient(180deg, #090b11 0%, #05070d 100%);
+    radial-gradient(circle at 80% 12%, rgba(242, 216, 186, 0.05), transparent 18%),
+    linear-gradient(180deg, #100906 0%, #070403 100%);
 
   --gradient-body-bg:
     radial-gradient(circle at 15% 10%, rgba(217, 107, 43, 0.1), transparent 22%),
-    radial-gradient(circle at 85% 12%, rgba(255, 255, 255, 0.04), transparent 16%),
+    radial-gradient(circle at 85% 12%, rgba(242, 216, 186, 0.04), transparent 16%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 24%),
     var(--color-bg);
 
@@ -261,7 +261,7 @@ html.dark {
 }
 
 html.light {
-  --hero-bg-image: url("/assets/theme/light.jpg");
+  --hero-bg-image: url("/assets/theme/dark.jpg");
   --hero-text-color: #3f3a34;
   --hero-text-soft-color: #6b6257;
   --hero-muted-color: #6d675f;
@@ -272,6 +272,8 @@ html {
   scroll-behavior: smooth;
   background: var(--gradient-app-bg);
   font-family: var(--font-family-base);
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -307,6 +309,7 @@ a {
 
 img {
   max-width: 100%;
+  height: auto;
 }
 
 a,
@@ -581,6 +584,33 @@ p {
 .icon-button:hover {
   color: var(--color-primary);
   border-color: var(--color-border-strong);
+}
+
+/* ==========================================================================
+   COMPATIBILIDADE ENTRE NAVEGADORES
+   ========================================================================== */
+
+@supports not (color: color-mix(in srgb, white, black)) {
+  :root {
+    --color-border: rgba(255, 255, 255, 0.14);
+    --color-border-soft: rgba(255, 255, 255, 0.08);
+    --gradient-button-primary: linear-gradient(135deg, #e46f3d, #9f4726);
+    --gradient-button-soft: linear-gradient(
+      180deg,
+      rgba(228, 111, 61, 0.14),
+      rgba(242, 216, 186, 0.08)
+    );
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .surface-panel,
+  .glass-panel,
+  .glass-card,
+  .button-secondary,
+  .icon-button {
+    background: rgba(10, 15, 24, 0.96);
+  }
 }
 
 /* ==========================================================================
