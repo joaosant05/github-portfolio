@@ -1221,6 +1221,80 @@
   }
 }
 
+@media (hover: none), (pointer: coarse) {
+  .portfolio__preview {
+    display: none !important;
+  }
+
+  .portfolio__item,
+  .portfolio__item::before,
+  .portfolio__media-image,
+  .portfolio__item-title,
+  .portfolio__tag,
+  .portfolio__actions::before,
+  .portfolio__readmore,
+  .portfolio__readmore::before,
+  .portfolio__readmore svg {
+    transition: none !important;
+  }
+
+  .portfolio__item:hover,
+  .portfolio__item:focus-within {
+    border-color: color-mix(in srgb, var(--color-white) 8%, transparent);
+    transform: none;
+    box-shadow:
+      0 1px 0 color-mix(in srgb, var(--color-white) 6%, transparent) inset,
+      0 24px 70px color-mix(in srgb, var(--color-black) 18%, transparent);
+  }
+
+  .portfolio__item:hover::before,
+  .portfolio__item:focus-within::before,
+  .portfolio__readmore:hover::before,
+  .portfolio__readmore:focus-visible::before,
+  .portfolio__item:hover .portfolio__readmore::before,
+  .portfolio__item:focus-within .portfolio__readmore::before {
+    opacity: 0;
+  }
+
+  .portfolio__item:hover .portfolio__media-image,
+  .portfolio__item:focus-within .portfolio__media-image {
+    opacity: 0.94;
+    transform: scale(1.01);
+  }
+
+  .portfolio__item:hover .portfolio__item-title,
+  .portfolio__item:focus-within .portfolio__item-title {
+    color: var(--color-text-strong);
+    transform: none;
+  }
+
+  .portfolio__item:hover .portfolio__description,
+  .portfolio__item:focus-within .portfolio__description {
+    color: var(--color-text-faint);
+  }
+
+  .portfolio__item:hover .portfolio__tag,
+  .portfolio__item:focus-within .portfolio__tag {
+    border-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
+    color: color-mix(in srgb, var(--color-secondary) 72%, var(--color-text) 28%);
+    transform: none;
+  }
+
+  .portfolio__readmore:hover,
+  .portfolio__readmore:focus-visible,
+  .portfolio__item:hover .portfolio__readmore,
+  .portfolio__item:focus-within .portfolio__readmore {
+    transform: none;
+  }
+
+  .portfolio__readmore:hover svg,
+  .portfolio__readmore:focus-visible svg,
+  .portfolio__item:hover .portfolio__readmore svg,
+  .portfolio__item:focus-within .portfolio__readmore svg {
+    transform: none;
+  }
+}
+
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .portfolio__preview,
   .portfolio__modal-backdrop {

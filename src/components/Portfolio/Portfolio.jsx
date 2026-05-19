@@ -14,19 +14,18 @@ import "./Portfolio.css";
 const Motion = motion;
 
 const revealViewport = {
-  once: false,
-  amount: 0.18,
-  margin: "0px 0px -8% 0px",
+  once: true,
+  amount: 0.14,
+  margin: "0px 0px -12% 0px",
 };
 
 const headingRevealVariants = {
   hidden: {
     opacity: 0,
-    y: 30,
-    scale: 0.985,
-    filter: "blur(12px)",
+    y: 24,
+    scale: 0.995,
     transition: {
-      duration: 0.42,
+      duration: 0.28,
       ease: [0.4, 0, 0.2, 1],
     },
   },
@@ -34,9 +33,8 @@ const headingRevealVariants = {
     opacity: 1,
     y: 0,
     scale: 1,
-    filter: "blur(0px)",
     transition: {
-      duration: 0.82,
+      duration: 0.58,
       ease: [0.22, 1, 0.36, 1],
     },
   },
@@ -45,11 +43,10 @@ const headingRevealVariants = {
 const projectRevealVariants = {
   hidden: {
     opacity: 0,
-    y: 42,
-    scale: 0.982,
-    filter: "blur(14px)",
+    y: 28,
+    scale: 0.995,
     transition: {
-      duration: 0.42,
+      duration: 0.28,
       ease: [0.4, 0, 0.2, 1],
     },
   },
@@ -57,10 +54,9 @@ const projectRevealVariants = {
     opacity: 1,
     y: 0,
     scale: 1,
-    filter: "blur(0px)",
     transition: {
-      duration: 0.68,
-      delay: Math.min(index * 0.055, 0.28),
+      duration: 0.5,
+      delay: Math.min(index * 0.035, 0.16),
       ease: [0.22, 1, 0.36, 1],
     },
   }),
@@ -338,6 +334,7 @@ function Portfolio() {
 
   const [preview, setPreview] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [canUseHoverPreview, setCanUseHoverPreview] = useState(false);
 
   const shouldReduceMotion = useReducedMotion();
 
@@ -357,16 +354,41 @@ function Portfolio() {
   });
 
   const safeProjects = useMemo(() => portfolioProjects ?? [], []);
+  const canAnimateReveal = !shouldReduceMotion && canUseHoverPreview;
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return undefined;
+
+    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const syncHoverSupport = () => {
+      const supportsHoverPreview = mediaQuery.matches;
+      setCanUseHoverPreview(supportsHoverPreview);
+
+      if (!supportsHoverPreview) {
+        setPreview(null);
+      }
+    };
+
+    syncHoverSupport();
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", syncHoverSupport);
+      return () => mediaQuery.removeEventListener("change", syncHoverSupport);
+    }
+
+    mediaQuery.addListener(syncHoverSupport);
+    return () => mediaQuery.removeListener(syncHoverSupport);
+  }, []);
 
   const handleMouseMove = (event) => {
-    if (shouldReduceMotion || selectedProject) return;
+    if (!canUseHoverPreview || shouldReduceMotion || selectedProject) return;
 
     mouseX.set(event.clientX + 28);
     mouseY.set(event.clientY - 88);
   };
 
   const handlePreviewEnter = (project) => {
-    if (shouldReduceMotion || selectedProject) return;
+    if (!canUseHoverPreview || shouldReduceMotion || selectedProject) return;
     setPreview(project);
   };
 
@@ -390,8 +412,8 @@ function Portfolio() {
           <Motion.div
             className="portfolio__heading"
             variants={headingRevealVariants}
-            initial={shouldReduceMotion ? false : "hidden"}
-            whileInView={shouldReduceMotion ? undefined : "visible"}
+            initial={canAnimateReveal ? "hidden" : false}
+            whileInView={canAnimateReveal ? "visible" : undefined}
             viewport={revealViewport}
           >
             <span className="portfolio__eyebrow">
@@ -432,21 +454,25 @@ function Portfolio() {
                   className="portfolio__item"
                   custom={index}
                   variants={projectRevealVariants}
-                  initial={shouldReduceMotion ? false : "hidden"}
-                  whileInView={shouldReduceMotion ? undefined : "visible"}
+                  initial={canAnimateReveal ? "hidden" : false}
+                  whileInView={canAnimateReveal ? "visible" : undefined}
                   viewport={revealViewport}
                   whileHover={
-                    shouldReduceMotion
-                      ? undefined
-                      : {
+                    canAnimateReveal
+                      ? {
                           y: -6,
                           transition: {
                             duration: 0.32,
                             ease: [0.22, 1, 0.36, 1],
                           },
                         }
+                      : undefined
                   }
-                  onMouseEnter={() => handlePreviewEnter(project)}
+                  onMouseEnter={
+                    canUseHoverPreview
+                      ? () => handlePreviewEnter(project)
+                      : undefined
+                  }
                 >
                   <div className="portfolio__media" aria-hidden="true">
                     <img
@@ -492,9 +518,15 @@ function Portfolio() {
                         defaultValue: `Open details for ${title}`,
                       })}
                       onClick={() => handleOpenProject(project)}
-                      onMouseEnter={() => handlePreviewEnter(project)}
-                      onFocus={() => setPreview(project)}
-                      onBlur={handlePreviewLeave}
+                      onMouseEnter={
+                        canUseHoverPreview
+                          ? () => handlePreviewEnter(project)
+                          : undefined
+                      }
+                      onFocus={
+                        canUseHoverPreview ? () => setPreview(project) : undefined
+                      }
+                      onBlur={canUseHoverPreview ? handlePreviewLeave : undefined}
                     >
                       <span>
                         {t("work.readMore", {
@@ -509,7 +541,10 @@ function Portfolio() {
             })}
 
             <AnimatePresence>
-              {preview && !shouldReduceMotion && !selectedProject && (
+              {preview &&
+                canUseHoverPreview &&
+                !shouldReduceMotion &&
+                !selectedProject && (
                 <Motion.div
                   className="portfolio__preview"
                   style={{ x: springX, y: springY }}

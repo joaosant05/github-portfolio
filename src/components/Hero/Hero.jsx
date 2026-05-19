@@ -126,10 +126,16 @@ function AnimatedWord() {
   );
 }
 
-function BB8Runner({ isMobile, controlsRef }) {
+function BB8Runner({
+  isMobile,
+  controlsRef,
+  disableModelInteraction = false,
+  onReady,
+}) {
   const rootRef = useRef(null);
   const visualRef = useRef(null);
   const animRef = useRef(null);
+  const hasReportedReadyRef = useRef(false);
 
   const dragRef = useRef({
     active: false,
@@ -161,14 +167,25 @@ function BB8Runner({ isMobile, controlsRef }) {
     }),
     [isMobile]
   );
+  const modelPath = isMobile ? "/models/bb8-mobile.glb" : "/models/bb8.glb";
 
   const setCursor = useCallback((value) => {
     document.body.style.cursor = value;
   }, []);
 
-  const handleAnimationReady = useCallback((data) => {
-    animRef.current = data;
-  }, []);
+  const reportReady = useCallback(() => {
+    if (hasReportedReadyRef.current) return;
+    hasReportedReadyRef.current = true;
+    window.requestAnimationFrame(() => onReady?.());
+  }, [onReady]);
+
+  const handleAnimationReady = useCallback(
+    (data) => {
+      animRef.current = data;
+      reportReady();
+    },
+    [reportReady]
+  );
 
   const handlePointerDown = useCallback(
     (e) => {
@@ -262,7 +279,9 @@ function BB8Runner({ isMobile, controlsRef }) {
         obj.receiveShadow = false;
       }
     });
-  }, []);
+
+    reportReady();
+  }, [reportReady]);
 
   useEffect(() => {
     const controls = controlsRef?.current;
@@ -401,14 +420,23 @@ function BB8Runner({ isMobile, controlsRef }) {
     visual.rotation.z = 0;
   });
 
-  const interactiveHandlers = useMemo(
-    () => ({
+  const interactiveHandlers = useMemo(() => {
+    if (disableModelInteraction) return {};
+
+    return {
       onPointerDown: handlePointerDown,
       onPointerUp: handlePointerUpOnMesh,
       onPointerOver: handlePointerOver,
       onPointerOut: handlePointerOut,
-    }),
-    [handlePointerDown, handlePointerUpOnMesh, handlePointerOver, handlePointerOut]
+    };
+  },
+    [
+      disableModelInteraction,
+      handlePointerDown,
+      handlePointerUpOnMesh,
+      handlePointerOver,
+      handlePointerOut,
+    ]
   );
 
   return (
@@ -430,6 +458,7 @@ function BB8Runner({ isMobile, controlsRef }) {
 
       <group ref={visualRef}>
         <BB8
+          modelPath={modelPath}
           onAnimationReady={handleAnimationReady}
           interactiveHandlers={interactiveHandlers}
           scale={RUN_CONFIG.scale}
@@ -441,75 +470,15 @@ function BB8Runner({ isMobile, controlsRef }) {
   );
 }
 
-function BB8LoadingFallback({ isMobile }) {
-  const rootRef = useRef(null);
-
-  useFrame((state) => {
-    const root = rootRef.current;
-    if (!root || !isMobile) return;
-
-    const viewport = state.viewport.getCurrentViewport(state.camera, [0, 0, 0]);
-    const travel = viewport.width / 2 + 0.9;
-    const progress = (Math.sin(state.clock.elapsedTime * 0.34) + 1) / 2;
-    const eased = easeOutCubic(progress);
-    root.position.x = lerp(-travel, 0.54, eased);
-  });
-
-  return (
-    <group
-      ref={rootRef}
-      position={isMobile ? [0.54, -1.04, 0] : [1.3, -2.34, -0.5]}
-      scale={isMobile ? 0.72 : 1.25}
-      rotation={[0, -0.18, 0]}
-    >
-      <mesh
-        position={[0, -0.66, -0.08]}
-        scale={[1.55, 0.38, 1]}
-        renderOrder={1}
-      >
-        <circleGeometry args={[0.58, 48]} />
-        <meshBasicMaterial
-          color="#000000"
-          transparent
-          opacity={0.42}
-          depthTest={false}
-          depthWrite={false}
-        />
-      </mesh>
-
-      <mesh position={[0, 0, 0]}>
-        <sphereGeometry args={[0.38, 36, 36]} />
-        <meshBasicMaterial color="#f3e6d2" />
-      </mesh>
-
-      <mesh position={[0.08, 0.03, 0.34]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.18, 0.026, 16, 48]} />
-        <meshBasicMaterial color="#d96b2b" />
-      </mesh>
-
-      <mesh position={[0, 0.43, 0]} scale={[1, 0.62, 1]}>
-        <sphereGeometry args={[0.25, 32, 32]} />
-        <meshBasicMaterial color="#f6ead8" />
-      </mesh>
-
-      <mesh position={[0.08, 0.47, 0.22]}>
-        <sphereGeometry args={[0.052, 18, 18]} />
-        <meshBasicMaterial color="#17100c" />
-      </mesh>
-
-      <mesh position={[0.05, 0.63, 0]} rotation={[0.18, 0, -0.18]}>
-        <cylinderGeometry args={[0.01, 0.01, 0.36, 8]} />
-        <meshBasicMaterial color="#f2d8ba" />
-      </mesh>
-    </group>
-  );
-}
-
 function Hero() {
   const isMobile = useMediaQuery({ maxWidth: 853 });
-  const { t } = useTranslation();
+  const hasTouchPrimaryInput = useMediaQuery({
+    query: "(hover: none), (pointer: coarse)",
+  });
+  const { t, i18n } = useTranslation();
   const controlsRef = useRef(null);
   const heroRef = useRef(null);
+  const [isModelReady, setIsModelReady] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -568,6 +537,8 @@ function Hero() {
     : { position: [0, 0.35, 5.9], fov: 32 };
 
   const orbitTarget = isMobile ? [0, -0.9, 0] : [0, -1.5, 0];
+  const handleModelReady = useCallback(() => setIsModelReady(true), []);
+  const isPortuguese = i18n.resolvedLanguage?.toLowerCase().startsWith("pt");
 
   return (
     <section ref={heroRef} className="hero" id="home">
@@ -584,7 +555,26 @@ function Hero() {
           transition={{ delay: 0.2, duration: 0.75, ease: "easeOut" }}
         >
           <div className="hero__canvas">
-            <Canvas camera={cameraSettings} dpr={[1, 1.5]}>
+            {!isModelReady ? (
+              <div className="hero__model-loader" aria-hidden="true">
+                <span className="hero__model-loader-ring" />
+                <span className="hero__model-loader-core" />
+                <span className="hero__model-loader-shadow" />
+              </div>
+            ) : null}
+
+            <Canvas
+              camera={cameraSettings}
+              dpr={isMobile ? [0.75, 1] : [1, 1.25]}
+              gl={{
+                alpha: true,
+                antialias: !isMobile,
+                powerPreference: "high-performance",
+              }}
+              onCreated={({ gl }) => {
+                gl.setClearColor(0x000000, 0);
+              }}
+            >
               <OrbitControls
                 ref={controlsRef}
                 makeDefault
@@ -607,8 +597,13 @@ function Hero() {
                 intensity={1.30}
               />
 
-              <Suspense fallback={<BB8LoadingFallback isMobile={isMobile} />}>
-                <BB8Runner isMobile={isMobile} controlsRef={controlsRef} />
+              <Suspense fallback={null}>
+                <BB8Runner
+                  isMobile={isMobile}
+                  controlsRef={controlsRef}
+                  disableModelInteraction={isMobile || hasTouchPrimaryInput}
+                  onReady={handleModelReady}
+                />
               </Suspense>
             </Canvas>
           </div>
@@ -641,13 +636,31 @@ function Hero() {
               <span className="hero__line">{t("hero.titleLine1")}</span>
               <span className="hero__line">{t("hero.titleLine2")}</span>
 
-              <span className="hero__line hero__line--word">
-                <AnimatedWord />
-              </span>
+              {isPortuguese ? (
+                <>
+                  <span className="hero__line hero__line--solution">
+                    <span className="hero__title-soft">
+                      {t("hero.titleLine4")}
+                    </span>
+                  </span>
 
-              <span className="hero__line hero__line--solution">
-                <span className="hero__title-soft">{t("hero.titleLine4")}</span>
-              </span>
+                  <span className="hero__line hero__line--word">
+                    <AnimatedWord />
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="hero__line hero__line--word">
+                    <AnimatedWord />
+                  </span>
+
+                  <span className="hero__line hero__line--solution">
+                    <span className="hero__title-soft">
+                      {t("hero.titleLine4")}
+                    </span>
+                  </span>
+                </>
+              )}
             </Motion.h1>
 
           </Motion.div>

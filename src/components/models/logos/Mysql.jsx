@@ -31,5 +31,4 @@ export function Model(props) {
   )
 }
 
-useGLTF.preload('/models/mysql_icon.glb')
 

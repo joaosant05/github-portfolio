@@ -27,5 +27,4 @@ export function Model(props) {
   )
 }
 
-useGLTF.preload('/models/fastapi_icon.glb')
 

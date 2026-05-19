@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import { LuLanguages } from "react-icons/lu";
 import { FiMenu, FiX } from "react-icons/fi";
@@ -10,6 +10,8 @@ const Motion = motion;
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("#home");
+  const menuRef = useRef(null);
+  const toggleRef = useRef(null);
 
   const { t, i18n } = useTranslation();
 
@@ -28,6 +30,8 @@ function Navbar() {
   }, [i18n.language]);
 
   useEffect(() => {
+    let raf = 0;
+
     const updateActiveSection = () => {
       const sections = navItems
         .map((item) => document.querySelector(item.href))
@@ -60,39 +64,59 @@ function Navbar() {
         currentSection = navItems[navItems.length - 1]?.href || "#contact";
       }
 
-      setActiveSection(currentSection);
+      setActiveSection((current) =>
+        current === currentSection ? current : currentSection
+      );
+    };
+
+    const scheduleActiveSectionUpdate = () => {
+      if (raf) return;
+      raf = window.requestAnimationFrame(() => {
+        raf = 0;
+        updateActiveSection();
+      });
     };
 
     updateActiveSection();
 
-    window.addEventListener("scroll", updateActiveSection, { passive: true });
-    window.addEventListener("resize", updateActiveSection);
+    window.addEventListener("scroll", scheduleActiveSectionUpdate, {
+      passive: true,
+    });
+    window.addEventListener("resize", scheduleActiveSectionUpdate);
 
     return () => {
-      window.removeEventListener("scroll", updateActiveSection);
-      window.removeEventListener("resize", updateActiveSection);
+      window.removeEventListener("scroll", scheduleActiveSectionUpdate);
+      window.removeEventListener("resize", scheduleActiveSectionUpdate);
+      if (raf) window.cancelAnimationFrame(raf);
     };
   }, [navItems]);
 
   useEffect(() => {
     if (!isOpen) return undefined;
 
-    const closeOnScrollIntent = () => setIsOpen(false);
+    const closeOnOutsidePointer = (event) => {
+      const menu = menuRef.current;
+      const toggle = toggleRef.current;
+      const target = event.target;
+
+      if (menu?.contains(target) || toggle?.contains(target)) {
+        return;
+      }
+
+      setIsOpen(false);
+    };
+
     const closeOnEscape = (event) => {
       if (event.key === "Escape") {
         setIsOpen(false);
       }
     };
 
-    window.addEventListener("scroll", closeOnScrollIntent, { passive: true });
-    window.addEventListener("wheel", closeOnScrollIntent, { passive: true });
-    window.addEventListener("touchmove", closeOnScrollIntent, { passive: true });
+    document.addEventListener("pointerdown", closeOnOutsidePointer);
     document.addEventListener("keydown", closeOnEscape);
 
     return () => {
-      window.removeEventListener("scroll", closeOnScrollIntent);
-      window.removeEventListener("wheel", closeOnScrollIntent);
-      window.removeEventListener("touchmove", closeOnScrollIntent);
+      document.removeEventListener("pointerdown", closeOnOutsidePointer);
       document.removeEventListener("keydown", closeOnEscape);
     };
   }, [isOpen]);
@@ -173,6 +197,7 @@ function Navbar() {
             </Motion.button>
 
             <button
+              ref={toggleRef}
               className="navbar__toggle"
               type="button"
               aria-label={isOpen ? t("navbar.closeMenu") : t("navbar.openMenu")}
@@ -185,62 +210,53 @@ function Navbar() {
           </div>
         </div>
 
-        <AnimatePresence>
-          {isOpen && (
-            <Motion.div
-              id="navbar-mobile-menu"
-              className="navbar__mobile"
-              role="dialog"
-              aria-modal="false"
-              aria-label={t("navbar.primaryNavigation")}
-              initial={{ opacity: 0, y: -14, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.98 }}
-              transition={{ duration: 0.22, ease: "easeOut" }}
+        <div
+          ref={menuRef}
+          id="navbar-mobile-menu"
+          className={`navbar__mobile ${isOpen ? "is-open" : ""}`}
+          data-state={isOpen ? "open" : "closed"}
+          role="dialog"
+          aria-modal="false"
+          aria-hidden={!isOpen}
+          aria-label={t("navbar.primaryNavigation")}
+        >
+          <nav aria-label={t("navbar.primaryNavigation")}>
+            <ul className="navbar__mobile-list">
+              {navItems.map((item) => {
+                const isActive = activeSection === item.href;
+
+                return (
+                  <li key={item.key}>
+                    <a
+                      href={item.href}
+                      className={`navbar__mobile-link ${
+                        isActive ? "is-active" : ""
+                      }`}
+                      aria-current={isActive ? "page" : undefined}
+                      tabIndex={isOpen ? undefined : -1}
+                      onClick={closeMenu}
+                    >
+                      <span>{item.label}</span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+
+          <div className="navbar__mobile-actions">
+            <button
+              className="navbar__action-btn navbar__language-btn"
+              type="button"
+              onClick={toggleLanguage}
+              aria-label={t("navbar.changeLanguage")}
+              tabIndex={isOpen ? undefined : -1}
             >
-              <nav aria-label={t("navbar.primaryNavigation")}>
-                <ul className="navbar__mobile-list">
-                  {navItems.map((item, index) => {
-                    const isActive = activeSection === item.href;
-
-                    return (
-                  <Motion.li
-                        key={item.key}
-                        initial={{ opacity: 0, x: -14 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -10 }}
-                        transition={{ delay: index * 0.04 }}
-                      >
-                        <a
-                          href={item.href}
-                          className={`navbar__mobile-link ${
-                            isActive ? "is-active" : ""
-                          }`}
-                          aria-current={isActive ? "page" : undefined}
-                          onClick={closeMenu}
-                        >
-                          <span>{item.label}</span>
-                        </a>
-                  </Motion.li>
-                    );
-                  })}
-                </ul>
-              </nav>
-
-              <div className="navbar__mobile-actions">
-                <button
-                  className="navbar__action-btn navbar__language-btn"
-                  type="button"
-                  onClick={toggleLanguage}
-                  aria-label={t("navbar.changeLanguage")}
-                >
-                  <LuLanguages size={18} />
-                  <span>{currentLanguageLabel}</span>
-                </button>
-              </div>
-            </Motion.div>
-          )}
-        </AnimatePresence>
+              <LuLanguages size={18} />
+              <span>{currentLanguageLabel}</span>
+            </button>
+          </div>
+        </div>
       </div>
     </Motion.header>
   );

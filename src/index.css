@@ -268,6 +268,16 @@ html.light {
   --hero-accent-color: #a35a37;
 }
 
+@media (max-width: 853px) {
+  html.dark {
+    --hero-bg-image: url("/assets/theme/desert-mobile.jpg");
+  }
+
+  html.light {
+    --hero-bg-image: url("/assets/theme/dark-mobile.jpg");
+  }
+}
+
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 5.75rem;

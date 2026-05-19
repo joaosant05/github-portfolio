@@ -47,5 +47,4 @@ export function Model(props) {
   )
 }
 
-useGLTF.preload('/models/devops_icon.glb')
 

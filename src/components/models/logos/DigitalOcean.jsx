@@ -69,5 +69,4 @@ export function Model(props) {
   )
 }
 
-useGLTF.preload('/models/digitalocean_icon.glb')
 

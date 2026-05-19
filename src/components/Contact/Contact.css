@@ -48,16 +48,12 @@
   width: min(100%, 1320px);
   margin-inline: auto;
   display: grid;
-  grid-template-columns: minmax(280px, 0.92fr) minmax(320px, 0.8fr);
-  grid-template-areas:
-    "intro details"
-    "intro aside";
+  grid-template-columns: minmax(280px, 0.82fr) minmax(360px, 0.9fr);
   gap: clamp(1.3rem, 3vw, 2.4rem) clamp(2rem, 6vw, 6rem);
   align-items: start;
 }
 
 .contact__intro {
-  grid-area: intro;
   max-width: 660px;
 }
 
@@ -87,12 +83,16 @@
   line-height: 1.8;
 }
 
+.contact__content {
+  display: grid;
+  gap: 1rem;
+}
+
 .contact__details {
-  grid-area: details;
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.85rem;
-  margin: 0;
+  margin: clamp(1.45rem, 3vw, 2rem) 0 0;
 }
 
 .contact__detail {
@@ -148,6 +148,7 @@
   margin: 0;
 }
 
+.contact__detail dd > span,
 .contact__detail a {
   display: inline-flex;
   align-items: center;
@@ -157,6 +158,11 @@
   text-decoration: none;
   font-size: clamp(0.98rem, 1.1vw, 1.08rem);
   line-height: 1.6;
+}
+
+.contact__detail dd > span {
+  display: block;
+  overflow-wrap: anywhere;
 }
 
 .contact__detail a span {
@@ -180,30 +186,134 @@
   transform: translate3d(3px, -3px, 0);
 }
 
-.contact__aside {
-  grid-area: aside;
-  max-width: 44ch;
-  margin: 0.15rem 0 0;
-  color: var(--color-text-dim);
-  font-size: 0.92rem;
-  line-height: 1.75;
+.contact__form {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.05rem, 2.2vw, 1.45rem);
+  border: 1px solid color-mix(in srgb, var(--color-white) 8%, transparent);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-white) 5%, transparent),
+      color-mix(in srgb, var(--color-primary) 3.5%, transparent) 100%
+    ),
+    color-mix(in srgb, var(--color-black) 20%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--color-white) 6%, transparent),
+    0 26px 70px color-mix(in srgb, var(--color-black) 24%, transparent);
+}
+
+.contact__form-title {
+  margin: 0;
+  color: var(--color-text-strong);
+  font-size: clamp(1.15rem, 1.7vw, 1.45rem);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.contact__field {
+  display: grid;
+  gap: 0.48rem;
+}
+
+.contact__field span {
+  color: color-mix(in srgb, var(--color-secondary) 76%, var(--color-text) 24%);
+  font-size: 0.78rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.contact__field input,
+.contact__field textarea {
+  width: 100%;
+  border: 1px solid color-mix(in srgb, var(--color-white) 9%, transparent);
+  border-radius: 0.95rem;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-white) 4%, transparent),
+      color-mix(in srgb, var(--color-black) 6%, transparent)
+    ),
+    color-mix(in srgb, var(--color-black) 16%, transparent);
+  color: var(--color-text-strong);
+  font: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  padding: 0.92rem 1rem;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-white) 4%, transparent);
+}
+
+.contact__field textarea {
+  min-height: 9rem;
+  resize: vertical;
+}
+
+.contact__field input::placeholder,
+.contact__field textarea::placeholder {
+  color: var(--color-input-placeholder);
+}
+
+.contact__field input:focus,
+.contact__field textarea:focus {
+  border-color: color-mix(in srgb, var(--color-primary) 42%, var(--color-white) 12%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--color-white) 5%, transparent),
+    0 0 0 4px color-mix(in srgb, var(--color-ring) 48%, transparent);
+  outline: none;
+}
+
+.contact__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 3.05rem;
+  margin-top: 0.25rem;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 38%, transparent);
+  border-radius: var(--radius-pill);
+  background: var(--gradient-button-primary);
+  color: color-mix(in srgb, var(--color-white) 90%, var(--color-secondary) 10%);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  box-shadow:
+    0 16px 38px color-mix(in srgb, var(--color-primary) 18%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--color-white) 10%, transparent);
+}
+
+.contact__submit svg {
+  flex: 0 0 auto;
+  font-size: 1rem;
+}
+
+.contact__submit:hover,
+.contact__submit:focus-visible {
+  transform: translate3d(0, -2px, 0);
+  border-color: color-mix(in srgb, var(--color-secondary) 42%, transparent);
+  outline: none;
+}
+
+.contact__submit:hover svg,
+.contact__submit:focus-visible svg {
+  transform: translate3d(3px, -3px, 0);
 }
 
 @media (max-width: 960px) {
   .contact__shell {
     grid-template-columns: 1fr;
-    grid-template-areas:
-      "intro"
-      "details"
-      "aside";
   }
 
   .contact__intro {
     max-width: 760px;
   }
 
+  .contact__content {
+    max-width: 760px;
+  }
+
   .contact__details {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 }
 
@@ -224,7 +334,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .contact__detail,
-  .contact__detail a svg:last-child {
+  .contact__detail a svg:last-child,
+  .contact__submit,
+  .contact__submit svg {
     transition: none !important;
   }
 }

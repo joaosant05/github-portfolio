@@ -1,25 +1,13 @@
-const backgroundAssets = [
-  "/assets/theme/desert.jpg",
-  "/assets/theme/dark.jpg",
-];
-
-const modelAssets = [
-  "/models/bb8.glb",
-  "/models/react_icon.glb",
-  "/models/javascript_icon.glb",
-  "/models/typescript_icon.glb",
-  "/models/python_icon.glb",
-  "/models/fastapi_icon.glb",
-  "/models/java_icon.glb",
-  "/models/csharp_icon.glb",
-  "/models/mysql_icon.glb",
-  "/models/git_icon.glb",
-  "/models/docker_icon.glb",
-  "/models/devops_icon.glb",
-  "/models/digitalocean_icon.glb",
-  "/models/figma_icon.glb",
-  "/models/illustrator_icon.glb",
-];
+const backgroundAssets = {
+  dark: {
+    desktop: "/assets/theme/desert.jpg",
+    mobile: "/assets/theme/desert-mobile.jpg",
+  },
+  light: {
+    desktop: "/assets/theme/dark.jpg",
+    mobile: "/assets/theme/dark-mobile.jpg",
+  },
+};
 
 let preloadPromise;
 
@@ -38,39 +26,31 @@ function warmImageCache(src) {
   });
 }
 
-function warmFetchCache(src) {
-  if (!window.fetch) return Promise.resolve();
-
-  return fetch(src, {
-    cache: "force-cache",
-    credentials: "same-origin",
-  })
-    .then((response) => {
-      if (!response.ok) return undefined;
-      return response.arrayBuffer();
-    })
-    .catch(() => undefined);
-}
-
 export function preloadVisualAssets() {
   if (typeof window === "undefined") return Promise.resolve();
 
   if (!preloadPromise) {
-    const run = () =>
-      Promise.allSettled([
-        ...backgroundAssets.map(warmImageCache),
-        ...modelAssets.map(warmFetchCache),
-      ]);
+    const savedTheme = window.localStorage?.getItem("theme");
+    const theme = savedTheme === "light" ? "light" : "dark";
+    const isMobile = window.matchMedia?.("(max-width: 853px)").matches;
+    const viewportKey = isMobile ? "mobile" : "desktop";
+    const currentBackground = backgroundAssets[theme][viewportKey];
+    const followUpBackgrounds = Object.values(backgroundAssets)
+      .map((entry) => entry[viewportKey])
+      .filter((src) => src !== currentBackground);
 
     preloadPromise = new Promise((resolve) => {
-      const start = () => run().then(resolve);
+      warmImageCache(currentBackground).finally(resolve);
+
+      const warmFollowUps = () =>
+        Promise.allSettled(followUpBackgrounds.map(warmImageCache));
 
       if ("requestIdleCallback" in window) {
-        window.requestIdleCallback(start, { timeout: 1200 });
+        window.requestIdleCallback(warmFollowUps, { timeout: 1800 });
         return;
       }
 
-      window.setTimeout(start, 250);
+      window.setTimeout(warmFollowUps, 700);
     });
   }
 

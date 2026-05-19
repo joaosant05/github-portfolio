@@ -2,9 +2,14 @@
 import React, { useEffect, useRef } from "react";
 import { useGLTF, useAnimations } from "@react-three/drei";
 
-export function BB8({ onAnimationReady, interactiveHandlers = {}, ...props }) {
+export function BB8({
+  modelPath = "/models/bb8.glb",
+  onAnimationReady,
+  interactiveHandlers = {},
+  ...props
+}) {
   const group = useRef();
-  const { nodes, materials, animations } = useGLTF("/models/bb8.glb");
+  const { nodes, materials, animations } = useGLTF(modelPath);
   const { actions, mixer } = useAnimations(animations, group);
 
   useEffect(() => {
@@ -131,5 +136,3 @@ export function BB8({ onAnimationReady, interactiveHandlers = {}, ...props }) {
     </group>
   );
 }
-
-useGLTF.preload("/models/bb8.glb");

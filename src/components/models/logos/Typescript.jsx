@@ -24,5 +24,4 @@ export function Model(props) {
   )
 }
 
-useGLTF.preload('/models/typescript_icon.glb')
 

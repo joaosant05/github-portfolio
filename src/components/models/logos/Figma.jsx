@@ -28,5 +28,4 @@ export function Model(props) {
   )
 }
 
-useGLTF.preload('/models/figma_icon.glb')
 

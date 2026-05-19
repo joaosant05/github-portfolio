@@ -24,5 +24,4 @@ export function Model(props) {
   )
 }
 
-useGLTF.preload('/models/docker_icon.glb')
 

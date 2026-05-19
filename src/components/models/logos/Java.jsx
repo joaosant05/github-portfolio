@@ -38,5 +38,4 @@ export function Model(props) {
   )
 }
 
-useGLTF.preload('/models/java_icon.glb')
 

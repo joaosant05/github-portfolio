@@ -29,5 +29,4 @@ export function Model(props) {
   )
 }
 
-useGLTF.preload('/models/illustrator_icon.glb')
 

@@ -558,6 +558,19 @@ const TechStackCard = memo(function TechStackCard({
     }
   };
 
+  const handleModelPointerDown = (event) => {
+    if (!isActive) return;
+
+    event.stopPropagation();
+    onInteractionStart?.();
+  };
+
+  const handleModelClick = (event) => {
+    if (!isActive) return;
+
+    event.stopPropagation();
+  };
+
   return (
     <article
       className={`about__stack-card ${
@@ -607,7 +620,12 @@ const TechStackCard = memo(function TechStackCard({
         <span className="about__stack-category">{categoryLabel}</span>
       </div>
 
-      <div className="about__stack-model-shell" aria-hidden="true">
+      <div
+        className="about__stack-model-shell"
+        aria-hidden="true"
+        onClick={handleModelClick}
+        onPointerDown={handleModelPointerDown}
+      >
         {renderModel ? (
           <StackModelCanvas
             item={item}
@@ -637,9 +655,22 @@ function About() {
     active: false,
     pointerId: null,
     startX: 0,
+    startY: 0,
     deltaX: 0,
+    deltaY: 0,
     defaultStep: 0,
     moved: false,
+    isHorizontal: false,
+  });
+  const panelGestureRef = useRef({
+    active: false,
+    pointerId: null,
+    startX: 0,
+    startY: 0,
+    deltaX: 0,
+    deltaY: 0,
+    moved: false,
+    isHorizontal: false,
   });
 
   const [isInView, setIsInView] = useState(false);
@@ -818,14 +849,19 @@ function About() {
 
   const startStackDrag = (event) => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
+    if (event.target.closest?.(".about__stack-model-shell")) return;
+    event.stopPropagation();
 
     stackGestureRef.current = {
       active: true,
       pointerId: event.pointerId,
       startX: event.clientX,
+      startY: event.clientY,
       deltaX: 0,
+      deltaY: 0,
       defaultStep: Number(event.currentTarget.dataset.step || 0),
       moved: false,
+      isHorizontal: false,
     };
 
     setIsStackPaused(true);
@@ -837,11 +873,21 @@ function About() {
     const gesture = stackGestureRef.current;
 
     if (!gesture.active || gesture.pointerId !== event.pointerId) return;
+    event.stopPropagation();
 
     gesture.deltaX = event.clientX - gesture.startX;
+    gesture.deltaY = event.clientY - gesture.startY;
 
-    if (Math.abs(gesture.deltaX) > 10) {
+    const absX = Math.abs(gesture.deltaX);
+    const absY = Math.abs(gesture.deltaY);
+
+    if (!gesture.moved && Math.max(absX, absY) > 10) {
       gesture.moved = true;
+      gesture.isHorizontal = absX > absY * 1.15;
+    }
+
+    if (!gesture.isHorizontal) {
+      return;
     }
 
     event.preventDefault();
@@ -851,6 +897,7 @@ function About() {
     const gesture = stackGestureRef.current;
 
     if (!gesture.active || gesture.pointerId !== event.pointerId) return;
+    event.stopPropagation();
 
     const threshold = 64;
 
@@ -870,14 +917,84 @@ function About() {
       active: false,
       pointerId: null,
       startX: 0,
+      startY: 0,
       deltaX: 0,
+      deltaY: 0,
       defaultStep: 0,
       moved: false,
+      isHorizontal: false,
     };
 
     setIsStackDragging(false);
     setIsStackPaused(false);
 
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
+  };
+
+  const resetPanelSwipe = () => {
+    panelGestureRef.current = {
+      active: false,
+      pointerId: null,
+      startX: 0,
+      startY: 0,
+      deltaX: 0,
+      deltaY: 0,
+      moved: false,
+      isHorizontal: false,
+    };
+  };
+
+  const startPanelSwipe = (event) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    if (event.target.closest?.("a, button, .about__stack-carousel")) return;
+
+    panelGestureRef.current = {
+      active: true,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      deltaX: 0,
+      deltaY: 0,
+      moved: false,
+      isHorizontal: false,
+    };
+
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+  };
+
+  const movePanelSwipe = (event) => {
+    const gesture = panelGestureRef.current;
+
+    if (!gesture.active || gesture.pointerId !== event.pointerId) return;
+
+    gesture.deltaX = event.clientX - gesture.startX;
+    gesture.deltaY = event.clientY - gesture.startY;
+
+    const absX = Math.abs(gesture.deltaX);
+    const absY = Math.abs(gesture.deltaY);
+
+    if (!gesture.moved && Math.max(absX, absY) > 12) {
+      gesture.moved = true;
+      gesture.isHorizontal = absX > absY * 1.18;
+    }
+
+    if (gesture.isHorizontal) {
+      event.preventDefault();
+    }
+  };
+
+  const endPanelSwipe = (event) => {
+    const gesture = panelGestureRef.current;
+
+    if (!gesture.active || gesture.pointerId !== event.pointerId) return;
+
+    const threshold = 72;
+
+    if (gesture.isHorizontal && Math.abs(gesture.deltaX) >= threshold) {
+      handlePanelChange(gesture.deltaX < 0 ? 1 : -1);
+    }
+
+    resetPanelSwipe();
     event.currentTarget.releasePointerCapture?.(event.pointerId);
   };
 
@@ -914,7 +1031,13 @@ function About() {
             tabIndex={0}
             onKeyDown={handleKeyNavigation}
           >
-            <div className="about__carousel-viewport">
+            <div
+              className="about__carousel-viewport"
+              onPointerDown={startPanelSwipe}
+              onPointerMove={movePanelSwipe}
+              onPointerUp={endPanelSwipe}
+              onPointerCancel={endPanelSwipe}
+            >
               <div className="about__carousel-stage">
                 <article
                   id="about-panel-bio"
@@ -1015,9 +1138,14 @@ function About() {
                     className={`about__stack-carousel ${
                       isStackDragging ? "is-dragging" : ""
                     }`}
+                    data-step="0"
                     aria-label={t("about.stackAriaLabel", {
                       defaultValue: "Infinite technology carousel",
                     })}
+                    onPointerDown={startStackDrag}
+                    onPointerMove={moveStackDrag}
+                    onPointerUp={endStackDrag}
+                    onPointerCancel={endStackDrag}
                   >
                     <div className="about__stack-drag-zones" aria-hidden="true">
                       <div

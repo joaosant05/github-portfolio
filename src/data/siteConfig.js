@@ -1,6 +1,7 @@
 export const profileConfig = {
   name: "João Santos",
   email: "joaogabriel.jog220@gmail.com",
+  location: "Rio Grande do Sul, Brasil",
   phone: "5551995245086",
   phoneDisplay: "+55 51 99524-5086",
   whatsappUrl: "https://wa.me/5551995245086",
