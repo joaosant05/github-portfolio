@@ -53,6 +53,14 @@
     "achievementsEmpty": "Add achievements to src/data/achivements.js",
     "achievementUntitled": "Untitled achievement",
     "achievementUnknownIssuer": "Issuer not informed",
+    "achievementDescriptions": {
+      "fortinetNse1": "Credly badge for the Getting Started in Cybersecurity 3.0 exam.",
+      "fortinetNse2": "Credly badge for the Technical Introduction to Cybersecurity 3.0 exam.",
+      "ciscoIntroCybersecurity": "Credly badge for the Introduction to Cybersecurity course.",
+      "ciscoLearnAThon2026": "Credly badge awarded for participating in the Cisco Networking Academy Learn-A-Thon 2026.",
+      "ciscoEthicalHacker": "Credly badge for the Ethical Hacker course, focused on vulnerability assessment, penetration testing, and mitigation.",
+      "certiprofLifelongLearning2025": "Credly recognition for a continued commitment to lifelong learning in 2025."
+    },
     "stackAriaLabel": "Animated technologies list",
     "socialsAriaLabel": "Social links",
     "carouselAriaLabel": "About section carousel",

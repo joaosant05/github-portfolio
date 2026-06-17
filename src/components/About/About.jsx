@@ -1,6 +1,7 @@
 // src/components/About/About.jsx
 import React, {
   Suspense,
+  lazy,
   memo,
   useEffect,
   useMemo,
@@ -13,20 +14,6 @@ import { OrbitControls } from "@react-three/drei";
 import achievementsData from "../../data/achivements";
 import { profileConfig } from "../../data/siteConfig";
 import { socialIconMap } from "../../utils/socialIcons";
-import { Model as CSharpLogo } from "../models/logos/CSharp";
-import { Model as DevopsLogo } from "../models/logos/Devops";
-import { Model as DigitalOceanLogo } from "../models/logos/DigitalOcean";
-import { Model as DockerLogo } from "../models/logos/Docker";
-import { Model as FastapiLogo } from "../models/logos/Fastapi";
-import { Model as FigmaLogo } from "../models/logos/Figma";
-import { Model as GitLogo } from "../models/logos/Git";
-import { Model as IllustratorLogo } from "../models/logos/Illustrator";
-import { Model as JavaLogo } from "../models/logos/Java";
-import { Model as JavascriptLogo } from "../models/logos/Javascript";
-import { Model as MysqlLogo } from "../models/logos/Mysql";
-import { Model as PythonLogo } from "../models/logos/Python";
-import { Model as ReactLogo } from "../models/logos/React";
-import { Model as TypescriptLogo } from "../models/logos/Typescript";
 import "./About.css";
 
 function normalizeLogoKey(value = "") {
@@ -37,21 +24,47 @@ function normalizeLogoKey(value = "") {
     .replace(/[^a-z0-9]/g, "");
 }
 
+const loadModel = (importer) =>
+  lazy(() => importer().then((module) => ({ default: module.Model })));
+
 const logoRegistry = {
-  csharp: CSharpLogo,
-  devops: DevopsLogo,
-  digitalocean: DigitalOceanLogo,
-  docker: DockerLogo,
-  fastapi: FastapiLogo,
-  figma: FigmaLogo,
-  git: GitLogo,
-  illustrator: IllustratorLogo,
-  java: JavaLogo,
-  javascript: JavascriptLogo,
-  mysql: MysqlLogo,
-  python: PythonLogo,
-  react: ReactLogo,
-  typescript: TypescriptLogo,
+  csharp: loadModel(() => import("../models/logos/CSharp")),
+  devops: loadModel(() => import("../models/logos/Devops")),
+  digitalocean: loadModel(() => import("../models/logos/DigitalOcean")),
+  docker: loadModel(() => import("../models/logos/Docker")),
+  fastapi: loadModel(() => import("../models/logos/Fastapi")),
+  figma: loadModel(() => import("../models/logos/Figma")),
+  git: loadModel(() => import("../models/logos/Git")),
+  illustrator: loadModel(() => import("../models/logos/Illustrator")),
+  java: loadModel(() => import("../models/logos/Java")),
+  javascript: loadModel(() => import("../models/logos/Javascript")),
+  mysql: loadModel(() => import("../models/logos/Mysql")),
+  python: loadModel(() => import("../models/logos/Python")),
+  react: loadModel(() => import("../models/logos/React")),
+  typescript: loadModel(() => import("../models/logos/Typescript")),
+};
+
+const stackFallbackIconMap = {
+  csharp: { src: "/assets/logos/stacks/csharp.svg", scale: 0.98 },
+  devops: { src: "/assets/logos/stacks/azure-devops.svg", scale: 0.96 },
+  digitalocean: {
+    src: "/assets/logos/stacks/digital-ocean-icon.svg",
+    scale: 0.98,
+  },
+  docker: { src: "/assets/logos/stacks/docker-icon.svg", scale: 1 },
+  fastapi: { src: "/assets/logos/stacks/fastapi-icon.svg", scale: 0.98 },
+  figma: { src: "/assets/logos/stacks/figma.svg", scale: 0.76 },
+  git: { src: "/assets/logos/stacks/git-icon.svg", scale: 0.96 },
+  illustrator: {
+    src: "/assets/logos/stacks/adobe-illustrator.svg",
+    scale: 0.94,
+  },
+  java: { src: "/assets/logos/stacks/java.svg", scale: 0.9 },
+  javascript: { src: "/assets/logos/stacks/javascript.svg", scale: 0.96 },
+  mysql: { src: "/assets/logos/stacks/mysql-icon.svg", scale: 0.92 },
+  python: { src: "/assets/logos/stacks/python.svg", scale: 0.98 },
+  react: { src: "/assets/logos/stacks/react.svg", scale: 0.98 },
+  typescript: { src: "/assets/logos/stacks/typescript.svg", scale: 0.96 },
 };
 
 const stackItems = [
@@ -316,11 +329,23 @@ function getDateLocale(language) {
   return language.toLowerCase().includes("pt") ? "pt-BR" : "en-US";
 }
 
+function parseAchievementDate(value) {
+  if (!value) return null;
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    const [year, month, day] = value.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  }
+
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
 function formatDate(value, language) {
   if (!value) return "--";
 
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
+  const date = parseAchievementDate(value);
+  if (!date) return value;
 
   return new Intl.DateTimeFormat(getDateLocale(language), {
     day: "2-digit",
@@ -342,6 +367,33 @@ function resolveAchievementImage(imageValue) {
   }
 
   return `/assets/achivements/${imageValue}`;
+}
+
+function StackVisualFallback({ item }) {
+  const logoKey = normalizeLogoKey(item.modelKey || item.name);
+  const iconConfig = stackFallbackIconMap[logoKey];
+  const iconSrc = iconConfig?.src;
+
+  return (
+    <div className="about__stack-model-fallback">
+      {iconSrc ? (
+        <img
+          className="about__stack-model-fallback-icon"
+          src={iconSrc}
+          alt=""
+          loading="eager"
+          decoding="sync"
+          style={{
+            "--fallback-scale": iconConfig.scale ?? 1,
+            "--fallback-x": `${iconConfig.x ?? 0}px`,
+            "--fallback-y": `${iconConfig.y ?? 0}px`,
+          }}
+        />
+      ) : (
+        item.name.slice(0, 2).toUpperCase()
+      )}
+    </div>
+  );
 }
 
 function FloatingModel({ item, viewer, ModelComponent, reduceMotion = false }) {
@@ -419,11 +471,7 @@ const StackModelCanvas = memo(function StackModelCanvas({
   const viewer = item.viewer || {};
 
   if (!ModelComponent) {
-    return (
-      <div className="about__stack-model-fallback">
-        {item.name.slice(0, 2).toUpperCase()}
-      </div>
-    );
+    return <StackVisualFallback item={item} />;
   }
 
   return (
@@ -634,9 +682,7 @@ const TechStackCard = memo(function TechStackCard({
             animateModel={isActive}
           />
         ) : (
-          <div className="about__stack-model-fallback">
-            {item.name.slice(0, 2).toUpperCase()}
-          </div>
+          <StackVisualFallback item={item} />
         )}
       </div>
 
@@ -708,10 +754,18 @@ function About() {
           achievement.issuedDate ||
           "",
         description:
-          achievement.description ||
-          achievement.summary ||
-          achievement.text ||
-          "",
+          achievement.descriptionKey
+            ? t(achievement.descriptionKey, {
+                defaultValue:
+                  achievement.description ||
+                  achievement.summary ||
+                  achievement.text ||
+                  "",
+              })
+            : achievement.description ||
+              achievement.summary ||
+              achievement.text ||
+              "",
         badgeImage: resolveAchievementImage(
           achievement.badgeImage ||
             achievement.image ||
@@ -727,8 +781,12 @@ function About() {
           achievement.credlyUrl ||
           "",
       }))
-      .sort((a, b) => new Date(b.issuedAt) - new Date(a.issuedAt));
-  }, [t]);
+      .sort(
+        (a, b) =>
+          (parseAchievementDate(b.issuedAt)?.getTime() || 0) -
+          (parseAchievementDate(a.issuedAt)?.getTime() || 0)
+      );
+  }, [t, i18n.language]);
 
   const featuredAchievements = useMemo(
     () => achievements,
@@ -1184,7 +1242,7 @@ function About() {
                             offset={offset}
                             onSelect={() => setActiveStackIndex(index)}
                             reduceMotion={reduceMotion}
-                            renderModel={shouldRenderStackModel}
+                            renderModel={shouldRenderStackModel && offset === 0}
                             onInteractionStart={handleStackInteractionStart}
                             onInteractionEnd={handleStackInteractionEnd}
                           />

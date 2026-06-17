@@ -25,6 +25,7 @@ const lerp = (a, b, t) => a + (b - a) * t;
 
 const easeInCubic = (t) => t * t * t;
 const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+const HERO_TOUCH_SCROLL_MULTIPLIER = 5;
 
 function AnimatedWord() {
   const { t, i18n } = useTranslation();
@@ -478,6 +479,12 @@ function Hero() {
   const { t, i18n } = useTranslation();
   const controlsRef = useRef(null);
   const heroRef = useRef(null);
+  const touchScrollRef = useRef({
+    active: false,
+    lastX: 0,
+    lastY: 0,
+    vertical: false,
+  });
   const [isModelReady, setIsModelReady] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
@@ -531,6 +538,92 @@ function Hero() {
       if (raf) window.cancelAnimationFrame(raf);
     };
   }, [isMobile, shouldReduceMotion]);
+
+  useEffect(() => {
+    if (!isMobile && !hasTouchPrimaryInput) return;
+
+    const el = heroRef.current;
+    if (!el) return;
+
+    const gesture = touchScrollRef.current;
+    const resetGesture = () => {
+      gesture.active = false;
+      gesture.vertical = false;
+    };
+
+    const handleTouchStart = (event) => {
+      if (event.touches.length !== 1) {
+        resetGesture();
+        return;
+      }
+
+      const touch = event.touches[0];
+      gesture.active = true;
+      gesture.vertical = false;
+      gesture.lastX = touch.clientX;
+      gesture.lastY = touch.clientY;
+    };
+
+    const handleTouchMove = (event) => {
+      if (!gesture.active || event.touches.length !== 1) return;
+
+      const touch = event.touches[0];
+      const deltaX = touch.clientX - gesture.lastX;
+      const deltaY = touch.clientY - gesture.lastY;
+
+      if (!gesture.vertical) {
+        const absX = Math.abs(deltaX);
+        const absY = Math.abs(deltaY);
+        if (absX < 8 && absY < 8) return;
+
+        gesture.vertical = absY > absX;
+      }
+
+      if (!gesture.vertical) {
+        gesture.lastX = touch.clientX;
+        gesture.lastY = touch.clientY;
+        return;
+      }
+
+      const atPageTop = window.scrollY <= 0;
+      if (atPageTop && deltaY > 0) {
+        gesture.lastX = touch.clientX;
+        gesture.lastY = touch.clientY;
+        return;
+      }
+
+      event.preventDefault();
+      window.scrollBy(0, -deltaY * HERO_TOUCH_SCROLL_MULTIPLIER);
+
+      gesture.lastX = touch.clientX;
+      gesture.lastY = touch.clientY;
+    };
+
+    el.addEventListener("touchstart", handleTouchStart, {
+      passive: true,
+      capture: true,
+    });
+    el.addEventListener("touchmove", handleTouchMove, {
+      passive: false,
+      capture: true,
+    });
+    el.addEventListener("touchend", resetGesture, {
+      passive: true,
+      capture: true,
+    });
+    el.addEventListener("touchcancel", resetGesture, {
+      passive: true,
+      capture: true,
+    });
+
+    return () => {
+      el.removeEventListener("touchstart", handleTouchStart, true);
+      el.removeEventListener("touchmove", handleTouchMove, true);
+      el.removeEventListener("touchend", resetGesture, true);
+      el.removeEventListener("touchcancel", resetGesture, true);
+      resetGesture();
+    };
+  }, [hasTouchPrimaryInput, isMobile]);
 
   const cameraSettings = isMobile
     ? { position: [0, 0.18, 5.25], fov: 31 }

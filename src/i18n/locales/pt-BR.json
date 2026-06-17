@@ -53,6 +53,14 @@
     "achievementsEmpty": "Adicione conquistas em src/data/achivements.js",
     "achievementUntitled": "Conquista sem título",
     "achievementUnknownIssuer": "Emissor não informado",
+    "achievementDescriptions": {
+      "fortinetNse1": "Badge da Credly referente ao exame Getting Started in Cybersecurity 3.0.",
+      "fortinetNse2": "Badge da Credly referente ao exame Technical Introduction to Cybersecurity 3.0.",
+      "ciscoIntroCybersecurity": "Badge da Credly do curso Introduction to Cybersecurity.",
+      "ciscoLearnAThon2026": "Badge da Credly concedida pela participacao no Cisco Networking Academy Learn-A-Thon 2026.",
+      "ciscoEthicalHacker": "Badge da Credly referente ao curso Ethical Hacker, com foco em avaliacao de vulnerabilidades, pentest e mitigacao.",
+      "certiprofLifelongLearning2025": "Reconhecimento da Credly pelo compromisso com aprendizagem continua em 2025."
+    },
     "stackAriaLabel": "Lista animada de tecnologias",
     "socialsAriaLabel": "Links de redes sociais",
     "carouselAriaLabel": "Carrossel da seção sobre mim",

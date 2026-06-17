@@ -558,6 +558,7 @@
     --hero-top-offset: 86px;
     padding-top: var(--hero-top-offset);
     --hero-parallax-glow-opacity: 0.14;
+    touch-action: pan-y;
   }
 
   .hero__backdrop::before {
@@ -659,6 +660,10 @@
 }
 
 @media (hover: none), (pointer: coarse) {
+  .hero {
+    touch-action: pan-y;
+  }
+
   .hero__canvas-shell,
   .hero__canvas-zone,
   .hero__canvas {
