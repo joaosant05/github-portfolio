@@ -81,7 +81,7 @@
     "technologiesTitle": "Technologies and focus",
     "openProject": "Open project",
     "privateProjectNote": "This is a private project, so public access is not available.",
-    "readMore": "Read more",
+    "readMore": "View details",
     "readMoreProjectAria": "Open details for {{project}}",
     "previewLabel": "Preview",
     "projectTypes": {
@@ -94,16 +94,17 @@
       "inDevelopment": "In development"
     },
     "projectVisibility": {
-      "private": "Private project"
+      "private": "Private project",
+      "public": "Public link"
     },
     "projectTags": {
-      "aiChat": "AI Chat",
-      "geminiApi": "Gemini API",
+      "aiChat": "AI chat",
+      "geminiApi": "Gemini APIs",
       "generativeAi": "Generative AI",
       "imageGeneration": "Image generation",
       "auth0": "Auth0",
       "adminDashboards": "Admin dashboards",
-      "reactJsx": "React JSX",
+      "reactJsx": "React.jsx",
       "reactTsx": "React TSX",
       "fastapi": "FastAPI",
       "python": "Python",
@@ -126,54 +127,142 @@
       "catalogIntegration": "Catalog integration",
       "csharp": "C#",
       "localCache": "Local cache",
-      "azure": "Azure"
+      "azure": "Azure",
+      "institutionalSite": "Company website",
+      "digitalSolutions": "Digital solutions",
+      "businessAutomation": "Sales automation",
+      "entrepreneurship": "Entrepreneurship",
+      "sprintPlanning": "Sprint planning",
+      "kanban": "Kanban",
+      "deliveryTimeline": "Delivery timeline",
+      "teamManagement": "Team management",
+      "documentReview": "Document review",
+      "crm": "CRM",
+      "salesPipeline": "Sales pipeline",
+      "customerManagement": "Customer management",
+      "workflowAutomation": "Workflow automation",
+      "postgresql": "PostgreSQL",
+      "hostinger": "Hostinger",
+      "codex": "Codex",
+      "figma": "Figma",
+      "nginx": "Nginx",
+      "illustrator": "Illustrator",
+      "adobeIntegration": "Adobe integration",
+      "customAgents": "Custom agents",
+      "userAccess": "Per-user access control",
+      "activityTracking": "Activity tracking",
+      "projectManagement": "Project management",
+      "n8n": "n8n",
+      "integratedAi": "Integrated AI",
+      "microsoftIntegration": "Microsoft integration"
     },
     "projects": {
       "kodaAi": {
         "title": "Koda AI",
-        "role": "Full-stack development of a corporate AI platform",
-        "description": "An artificial intelligence chat platform built for corporate use, integrating with the Gemini API, Auth0 authentication, MySQL, and features for text generation, image generation, and internal automation. The platform also includes specialized scripts for different team demands and administrative dashboards to monitor adoption.",
+        "role": "An AI platform for everyday business tasks",
+        "description": "Koda AI brings chat, custom agents and creative tools into a business platform. With Gemini APIs and Adobe integration, it supports content generation, image creation and document review. Files and suggestions stay side by side, with authentication and individual access control.",
         "highlights": [
-          "Integration with generative AI models and image generation through API.",
-          "User management and centralized authentication with Auth0.",
-          "Internal scripts created for specific needs across different teams.",
-          "Administrative dashboards for usage analysis and platform monitoring."
+          "AI chat and custom agents for different work needs.",
+          "Document review with the PDF and suggestions in one interface.",
+          "Gemini APIs and Adobe integration to connect creative tools.",
+          "Auth0 authentication and individual access control for business use."
+        ],
+        "summary": "AI chat, custom agents and integrations for creating and reviewing work in context.",
+        "statement": "AI connected to everyday work.",
+        "gallery": [
+          "AI chat",
+          "Document review",
+          "Agents and documents",
+          "Apps and integrations"
         ]
       },
-      "clientPortal": {
-        "title": "Client Portal",
-        "role": "Full-stack development and architecture of a corporate client platform",
-        "description": "A corporate portal created to centralize the relationship between company and clients, bringing together projects, products, attachments, responsible users, permissions, dashboards, and ERP integrations in one platform. The application uses React, FastAPI, MySQL, Auth0, and a Docker-based architecture hosted on DigitalOcean.",
+      "centrix": {
+        "title": "Centrix",
+        "role": "An independent brand, digital presence and sales automation",
+        "description": "I founded Centrix to make technology more accessible to small businesses and entrepreneurs. I built its digital presence to introduce tailored solutions, explain the delivery process and make it easier to get in touch. The project also includes an initial email outreach setup and a configured WhatsApp Business channel.",
         "highlights": [
-          "A complete hub to centralize projects, products, and strategic client information.",
-          "ERP integration and project organization by client, team, and category.",
-          "Access control with multiple roles such as administrator, manager, leader, editor, and client.",
-          "Architecture separated into containers for front-end, back-end, database, and microservices."
+          "A company website presenting services, partners and contact channels.",
+          "A visual walkthrough of discovery, development, validation and support.",
+          "Automated email outreach setup and WhatsApp Business configuration.",
+          "An independent business focused on the needs of small companies and entrepreneurs."
+        ],
+        "summary": "Tailored digital solutions, from the first conversation to a small business’s online presence.",
+        "statement": "Bringing technology closer to entrepreneurs.",
+        "gallery": ["Home page", "Services", "Our process", "Partners"]
+      },
+      "sprintly": {
+        "title": "Sprintly",
+        "role": "Sprint planning and delivery tracking",
+        "description": "Sprintly brings tasks, projects and deadlines into a shared workspace for teams. It connects the sprint board to a delivery timeline, helping people track priorities, ownership and time spent on activities. An integrated view for organizing work and following the progress of each project.",
+        "highlights": [
+          "A sprint board with activities grouped by status and priority.",
+          "A visual delivery timeline with dates, owners and overdue indicators.",
+          "Estimates, logged time, comments and checklists for individual tasks.",
+          "Project, team and activity views for exploring work at different levels."
+        ],
+        "summary": "Connected sprints, activities and timelines that bring clarity to teamwork.",
+        "statement": "From the plan to the delivery.",
+        "gallery": [
+          "Sprint board",
+          "Delivery timeline",
+          "Team overview",
+          "Activities"
         ]
       },
-      "vilmora": {
-        "title": "Vilmora",
-        "role": "Full-stack development of an authorial calendar integration product",
-        "description": "A web platform in development to centralize and synchronize calendars from different accounts and digital platforms. The goal is to reduce scheduling conflicts, rework, and manual checks through a unified view of appointments and automatic blocking across connected accounts.",
+      "prisma": {
+        "title": "Prisma",
+        "role": "Sales management and workflow automation",
+        "description": "Prisma connects customer relationships to daily sales work. Deals, contacts, proposals and actions come together in a CRM with a visual pipeline, integrated AI and Microsoft services. Automation features, including n8n and a workflow editor, help structure actions, decisions and notifications throughout the process.",
         "highlights": [
-          "Calendar centralization from different accounts in a single experience.",
-          "Synchronization and automatic blocking to reduce scheduling conflicts.",
-          "Architecture planned for integration with Google and Microsoft ecosystems.",
-          "An application designed for productivity, routine organization, and availability management."
-        ]
-      },
-      "pdfExtractor": {
-        "title": "PDF Extractor",
-        "role": "Technical evolution and functional expansion of an existing tool",
-        "description": "A corporate tool for extracting and processing information from PDFs, initially created with basic features and later evolved into a more complete solution. The project was built with React TSX on the front-end and C# on the back-end, using local cache and integration with an established online catalog system.",
-        "highlights": [
-          "Evolution from a simple first version into a more complete tool aligned with real team usage.",
-          "PDF processing without a database by using local cache.",
-          "Integration with an external online catalog system.",
-          "Structure prepared for future hosting on Azure."
+          "A visual sales pipeline with stages, priorities and status indicators.",
+          "Customer details with organized contacts, proposals and follow-up actions.",
+          "Email composition within the context of customer relationships.",
+          "A visual workflow editor with actions, conditions and notifications."
+        ],
+        "summary": "Customers, deals and automation in a CRM that follows every stage of the sales relationship.",
+        "statement": "More context for every opportunity.",
+        "gallery": [
+          "Sales pipeline",
+          "Customer details",
+          "Email communication",
+          "Workflow editor"
         ]
       }
-    }
+    },
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "selectedCount": "{{count}} featured projects",
+    "screenshots": "Screenshots",
+    "video": "Video",
+    "demo": "Demo",
+    "watchVideo": "Watch video",
+    "videoAria": "{{project}} demo",
+    "screenshotAria": "{{project}} screenshot {{index}}",
+    "mediaAria": "{{project}} media",
+    "videoDetails": "{{duration}} · {{size}} MB",
+    "coverAria": "{{project}} cover",
+    "hoverPreview": "Video preview",
+    "loadingPreview": "Loading preview",
+    "previewUnavailable": "Preview unavailable",
+    "exploreProject": "Explore project",
+    "privateAccess": "Restricted access",
+    "githubTitle": "More projects, open source.",
+    "githubProfile": "View profile",
+    "fullDemo": "Full demo",
+    "zoomImage": "Enlarge: {{caption}}",
+    "previousMedia": "Previous media",
+    "nextMedia": "Next media",
+    "pauseVideo": "Pause demo",
+    "unmute": "Enable sound",
+    "mute": "Mute",
+    "seekVideo": "Seek video",
+    "copyUrl": "Copy URL",
+    "copied": "Link copied",
+    "copyFailed": "Could not copy. Select and copy the address.",
+    "backProjects": "Back to projects",
+    "development": "Development",
+    "infrastructureTools": "Infrastructure and tools",
+    "productIntegrations": "Product and integrations"
   },
   "contact": {
     "eyebrow": "Contact",

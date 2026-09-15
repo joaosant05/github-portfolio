@@ -5,6 +5,7 @@ import { useGLTF, useAnimations } from "@react-three/drei";
 export function BB8({
   modelPath = "/models/bb8.glb",
   onAnimationReady,
+  paused = false,
   interactiveHandlers = {},
   ...props
 }) {
@@ -20,7 +21,7 @@ export function BB8({
 
     action.reset();
     action.setEffectiveWeight(1);
-    action.setEffectiveTimeScale(1);
+    action.setEffectiveTimeScale(paused ? 0 : 1);
     action.play();
 
     onAnimationReady?.({
@@ -32,7 +33,7 @@ export function BB8({
     return () => {
       action.stop();
     };
-  }, [actions, animations, mixer, onAnimationReady]);
+  }, [actions, animations, mixer, onAnimationReady, paused]);
 
   return (
     <group ref={group} {...props} dispose={null}>

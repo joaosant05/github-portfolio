@@ -94,16 +94,17 @@
       "inDevelopment": "Em desenvolvimento"
     },
     "projectVisibility": {
-      "private": "Projeto privado"
+      "private": "Projeto privado",
+      "public": "Link público"
     },
     "projectTags": {
-      "aiChat": "Chat de IA",
-      "geminiApi": "Gemini API",
+      "aiChat": "Chat IA",
+      "geminiApi": "APIs Gemini",
       "generativeAi": "IA generativa",
       "imageGeneration": "Geração de imagem",
       "auth0": "Auth0",
       "adminDashboards": "Dashboards admin",
-      "reactJsx": "React JSX",
+      "reactJsx": "React.jsx",
       "reactTsx": "React TSX",
       "fastapi": "FastAPI",
       "python": "Python",
@@ -126,54 +127,147 @@
       "catalogIntegration": "Integração com catálogos",
       "csharp": "C#",
       "localCache": "Cache local",
-      "azure": "Azure"
+      "azure": "Azure",
+      "institutionalSite": "Site institucional",
+      "digitalSolutions": "Soluções digitais",
+      "businessAutomation": "Automação comercial",
+      "entrepreneurship": "Empreendedorismo",
+      "sprintPlanning": "Planejamento de sprints",
+      "kanban": "Kanban",
+      "deliveryTimeline": "Cronograma de entregas",
+      "teamManagement": "Gestão de equipes",
+      "documentReview": "Revisão de documentos",
+      "crm": "CRM",
+      "salesPipeline": "Funil comercial",
+      "customerManagement": "Gestão de clientes",
+      "workflowAutomation": "Automação de fluxos",
+      "postgresql": "PostgreSQL",
+      "hostinger": "Hostinger",
+      "codex": "Codex",
+      "figma": "Figma",
+      "nginx": "Nginx",
+      "illustrator": "Illustrator",
+      "adobeIntegration": "Integração Adobe",
+      "customAgents": "Agentes personalizados",
+      "userAccess": "Controle por usuário",
+      "activityTracking": "Controle de atividades",
+      "projectManagement": "Gestão de projetos",
+      "n8n": "n8n",
+      "integratedAi": "IA integrada",
+      "microsoftIntegration": "Integração Microsoft"
     },
     "projects": {
       "kodaAi": {
         "title": "Koda AI",
-        "role": "Desenvolvimento full stack de uma plataforma corporativa de IA",
-        "description": "Chat de inteligência artificial desenvolvido para uso corporativo, com integração à API do Gemini, autenticação com Auth0, banco de dados MySQL e recursos para geração de texto, imagens e automações internas. A plataforma também conta com scripts especializados para diferentes demandas de times e dashboards administrativos para acompanhamento de uso pelos colaboradores.",
+        "role": "Plataforma corporativa de inteligência artificial",
+        "description": "O Koda AI reúne chat, agentes personalizados e ferramentas de criação em uma plataforma corporativa. Com APIs do Gemini e integração com o ecossistema Adobe, apoia a geração de conteúdo, a criação de imagens e a revisão de documentos. A experiência mantém arquivos e sugestões lado a lado, com autenticação e controle de acesso por usuário.",
         "highlights": [
-          "Integração com modelos de IA generativa e geração de imagens por API.",
-          "Gerenciamento de usuários e autenticação centralizada com Auth0.",
-          "Conjunto de scripts internos criados para necessidades específicas de diferentes times.",
-          "Dashboards administrativos para análise de utilização e acompanhamento da plataforma."
+          "Chat com IA e agentes personalizados para diferentes necessidades de trabalho.",
+          "Revisão de documentos com o PDF e as sugestões na mesma interface.",
+          "APIs do Gemini e integração Adobe para conectar recursos de criação.",
+          "Autenticação com Auth0 e controle de acesso individual para uso corporativo."
+        ],
+        "summary": "Chat IA, agentes personalizados e integrações para criar, revisar e trabalhar com mais contexto.",
+        "statement": "Uma IA conectada ao trabalho real.",
+        "gallery": [
+          "Chat IA",
+          "Revisão de documentos",
+          "Agentes e documentos",
+          "Aplicativos e integrações"
         ]
       },
-      "clientPortal": {
-        "title": "Portal do Cliente",
-        "role": "Desenvolvimento full stack e estruturação de uma plataforma corporativa para clientes",
-        "description": "Portal corporativo criado para centralizar o relacionamento entre empresa e clientes, reunindo projetos, produtos, anexos, responsáveis, permissões, dashboards e integrações com ERP em uma única plataforma. A aplicação utiliza React, FastAPI, MySQL, Auth0 e uma arquitetura baseada em containers Docker hospedados na DigitalOcean.",
+      "centrix": {
+        "title": "Centrix",
+        "role": "Marca própria, presença digital e automação comercial",
+        "description": "A Centrix nasceu da minha vontade de aproximar pequenas empresas e empreendedores da tecnologia. Desenvolvi sua presença digital para apresentar soluções sob medida, explicar o processo de trabalho e facilitar o primeiro contato. O projeto também reúne a estrutura inicial de prospecção por e-mail e atendimento pelo WhatsApp Business.",
         "highlights": [
-          "Hub completo para centralizar projetos, produtos e informações estratégicas para clientes.",
-          "Integração com ERP e organização de projetos por clientes, times e categorias.",
-          "Controle de acesso com múltiplos perfis, como administrador, gerente, líder, editor e cliente.",
-          "Arquitetura separada em containers para front-end, back-end, banco de dados e microsserviços."
+          "Site institucional com apresentação de serviços, parceiros e canais de contato.",
+          "Jornada visual que apresenta as etapas de descoberta, desenvolvimento, validação e suporte.",
+          "Estrutura de prospecção automatizada por e-mail e configuração do WhatsApp Business.",
+          "Iniciativa própria voltada às necessidades de pequenas empresas e empreendedores."
+        ],
+        "summary": "Soluções digitais sob medida, da primeira conversa à presença online de pequenos negócios.",
+        "statement": "Tecnologia mais próxima de quem empreende.",
+        "gallery": [
+          "Página inicial",
+          "Serviços",
+          "Processo de trabalho",
+          "Parceiros"
         ]
       },
-      "vilmora": {
-        "title": "Vilmora",
-        "role": "Desenvolvimento full stack de um produto autoral para integração de agendas",
-        "description": "Plataforma web em desenvolvimento para centralizar e sincronizar agendas de diferentes contas e plataformas digitais. A proposta é reduzir conflitos de horário, retrabalho e conferências manuais por meio de uma visão unificada de compromissos e bloqueios automáticos entre contas conectadas.",
+      "sprintly": {
+        "title": "Sprintly",
+        "role": "Planejamento de sprints e acompanhamento de entregas",
+        "description": "O Sprintly reúne tarefas, projetos e prazos em um espaço de trabalho para equipes. A plataforma conecta o quadro da sprint ao cronograma de entregas, permitindo acompanhar prioridades, responsáveis e tempo dedicado às atividades. Uma visão integrada para organizar o trabalho e entender o andamento de cada projeto.",
         "highlights": [
-          "Centralização de agendas de diferentes contas em uma experiência única.",
-          "Sincronização e bloqueios automáticos para reduzir conflitos de horário.",
-          "Arquitetura planejada para integração com ecossistemas Google e Microsoft.",
-          "Aplicação pensada para produtividade, organização de rotina e gestão de disponibilidade."
+          "Quadro de sprint com atividades organizadas por status e prioridade.",
+          "Cronograma visual de entregas, com datas, responsáveis e sinalização de atrasos.",
+          "Acompanhamento de estimativas, tempo registrado, comentários e checklists.",
+          "Visões de projetos, equipe e atividades para consultar o trabalho em diferentes níveis."
+        ],
+        "summary": "Sprints, atividades e cronogramas conectados para dar clareza ao trabalho da equipe.",
+        "statement": "Do planejamento ao que foi entregue.",
+        "gallery": [
+          "Quadro da sprint",
+          "Cronograma de entregas",
+          "Visão do time",
+          "Atividades"
         ]
       },
-      "pdfExtractor": {
-        "title": "PDF Extractor",
-        "role": "Evolução técnica e expansão funcional de uma ferramenta existente",
-        "description": "Ferramenta corporativa para extração e processamento de informações em PDFs, inicialmente criada com recursos básicos e posteriormente evoluída para uma solução mais completa. O projeto foi desenvolvido com React TSX no front-end e C# no back-end, utilizando cache local e integração com um sistema de catálogos online já consolidado no mercado.",
+      "prisma": {
+        "title": "Prisma",
+        "role": "Gestão comercial e automação de processos",
+        "description": "O Prisma conecta o relacionamento com clientes à execução da rotina comercial. Negociações, contatos, propostas e ações ficam reunidos em um CRM com funil visual, IA integrada e conexão com serviços Microsoft. Os recursos de automação, incluindo n8n e um editor de fluxos, ajudam a estruturar ações, decisões e avisos ao longo do processo.",
         "highlights": [
-          "Evolução de uma versão inicial simples para uma ferramenta mais completa e alinhada ao uso real do time.",
-          "Processamento de PDFs sem necessidade de banco de dados, utilizando cache local.",
-          "Integração com sistema externo de catálogos online.",
-          "Estrutura preparada para futura hospedagem em servidores Azure."
+          "Funil de negociações em quadro visual, com etapas, prioridades e status.",
+          "Detalhamento de clientes e organização de contatos, propostas e ações.",
+          "Composição de e-mails dentro do contexto do relacionamento comercial.",
+          "Editor visual de fluxos com etapas de ação, condições e notificações."
+        ],
+        "summary": "Clientes, negociações e automações em um CRM que acompanha cada etapa da relação comercial.",
+        "statement": "Mais contexto em cada oportunidade.",
+        "gallery": [
+          "Funil de negociações",
+          "Detalhes do cliente",
+          "Comunicação por e-mail",
+          "Editor de fluxos"
         ]
       }
-    }
+    },
+    "showMore": "Mostrar mais",
+    "showLess": "Mostrar menos",
+    "selectedCount": "{{count}} projetos em destaque",
+    "screenshots": "Prints",
+    "video": "Vídeo",
+    "demo": "Demonstração",
+    "watchVideo": "Assistir ao vídeo",
+    "videoAria": "Demonstração de {{project}}",
+    "screenshotAria": "Tela {{index}} de {{project}}",
+    "mediaAria": "Mídias de {{project}}",
+    "videoDetails": "{{duration}} · {{size}} MB",
+    "coverAria": "Capa de {{project}}",
+    "hoverPreview": "Prévia em vídeo",
+    "loadingPreview": "Carregando prévia",
+    "previewUnavailable": "Prévia indisponível",
+    "exploreProject": "Explorar projeto",
+    "privateAccess": "Acesso restrito",
+    "githubTitle": "Mais projetos, código aberto.",
+    "githubProfile": "Ver perfil",
+    "fullDemo": "Demonstração completa",
+    "zoomImage": "Ampliar: {{caption}}",
+    "previousMedia": "Mídia anterior",
+    "nextMedia": "Próxima mídia",
+    "pauseVideo": "Pausar demonstração",
+    "unmute": "Ativar som",
+    "mute": "Silenciar",
+    "seekVideo": "Selecionar momento do vídeo",
+    "copyUrl": "Copiar URL",
+    "copied": "Link copiado",
+    "copyFailed": "Não foi possível copiar. Selecione e copie o endereço.",
+    "backProjects": "Voltar aos projetos",
+    "development": "Desenvolvimento",
+    "infrastructureTools": "Infraestrutura e ferramentas",
+    "productIntegrations": "Produto e integrações"
   },
   "contact": {
     "eyebrow": "Contato",

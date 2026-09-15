@@ -1,599 +1,225 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useReducedMotion } from "motion/react";
 import {
-  AnimatePresence,
-  motion,
-  useMotionValue,
-  useReducedMotion,
-  useSpring,
-} from "motion/react";
-import { FiArrowUpRight, FiExternalLink, FiX } from "react-icons/fi";
+  FiArrowDown,
+  FiArrowUpRight,
+  FiChevronRight,
+  FiGithub,
+  FiLock,
+  FiPlay,
+} from "react-icons/fi";
 import { portfolioProjects } from "../../data/portfolioData";
+import { githubProjects } from "../../data/githubProjects";
+import ProjectPreview from "./ProjectPreview";
+import ProjectDetails from "./ProjectDetails";
+import ProjectSiteLink from "./ProjectSiteLink";
 import "./Portfolio.css";
 
-const Motion = motion;
-
-const revealViewport = {
-  once: true,
-  amount: 0.14,
-  margin: "0px 0px -12% 0px",
-};
-
-const headingRevealVariants = {
-  hidden: {
-    opacity: 0,
-    y: 24,
-    scale: 0.995,
-    transition: {
-      duration: 0.28,
-      ease: [0.4, 0, 0.2, 1],
-    },
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      duration: 0.58,
-      ease: [0.22, 1, 0.36, 1],
-    },
-  },
-};
-
-const projectRevealVariants = {
-  hidden: {
-    opacity: 0,
-    y: 28,
-    scale: 0.995,
-    transition: {
-      duration: 0.28,
-      ease: [0.4, 0, 0.2, 1],
-    },
-  },
-  visible: (index = 0) => ({
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      duration: 0.5,
-      delay: Math.min(index * 0.035, 0.16),
-      ease: [0.22, 1, 0.36, 1],
-    },
-  }),
-};
-
-function getProjectImages(project) {
-  const images =
-    project.images ||
-    project.galleryImages ||
-    project.screenshots ||
-    [];
-
-  if (Array.isArray(images) && images.length > 0) {
-    return images;
-  }
-
-  if (project.image) {
-    return [project.image];
-  }
-
-  return ["/assets/projects/project-placeholder.jpg"];
-}
-
-function getProjectTitle(t, project) {
-  if (project.titleKey) {
-    return t(project.titleKey, {
-      defaultValue: project.title || project.slug || "Project",
-    });
-  }
-
-  return project.title || "Project";
-}
-
-function getProjectDescription(t, project) {
-  if (project.descriptionKey) {
-    return t(project.descriptionKey, {
-      defaultValue: project.description || "",
-    });
-  }
-
-  return project.description || "";
-}
-
-function getProjectRole(t, project) {
-  if (project.roleKey) {
-    return t(project.roleKey, {
-      defaultValue: project.role || "",
-    });
-  }
-
-  return project.role || "";
-}
-
-function getProjectTags(t, project) {
-  if (Array.isArray(project.tagKeys) && project.tagKeys.length > 0) {
-    return project.tagKeys.map((tagKey) =>
-      t(`work.projectTags.${tagKey}`, {
-        defaultValue: tagKey,
-      })
-    );
-  }
-
-  return project.tags || [];
-}
-
-function getProjectHighlights(t, project) {
-  if (Array.isArray(project.highlightKeys) && project.highlightKeys.length > 0) {
-    return project.highlightKeys.map((highlightKey) =>
-      t(highlightKey, {
-        defaultValue: "",
-      })
-    );
-  }
-
-  return project.highlights || [];
-}
-
-function PortfolioModal({ project, onClose, shouldReduceMotion }) {
+function ProjectCard({ project, index, onOpen, previewsEnabled }) {
   const { t } = useTranslation();
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const closeButtonRef = useRef(null);
+  const reduceMotion = useReducedMotion();
+  const [previewActive, setPreviewActive] = useState(false);
+  const timer = useRef(null);
+  const title = t(project.titleKey);
+  const stopPreview = useCallback(() => {
+    clearTimeout(timer.current);
+    setPreviewActive(false);
+  }, []);
+  useEffect(() => () => clearTimeout(timer.current), []);
 
-  useEffect(() => {
-    if (!project) return undefined;
-
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    document.body.classList.add("portfolio-modal-open");
-    closeButtonRef.current?.focus();
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.body.classList.remove("portfolio-modal-open");
-    };
-  }, [project, onClose]);
-
-  if (!project) return null;
-
-  const title = getProjectTitle(t, project);
-  const description = getProjectDescription(t, project);
-  const role = getProjectRole(t, project);
-  const tags = getProjectTags(t, project);
-  const highlights = getProjectHighlights(t, project).filter(Boolean);
-  const images = getProjectImages(project);
-
-  const hasExternalLink = project.link && project.link !== "#";
+  const startPreview = (event) => {
+    if (event.pointerType !== "mouse" || reduceMotion || !previewsEnabled)
+      return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches)
+      return;
+    clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => setPreviewActive(true), 240);
+  };
+  const openProject = () => {
+    stopPreview();
+    onOpen(project);
+  };
 
   return (
-    <Motion.div
-      className="portfolio__modal-backdrop"
-      role="presentation"
-      initial={shouldReduceMotion ? false : { opacity: 0 }}
-      animate={shouldReduceMotion ? {} : { opacity: 1 }}
-      exit={shouldReduceMotion ? {} : { opacity: 0 }}
-      transition={{ duration: 0.22 }}
-      onMouseDown={onClose}
+    <article
+      className="portfolio__card"
+      style={{ "--project-accent": project.accent }}
+      onPointerEnter={startPreview}
+      onPointerLeave={stopPreview}
     >
-      <Motion.article
-        className="portfolio__modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="portfolio-modal-title"
-        initial={shouldReduceMotion ? false : { opacity: 0, y: 28, scale: 0.98 }}
-        animate={shouldReduceMotion ? {} : { opacity: 1, y: 0, scale: 1 }}
-        exit={shouldReduceMotion ? {} : { opacity: 0, y: 18, scale: 0.98 }}
-        transition={{
-          duration: 0.32,
-          ease: [0.22, 1, 0.36, 1],
-        }}
-        onMouseDown={(event) => event.stopPropagation()}
+      <button
+        type="button"
+        className="portfolio__cover-button"
+        onClick={openProject}
+        aria-label={t("work.readMoreProjectAria", { project: title })}
       >
-        <button
-          ref={closeButtonRef}
-          type="button"
-          className="portfolio__modal-close"
-          aria-label={t("work.closeProjectModal", {
-            defaultValue: "Close project details",
-          })}
-          onClick={onClose}
-        >
-          <FiX aria-hidden="true" />
-        </button>
-
-        <div className="portfolio__modal-scroll">
-          <header className="portfolio__modal-header">
-            <span className="portfolio__modal-eyebrow">
-              {t("work.projectDetails", {
-                defaultValue: "Project details",
-              })}
-            </span>
-
-            <h3 id="portfolio-modal-title" className="portfolio__modal-title">
-              {title}
-            </h3>
-
-            {role ? <p className="portfolio__modal-role">{role}</p> : null}
-          </header>
-
-          <div className="portfolio__modal-grid">
-            <div className="portfolio__modal-media">
-              <div className="portfolio__modal-main-image">
-                <img src={images[activeImageIndex]} alt={title} loading="lazy" />
-              </div>
-
-              {images.length > 1 ? (
-                <div className="portfolio__modal-thumbs">
-                  {images.map((image, index) => (
-                    <button
-                      key={`${image}-${index}`}
-                      type="button"
-                      className={`portfolio__modal-thumb ${
-                        activeImageIndex === index ? "is-active" : ""
-                      }`}
-                      onClick={() => setActiveImageIndex(index)}
-                      aria-label={t("work.viewProjectImage", {
-                        index: index + 1,
-                        defaultValue: `View image ${index + 1}`,
-                      })}
-                    >
-                      <img src={image} alt="" aria-hidden="true" loading="lazy" />
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-
-            <div className="portfolio__modal-content">
-              {description ? (
-                <section className="portfolio__modal-section">
-                  <h4>
-                    {t("work.overviewTitle", {
-                      defaultValue: "Overview",
-                    })}
-                  </h4>
-
-                  <p>{description}</p>
-                </section>
-              ) : null}
-
-              {highlights.length ? (
-                <section className="portfolio__modal-section">
-                  <h4>
-                    {t("work.highlightsTitle", {
-                      defaultValue: "Highlights",
-                    })}
-                  </h4>
-
-                  <ul className="portfolio__modal-highlights">
-                    {highlights.map((highlight, index) => (
-                      <li key={`${project.id}-highlight-${index}`}>
-                        {highlight}
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              ) : null}
-
-              {tags.length ? (
-                <section className="portfolio__modal-section">
-                  <h4>
-                    {t("work.technologiesTitle", {
-                      defaultValue: "Technologies and focus",
-                    })}
-                  </h4>
-
-                  <div className="portfolio__modal-tags">
-                    {tags.map((tag) => (
-                      <span key={tag} className="portfolio__tag">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </section>
-              ) : null}
-
-              <div className="portfolio__modal-actions">
-                {hasExternalLink ? (
-                  <a
-                    href={project.link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="portfolio__modal-link"
-                  >
-                    <span>
-                      {t("work.openProject", {
-                        defaultValue: "Open project",
-                      })}
-                    </span>
-                    <FiExternalLink aria-hidden="true" />
-                  </a>
-                ) : (
-                  <p className="portfolio__modal-private-note">
-                    {t("work.privateProjectNote", {
-                      defaultValue:
-                        "This is a private project, so public access is not available.",
-                    })}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
+        <img
+          className="portfolio__cover"
+          src={project.cover}
+          alt={t("work.coverAria", { project: title })}
+          width="1200"
+          height="675"
+          loading="lazy"
+          decoding="async"
+        />
+        {previewActive && previewsEnabled ? (
+          <ProjectPreview project={project} onStop={stopPreview} />
+        ) : null}
+        <span className="portfolio__preview-hint">
+          <FiPlay aria-hidden="true" />
+          {t("work.hoverPreview")}
+        </span>
+      </button>
+      <div className="portfolio__card-body">
+        <div className="portfolio__meta">
+          <span>
+            {String(index + 1).padStart(2, "0")} / {t(project.typeKey)}
+          </span>
+          <span>
+            {project.isPrivate ? (
+              <FiLock aria-hidden="true" />
+            ) : (
+              <span className="portfolio__status-dot" />
+            )}
+            {t(project.visibilityKey)}
+          </span>
         </div>
-      </Motion.article>
-    </Motion.div>
+        <h3>
+          <button type="button" onClick={openProject}>
+            {title}
+          </button>
+        </h3>
+        <p className="portfolio__role">{t(project.roleKey)}</p>
+        <p className="portfolio__description">{t(project.summaryKey)}</p>
+        <div className="portfolio__tags">
+          {project.cardTagKeys.map((key) => (
+            <span key={key} className="portfolio__tag">
+              {t(`work.projectTags.${key}`)}
+            </span>
+          ))}
+        </div>
+        <div className="portfolio__actions">
+          <button type="button" onClick={openProject}>
+            {t("work.exploreProject")}
+            <FiChevronRight aria-hidden="true" />
+          </button>
+          {project.link ? (
+            <ProjectSiteLink url={project.link} />
+          ) : (
+            <span>{t("work.privateAccess")}</span>
+          )}
+        </div>
+      </div>
+    </article>
   );
 }
 
-function Portfolio() {
-  const { t } = useTranslation();
-
-  const [preview, setPreview] = useState(null);
+export default function Portfolio() {
+  const { t, i18n } = useTranslation();
   const [selectedProject, setSelectedProject] = useState(null);
-  const [canUseHoverPreview, setCanUseHoverPreview] = useState(false);
-
-  const shouldReduceMotion = useReducedMotion();
-
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const springX = useSpring(mouseX, {
-    damping: 24,
-    stiffness: 220,
-    mass: 0.55,
-  });
-
-  const springY = useSpring(mouseY, {
-    damping: 24,
-    stiffness: 220,
-    mass: 0.55,
-  });
-
-  const safeProjects = useMemo(() => portfolioProjects ?? [], []);
-  const canAnimateReveal = !shouldReduceMotion && canUseHoverPreview;
-
-  useEffect(() => {
-    if (typeof window === "undefined" || !window.matchMedia) return undefined;
-
-    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
-    const syncHoverSupport = () => {
-      const supportsHoverPreview = mediaQuery.matches;
-      setCanUseHoverPreview(supportsHoverPreview);
-
-      if (!supportsHoverPreview) {
-        setPreview(null);
-      }
-    };
-
-    syncHoverSupport();
-
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener("change", syncHoverSupport);
-      return () => mediaQuery.removeEventListener("change", syncHoverSupport);
-    }
-
-    mediaQuery.addListener(syncHoverSupport);
-    return () => mediaQuery.removeListener(syncHoverSupport);
-  }, []);
-
-  const handleMouseMove = (event) => {
-    if (!canUseHoverPreview || shouldReduceMotion || selectedProject) return;
-
-    mouseX.set(event.clientX + 28);
-    mouseY.set(event.clientY - 88);
-  };
-
-  const handlePreviewEnter = (project) => {
-    if (!canUseHoverPreview || shouldReduceMotion || selectedProject) return;
-    setPreview(project);
-  };
-
-  const handlePreviewLeave = () => {
-    setPreview(null);
-  };
-
-  const handleOpenProject = (project) => {
-    setPreview(null);
-    setSelectedProject(project);
-  };
-
-  const handleCloseProject = () => {
-    setSelectedProject(null);
-  };
+  const [showMore, setShowMore] = useState(false);
+  const closeProject = useCallback(() => setSelectedProject(null), []);
+  const locale = i18n.resolvedLanguage?.startsWith("pt") ? "pt-BR" : "en";
 
   return (
-    <section className="portfolio" id="portfolio">
+    <section
+      className="portfolio"
+      id="portfolio"
+      aria-labelledby="portfolio-title"
+    >
       <div className="c-space">
         <div className="portfolio__shell">
-          <Motion.div
-            className="portfolio__heading"
-            variants={headingRevealVariants}
-            initial={canAnimateReveal ? "hidden" : false}
-            whileInView={canAnimateReveal ? "visible" : undefined}
-            viewport={revealViewport}
-          >
-            <span className="portfolio__eyebrow">
-              {t("work.eyebrow", {
-                defaultValue: "Portfolio",
-              })}
-            </span>
-
-            <h2 className="portfolio__title-main">
-              {t("work.title", {
-                defaultValue: "Projetos selecionados",
-              })}
-            </h2>
-
-            <p className="portfolio__intro">
-              {t("work.description", {
-                defaultValue:
-                  "Uma seleção de projetos com foco em produto, interface, lógica de negócio e experiência visual.",
-              })}
-            </p>
-          </Motion.div>
-
-          <div
-            className="portfolio__list"
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handlePreviewLeave}
-          >
-            {safeProjects.map((project, index) => {
-              const title = getProjectTitle(t, project);
-              const description = getProjectDescription(t, project);
-              const role = getProjectRole(t, project);
-              const tags = getProjectTags(t, project);
-              const images = getProjectImages(project);
-
-              return (
-                <Motion.article
-                  key={project.id}
-                  className="portfolio__item"
-                  custom={index}
-                  variants={projectRevealVariants}
-                  initial={canAnimateReveal ? "hidden" : false}
-                  whileInView={canAnimateReveal ? "visible" : undefined}
-                  viewport={revealViewport}
-                  whileHover={
-                    canAnimateReveal
-                      ? {
-                          y: -6,
-                          transition: {
-                            duration: 0.32,
-                            ease: [0.22, 1, 0.36, 1],
-                          },
-                        }
-                      : undefined
-                  }
-                  onMouseEnter={
-                    canUseHoverPreview
-                      ? () => handlePreviewEnter(project)
-                      : undefined
-                  }
-                >
-                  <div className="portfolio__media" aria-hidden="true">
-                    <img
-                      src={images[0]}
-                      alt=""
-                      loading="lazy"
-                      className="portfolio__media-image"
-                    />
-                  </div>
-
-                  <div className="portfolio__content">
-                    <div className="portfolio__meta">
-                      <span className="portfolio__index">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                    </div>
-
-                    <h3 className="portfolio__item-title">{title}</h3>
-
-                    {role ? <p className="portfolio__role">{role}</p> : null}
-
-                    {tags.length ? (
-                      <div className="portfolio__tags">
-                        {tags.slice(0, 6).map((tag) => (
-                          <span key={tag} className="portfolio__tag">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    ) : null}
-
-                    {description ? (
-                      <p className="portfolio__description">{description}</p>
-                    ) : null}
-                  </div>
-
-                  <div className="portfolio__actions">
-                    <button
-                      type="button"
-                      className="portfolio__readmore"
-                      aria-label={t("work.readMoreProjectAria", {
-                        project: title,
-                        defaultValue: `Open details for ${title}`,
-                      })}
-                      onClick={() => handleOpenProject(project)}
-                      onMouseEnter={
-                        canUseHoverPreview
-                          ? () => handlePreviewEnter(project)
-                          : undefined
-                      }
-                      onFocus={
-                        canUseHoverPreview ? () => setPreview(project) : undefined
-                      }
-                      onBlur={canUseHoverPreview ? handlePreviewLeave : undefined}
-                    >
-                      <span>
-                        {t("work.readMore", {
-                          defaultValue: "Read More",
-                        })}
-                      </span>
-                      <FiArrowUpRight aria-hidden="true" />
-                    </button>
-                  </div>
-                </Motion.article>
-              );
-            })}
-
-            <AnimatePresence>
-              {preview &&
-                canUseHoverPreview &&
-                !shouldReduceMotion &&
-                !selectedProject && (
-                <Motion.div
-                  className="portfolio__preview"
-                  style={{ x: springX, y: springY }}
-                  initial={{ opacity: 0, scale: 0.96 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.96 }}
-                  transition={{
-                    duration: 0.2,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                >
-                  <div className="portfolio__preview-media">
-                    <img
-                      src={getProjectImages(preview)[0]}
-                      alt={getProjectTitle(t, preview)}
-                      className="portfolio__preview-image"
-                    />
-                  </div>
-
-                  <div className="portfolio__preview-body">
-                    <span className="portfolio__preview-label">
-                      {t("work.previewLabel", {
-                        defaultValue: "Preview",
-                      })}
-                    </span>
-
-                    <strong className="portfolio__preview-title">
-                      {getProjectTitle(t, preview)}
-                    </strong>
-                  </div>
-                </Motion.div>
-              )}
-            </AnimatePresence>
+          <header className="portfolio__heading">
+            <div>
+              <span className="portfolio__eyebrow">{t("work.eyebrow")}</span>
+              <h2 id="portfolio-title">{t("work.title")}</h2>
+            </div>
+            <p>{t("work.description")}</p>
+          </header>
+          <div className="portfolio__grid">
+            {portfolioProjects.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                index={index}
+                onOpen={setSelectedProject}
+                previewsEnabled={!selectedProject}
+              />
+            ))}
           </div>
+          <footer className="portfolio__footer">
+            <span>
+              {t("work.selectedCount", { count: portfolioProjects.length })}
+            </span>
+            <button
+              type="button"
+              className="portfolio__show-more"
+              aria-expanded={showMore}
+              aria-controls="portfolio-more"
+              onClick={() => setShowMore(!showMore)}
+            >
+              {t(showMore ? "work.showLess" : "work.showMore")}
+              <FiArrowDown
+                className={showMore ? "is-expanded" : ""}
+                aria-hidden="true"
+              />
+            </button>
+          </footer>
+          <section
+            id="portfolio-more"
+            className="portfolio__repositories"
+            hidden={!showMore}
+            aria-labelledby="github-projects-title"
+          >
+            <header>
+              <div>
+                <span className="portfolio__eyebrow">GitHub</span>
+                <h3 id="github-projects-title">{t("work.githubTitle")}</h3>
+              </div>
+              <a
+                href="https://github.com/joaosant05"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t("work.githubProfile")}
+                <FiArrowUpRight aria-hidden="true" />
+              </a>
+            </header>
+            <div className="portfolio__repo-list">
+              {githubProjects.map((repo) => (
+                <a
+                  className="portfolio__repo"
+                  key={repo.name}
+                  href={repo.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FiGithub
+                    className="portfolio__repo-icon"
+                    aria-hidden="true"
+                  />
+                  <div>
+                    <h4>{repo.name}</h4>
+                    <p>{repo.descriptions?.[locale] || repo.description}</p>
+                  </div>
+                  <span className="portfolio__repo-language">
+                    {repo.language}
+                  </span>
+                  <FiArrowUpRight aria-hidden="true" />
+                </a>
+              ))}
+            </div>
+          </section>
         </div>
       </div>
-
-      <AnimatePresence>
-        {selectedProject ? (
-          <PortfolioModal
-            key={selectedProject.id}
-            project={selectedProject}
-            onClose={handleCloseProject}
-            shouldReduceMotion={shouldReduceMotion}
-          />
-        ) : null}
-      </AnimatePresence>
+      {selectedProject ? (
+        <ProjectDetails
+          key={selectedProject.id}
+          project={selectedProject}
+          onClose={closeProject}
+        />
+      ) : null}
     </section>
   );
 }
-
-export default Portfolio;
