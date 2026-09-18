@@ -19,8 +19,6 @@
     }
   },
   "hero": {
-    "pauseAnimations": "Pausar animações",
-    "resumeAnimations": "Retomar animações",
     "eyebrow": "Oi, eu sou João Santos",
     "titleLine1": "Um desenvolvedor",
     "titleLine2": "dedicado a criar",

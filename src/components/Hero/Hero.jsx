@@ -20,7 +20,7 @@ const Motion = motion;
 
 const clamp01 = (value) => Math.min(1, Math.max(0, value));
 
-function AnimatedWord({ active }) {
+function AnimatedWord() {
   const { t, i18n } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
@@ -35,14 +35,14 @@ function AnimatedWord({ active }) {
   const activeIndex = words.length ? index % words.length : 0;
 
   useEffect(() => {
-    if (!words.length || !active) return;
+    if (!words.length) return;
 
     const interval = window.setInterval(() => {
       setIndex((prev) => (prev + 1) % words.length);
     }, 2600);
 
     return () => window.clearInterval(interval);
-  }, [words.length, active]);
+  }, [words.length]);
 
   useLayoutEffect(() => {
     const el = sizerRef.current;
@@ -120,11 +120,7 @@ function Hero() {
   });
   const { t, i18n } = useTranslation();
   const heroRef = useRef(null);
-  const [isInView, setIsInView] = useState(true);
-  const [isPageVisible, setIsPageVisible] = useState(() => !document.hidden);
   const [isModelReady, setIsModelReady] = useState(false);
-  const [animationsPaused, setAnimationsPaused] = useState(false);
-  const animationsActive = isInView && isPageVisible && !animationsPaused;
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -178,17 +174,6 @@ function Hero() {
     };
   }, [isMobile, shouldReduceMotion, lowPower]);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => setIsInView(entry.isIntersecting));
-    observer.observe(heroRef.current);
-    const updateVisibility = () => setIsPageVisible(!document.hidden);
-    document.addEventListener("visibilitychange", updateVisibility);
-    return () => {
-      observer.disconnect();
-      document.removeEventListener("visibilitychange", updateVisibility);
-    };
-  }, []);
-
   const handleModelReady = useCallback(() => setIsModelReady(true), []);
   const isPortuguese = i18n.resolvedLanguage?.toLowerCase().startsWith("pt");
 
@@ -220,7 +205,7 @@ function Hero() {
                 isMobile={isMobile}
                 lowPower={lowPower}
                 disableModelInteraction={isMobile || hasTouchPrimaryInput}
-                isActive={animationsActive}
+
                 shouldReduceMotion={shouldReduceMotion}
                 onReady={handleModelReady}
               />
@@ -264,13 +249,13 @@ function Hero() {
                   </span>
 
                   <span className="hero__line hero__line--word">
-                    <AnimatedWord active={animationsActive} />
+                    <AnimatedWord />
                   </span>
                 </>
               ) : (
                 <>
                   <span className="hero__line hero__line--word">
-                    <AnimatedWord active={animationsActive} />
+                    <AnimatedWord />
                   </span>
 
                   <span className="hero__line hero__line--solution">
@@ -285,14 +270,6 @@ function Hero() {
           </Motion.div>
         </div>
       </div>
-      <button
-        type="button"
-        className="hero__animation-toggle"
-        aria-pressed={animationsPaused}
-        onClick={() => setAnimationsPaused((paused) => !paused)}
-      >
-        {t(animationsPaused ? "hero.resumeAnimations" : "hero.pauseAnimations")}
-      </button>
     </section>
   );
 }

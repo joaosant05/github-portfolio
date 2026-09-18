@@ -140,7 +140,9 @@ function FloatingModel({ item, viewer, ModelComponent, reduceMotion = false, isM
     <group ref={fitRef}>
       <group ref={rootRef} position={basePosition} rotation={baseRotation}>
         <group ref={spinRef}>
-          <StackLogo scale={viewer.scale ?? 1.08} />
+          <StackLogo
+            scale={(viewer.scale ?? 1.08) * (isMobile ? 1 : viewer.desktopScaleMultiplier ?? 1)}
+          />
         </group>
       </group>
     </group>

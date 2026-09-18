@@ -6,7 +6,6 @@ import { usePortfolioModel } from "../../hooks/usePortfolioModel";
 export function BB8({
   modelPath = "/models/bb8.glb",
   onAnimationReady,
-  paused = false,
   interactiveHandlers = {},
   ...props
 }) {
@@ -36,11 +35,6 @@ export function BB8({
     };
   }, [actions, animations, mixer, onAnimationReady]);
 
-  useEffect(() => {
-    const clip = animations?.[0];
-    const action = clip ? actions?.[clip.name] : null;
-    action?.setEffectiveTimeScale(paused ? 0 : 1);
-  }, [actions, animations, paused]);
 
   return (
     <group ref={group} {...props} dispose={null}>

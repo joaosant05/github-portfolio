@@ -821,21 +821,6 @@
   }
 }
 
-.hero__animation-toggle {
-  position: absolute;
-  right: max(1.25rem, env(safe-area-inset-right));
-  bottom: 1.25rem;
-  z-index: 10;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  background: var(--color-panel);
-  color: var(--color-text);
-  font: inherit;
-  font-size: 0.7rem;
-  cursor: pointer;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .hero {
     --hero-parallax-bg: 0px;
