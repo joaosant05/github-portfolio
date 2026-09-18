@@ -9,6 +9,9 @@ import {
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { BB8 } from "../models/BB8";
+import RenderLoop from "../models/RenderLoop";
+import CanvasViewport from "../models/CanvasViewport";
+import { canvasEvents } from "../../utils/canvasEvents";
 
 const clamp01 = (value) => Math.min(1, Math.max(0, value));
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
@@ -18,6 +21,7 @@ const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 
 function BB8Runner({
   isMobile,
+  lowPower,
   disableModelInteraction = false,
   onReady,
   shouldReduceMotion,
@@ -57,7 +61,7 @@ function BB8Runner({
     }),
     [isMobile],
   );
-  const modelPath = isMobile ? "/models/bb8-mobile.glb" : "/models/bb8.glb";
+  const modelPath = lowPower ? "/models/bb8-mobile.glb" : "/models/bb8.glb";
 
   const setCursor = useCallback((value) => {
     document.body.style.cursor = value;
@@ -368,6 +372,7 @@ function CameraTarget({ isMobile }) {
 
 export default function HeroScene({
   isMobile,
+  lowPower,
   disableModelInteraction,
   isActive,
   shouldReduceMotion,
@@ -375,17 +380,19 @@ export default function HeroScene({
 }) {
   return (
     <Canvas
+      events={canvasEvents}
+      resize={{ offsetSize: true }}
       camera={
         isMobile
           ? { position: [0, 0.18, 5.25], fov: 31 }
           : { position: [0, 0.35, 5.9], fov: 32 }
       }
-      frameloop={isActive && !shouldReduceMotion ? "always" : "demand"}
-      dpr={isMobile ? [0.75, 1] : [1, 1.25]}
+      frameloop="demand"
+      dpr={lowPower ? 1 : [1, 1.25]}
       gl={{
         alpha: true,
-        antialias: !isMobile,
-        powerPreference: "high-performance",
+        antialias: !lowPower,
+        powerPreference: lowPower ? "low-power" : "default",
       }}
       style={{
         pointerEvents: disableModelInteraction ? "none" : "auto",
@@ -393,12 +400,15 @@ export default function HeroScene({
       }}
       onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
     >
+      <CanvasViewport />
+      <RenderLoop active={isActive && !shouldReduceMotion} fps={lowPower ? 30 : 60} />
       <CameraTarget isMobile={isMobile} />
       <ambientLight intensity={1.18} />
       <directionalLight position={[6, 3, 1]} intensity={1.3} />
       <Suspense fallback={null}>
         <BB8Runner
           isMobile={isMobile}
+          lowPower={lowPower}
           disableModelInteraction={
             disableModelInteraction || shouldReduceMotion
           }

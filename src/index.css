@@ -261,7 +261,7 @@ html.dark {
 }
 
 html.light {
-  --hero-bg-image: url("/assets/theme/dark.jpg");
+  --hero-bg-image: none;
   --hero-text-color: #3f3a34;
   --hero-text-soft-color: #6b6257;
   --hero-muted-color: #6d675f;
@@ -274,7 +274,7 @@ html.light {
   }
 
   html.light {
-    --hero-bg-image: url("/assets/theme/dark-mobile.jpg");
+    --hero-bg-image: none;
   }
 }
 

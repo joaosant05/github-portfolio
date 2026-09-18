@@ -67,7 +67,9 @@
     "carouselDotsAriaLabel": "Navigation between about section panels",
     "carouselPagination": "Panel navigation",
     "stackFeaturedTooltip": "Frequently used technology in my projects",
-    "stackFeaturedAriaLabel": "{{stack}} is a frequently used technology in my projects"
+    "stackFeaturedAriaLabel": "{{stack}} is a frequently used technology in my projects",
+    "modelLoading": "Loading 3D model…",
+    "modelUnavailable": "3D model unavailable"
   },
   "work": {
     "eyebrow": "Portfolio",

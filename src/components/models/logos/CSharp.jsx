@@ -7,10 +7,10 @@ Title: C#
 */
 
 import React from 'react'
-import { useGLTF } from '@react-three/drei'
+import { usePortfolioModel } from '../../../hooks/usePortfolioModel'
 
 export function Model(props) {
-  const { nodes, materials } = useGLTF('/models/csharp_icon.glb')
+  const { nodes, materials } = usePortfolioModel('/models/csharp_icon.glb')
   return (
     <group {...props} dispose={null}>
       <group scale={0.01}>

@@ -1,16 +1,15 @@
 // src/components/About/About.jsx
 import React, {
-  Suspense,
-  lazy,
   memo,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import StackModelViewer from "./StackModelViewer";
+import { usePerformanceProfile } from "../../hooks/usePerformanceProfile";
 import achievementsData from "../../data/achivements";
 import { profileConfig } from "../../data/siteConfig";
 import { socialIconMap } from "../../utils/socialIcons";
@@ -23,26 +22,6 @@ function normalizeLogoKey(value = "") {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]/g, "");
 }
-
-const loadModel = (importer) =>
-  lazy(() => importer().then((module) => ({ default: module.Model })));
-
-const logoRegistry = {
-  csharp: loadModel(() => import("../models/logos/CSharp")),
-  devops: loadModel(() => import("../models/logos/Devops")),
-  digitalocean: loadModel(() => import("../models/logos/DigitalOcean")),
-  docker: loadModel(() => import("../models/logos/Docker")),
-  fastapi: loadModel(() => import("../models/logos/Fastapi")),
-  figma: loadModel(() => import("../models/logos/Figma")),
-  git: loadModel(() => import("../models/logos/Git")),
-  illustrator: loadModel(() => import("../models/logos/Illustrator")),
-  java: loadModel(() => import("../models/logos/Java")),
-  javascript: loadModel(() => import("../models/logos/Javascript")),
-  mysql: loadModel(() => import("../models/logos/Mysql")),
-  python: loadModel(() => import("../models/logos/Python")),
-  react: loadModel(() => import("../models/logos/React")),
-  typescript: loadModel(() => import("../models/logos/Typescript")),
-};
 
 const stackFallbackIconMap = {
   csharp: { src: "/assets/logos/stacks/csharp.svg", scale: 0.98 },
@@ -396,147 +375,6 @@ function StackVisualFallback({ item }) {
   );
 }
 
-function FloatingModel({ item, viewer, ModelComponent, reduceMotion = false }) {
-  const rootRef = useRef(null);
-  const spinRef = useRef(null);
-  const StackLogo = ModelComponent;
-
-  const basePosition = useMemo(
-    () => viewer.position ?? [0, -0.12, 0],
-    [viewer.position]
-  );
-
-  const baseRotation = useMemo(
-    () => viewer.rotation ?? [0.08, 0.35, 0],
-    [viewer.rotation]
-  );
-
-  const seed = useMemo(() => {
-    const key = normalizeLogoKey(item.modelKey || item.name || "model");
-    return key.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  }, [item.modelKey, item.name]);
-
-  const phase = useMemo(() => (seed % 360) * (Math.PI / 180), [seed]);
-
-  useFrame(() => {
-    const root = rootRef.current;
-    const spin = spinRef.current;
-
-    if (!root || !spin) return;
-
-    root.position.set(...basePosition);
-    root.rotation.set(...baseRotation);
-
-    spin.rotation.set(0, 0, 0);
-
-    if (reduceMotion) return;
-
-    const t = performance.now() / 1000;
-    const speed = 0.72 + (seed % 4) * 0.05;
-    const spinAmplitude = viewer.spinAmplitude ?? viewer.yawAmplitude ?? 0.34;
-    const spinValue = Math.sin(t * speed + phase) * spinAmplitude;
-    const spinAxis = viewer.spinAxis ?? "y";
-
-    if (spinAxis === "x") {
-      spin.rotation.x = spinValue;
-      return;
-    }
-
-    if (spinAxis === "z") {
-      spin.rotation.z = spinValue;
-      return;
-    }
-
-    spin.rotation.y = spinValue;
-  });
-
-  return (
-    <group ref={rootRef}>
-      <group ref={spinRef}>
-        <StackLogo scale={viewer.scale ?? 1.08} />
-      </group>
-    </group>
-  );
-}
-
-const StackModelCanvas = memo(function StackModelCanvas({
-  item,
-  reduceMotion,
-  isInteractive = true,
-  animateModel = true,
-}) {
-  const ModelComponent =
-    logoRegistry[normalizeLogoKey(item.modelKey || item.name)];
-
-  const viewer = item.viewer || {};
-
-  if (!ModelComponent) {
-    return <StackVisualFallback item={item} />;
-  }
-
-  return (
-    <div
-      className="about__stack-canvas-frame"
-      style={{
-        transform: `translate3d(${viewer.frameOffsetX ?? 0}px, ${
-          viewer.frameOffsetY ?? 0
-        }px, 0)`,
-      }}
-    >
-      <Canvas
-        dpr={animateModel ? [1, 1.35] : 1}
-        shadows={false}
-        frameloop={animateModel && !reduceMotion ? "always" : "demand"}
-        camera={{
-          position: viewer.cameraPosition || [0, 0, 4.2],
-          fov: viewer.fov || 34,
-          near: viewer.near ?? 0.01,
-          far: viewer.far ?? 100,
-        }}
-        gl={{
-          alpha: true,
-          antialias: true,
-          powerPreference: "high-performance",
-          preserveDrawingBuffer: false,
-        }}
-        onCreated={({ gl }) => {
-          gl.setClearColor(0x000000, 0);
-        }}
-      >
-        <ambientLight intensity={1.08} />
-        <directionalLight position={[3.2, 3.2, 4]} intensity={1.6} />
-        <directionalLight position={[-3, -2, 3]} intensity={0.72} />
-
-        <Suspense fallback={null}>
-          <group>
-            <FloatingModel
-              item={item}
-              viewer={viewer}
-              ModelComponent={ModelComponent}
-              reduceMotion={reduceMotion || !animateModel}
-            />
-          </group>
-
-          <OrbitControls
-            enabled={isInteractive}
-            enablePan={false}
-            enableZoom={false}
-            enableRotate={isInteractive}
-            enableDamping={isInteractive}
-            dampingFactor={0.16}
-            rotateSpeed={0.38}
-            target={viewer.target ?? viewer.position ?? [0, 0, 0]}
-            minAzimuthAngle={viewer.minAzimuthAngle ?? -0.45}
-            maxAzimuthAngle={viewer.maxAzimuthAngle ?? 0.45}
-            minPolarAngle={viewer.minPolarAngle ?? Math.PI / 2 - 0.26}
-            maxPolarAngle={viewer.maxPolarAngle ?? Math.PI / 2 + 0.18}
-          />
-        </Suspense>
-      </Canvas>
-    </div>
-  );
-});
-
 function getCircularOffset(index, activeIndex, total) {
   let offset = index - activeIndex;
 
@@ -569,6 +407,9 @@ const TechStackCard = memo(function TechStackCard({
   onSelect,
   reduceMotion,
   renderModel = true,
+  animateModel,
+  lowPower,
+  onModelSettled,
   onInteractionStart,
   onInteractionEnd,
 }) {
@@ -670,16 +511,18 @@ const TechStackCard = memo(function TechStackCard({
 
       <div
         className="about__stack-model-shell"
-        aria-hidden="true"
         onClick={handleModelClick}
         onPointerDown={handleModelPointerDown}
       >
         {renderModel ? (
-          <StackModelCanvas
+          <StackModelViewer
+            fallback={<StackVisualFallback item={item} />}
+            onSettled={onModelSettled}
+            lowPower={lowPower}
             item={item}
             reduceMotion={reduceMotion}
-            isInteractive={isActive}
-            animateModel={isActive}
+            isInteractive={isActive && animateModel}
+            animateModel={animateModel}
           />
         ) : (
           <StackVisualFallback item={item} />
@@ -721,12 +564,24 @@ function About() {
 
   const [isInView, setIsInView] = useState(false);
   const [activePanel, setActivePanel] = useState(0);
+  const [hasOpenedStack, setHasOpenedStack] = useState(false);
   const [activeStackIndex, setActiveStackIndex] = useState(2);
   const [isStackPaused, setIsStackPaused] = useState(false);
   const [isStackInteracting, setIsStackInteracting] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [isStackDragging, setIsStackDragging] = useState(false);
-  const shouldRenderStackModel = activePanel === 1;
+  const { lowPower } = usePerformanceProfile();
+  const [isPageVisible, setIsPageVisible] = useState(() => !document.hidden);
+  const [settledStack, setSettledStack] = useState(null);
+  const handleModelSettled = useCallback((name) => setSettledStack(name), []);
+  const shouldRenderStackModel = activePanel === 1 && isInView && isPageVisible;
+  const isCurrentModelSettled = settledStack === stackItems[activeStackIndex].name;
+
+  useEffect(() => {
+    const updateVisibility = () => setIsPageVisible(!document.hidden);
+    document.addEventListener("visibilitychange", updateVisibility);
+    return () => document.removeEventListener("visibilitychange", updateVisibility);
+  }, []);
 
   const achievements = useMemo(() => {
     const list = Array.isArray(achievementsData) ? achievementsData : [];
@@ -786,7 +641,7 @@ function About() {
           (parseAchievementDate(b.issuedAt)?.getTime() || 0) -
           (parseAchievementDate(a.issuedAt)?.getTime() || 0)
       );
-  }, [t, i18n.language]);
+  }, [t]);
 
   const featuredAchievements = useMemo(
     () => achievements,
@@ -819,7 +674,7 @@ function About() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsInView(entry.intersectionRatio >= 0.25);
+        setIsInView(entry.isIntersecting);
       },
       {
         threshold: [0, 0.15, 0.25, 0.45, 0.6],
@@ -850,7 +705,8 @@ function About() {
 
   useEffect(() => {
     if (
-      activePanel !== 1 ||
+      !shouldRenderStackModel ||
+      !isCurrentModelSettled ||
       reduceMotion ||
       isStackPaused ||
       isStackInteracting
@@ -863,7 +719,7 @@ function About() {
     }, 3000);
 
     return () => window.clearInterval(intervalId);
-  }, [activePanel, isStackPaused, isStackInteracting, reduceMotion]);
+  }, [shouldRenderStackModel, isCurrentModelSettled, activeStackIndex, isStackPaused, isStackInteracting, reduceMotion]);
 
   const keepCarouselInView = () => {
     if (typeof window === "undefined") return;
@@ -878,15 +734,15 @@ function About() {
   };
 
   const selectPanel = (index) => {
+    if (index === 1) setHasOpenedStack(true);
     setActivePanel(index);
     keepCarouselInView();
   };
 
   const handlePanelChange = (direction) => {
-    setActivePanel((prev) => {
-      const total = carouselItems.length;
-      return (prev + direction + total) % total;
-    });
+    const next = (activePanel + direction + carouselItems.length) % carouselItems.length;
+    if (next === 1) setHasOpenedStack(true);
+    setActivePanel(next);
     keepCarouselInView();
   };
 
@@ -1074,7 +930,7 @@ function About() {
     }`;
 
   return (
-    <section className="about" id="about">
+    <section className={`about${lowPower ? " about--low-power" : ""}`} id="about">
       <div className="c-space">
         <div className="about__shell">
           <div
@@ -1113,7 +969,13 @@ function About() {
                   <div className="about__bio-grid">
                     <div className="about__image-wrap">
                       <img
-                        src="/assets/socials/foto.jpeg"
+                        src="/assets/socials/profile-640.webp"
+                        srcSet="/assets/socials/profile-400.webp 400w, /assets/socials/profile-640.webp 640w"
+                        sizes="(max-width: 640px) 85vw, (max-width: 980px) 320px, 360px"
+                        width="640"
+                        height="960"
+                        loading="lazy"
+                        decoding="async"
                         alt={t("about.photoAlt", {
                           defaultValue: "Profile photo",
                         })}
@@ -1237,12 +1099,15 @@ function About() {
 
                         return (
                           <TechStackCard
-                            key={item.name}
+                            key={offset === 0 ? "active-stack-viewer" : item.name}
                             item={item}
                             offset={offset}
                             onSelect={() => setActiveStackIndex(index)}
                             reduceMotion={reduceMotion}
-                            renderModel={shouldRenderStackModel && offset === 0}
+                            renderModel={hasOpenedStack && offset === 0}
+                            animateModel={shouldRenderStackModel}
+                            lowPower={lowPower}
+                            onModelSettled={handleModelSettled}
                             onInteractionStart={handleStackInteractionStart}
                             onInteractionEnd={handleStackInteractionEnd}
                           />

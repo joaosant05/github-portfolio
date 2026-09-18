@@ -1,6 +1,7 @@
 //src/components/models/BB8.jsx
 import React, { useEffect, useRef } from "react";
-import { useGLTF, useAnimations } from "@react-three/drei";
+import { useAnimations } from "@react-three/drei";
+import { usePortfolioModel } from "../../hooks/usePortfolioModel";
 
 export function BB8({
   modelPath = "/models/bb8.glb",
@@ -10,7 +11,7 @@ export function BB8({
   ...props
 }) {
   const group = useRef();
-  const { nodes, materials, animations } = useGLTF(modelPath);
+  const { nodes, materials, animations } = usePortfolioModel(modelPath);
   const { actions, mixer } = useAnimations(animations, group);
 
   useEffect(() => {

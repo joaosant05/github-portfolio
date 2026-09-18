@@ -67,7 +67,9 @@
     "carouselDotsAriaLabel": "Navegação entre os painéis da seção sobre mim",
     "carouselPagination": "Navegação dos painéis",
     "stackFeaturedTooltip": "Tecnologia de uso recorrente nos meus projetos",
-    "stackFeaturedAriaLabel": "{{stack}} é uma tecnologia de uso recorrente nos meus projetos"
+    "stackFeaturedAriaLabel": "{{stack}} é uma tecnologia de uso recorrente nos meus projetos",
+    "modelLoading": "Carregando modelo 3D…",
+    "modelUnavailable": "Modelo 3D indisponível"
   },
   "work": {
     "eyebrow": "Portfólio",

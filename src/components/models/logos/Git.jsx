@@ -7,10 +7,10 @@ Title: Git logo
 */
 
 import React from 'react'
-import { useGLTF } from '@react-three/drei'
+import { usePortfolioModel } from '../../../hooks/usePortfolioModel'
 
 export function Model(props) {
-  const { nodes, materials } = useGLTF('/models/git_icon.glb')
+  const { nodes, materials } = usePortfolioModel('/models/git_icon.glb')
   return (
     <group {...props} dispose={null}>
       <group rotation={[-Math.PI / 2, 0, 0]}>

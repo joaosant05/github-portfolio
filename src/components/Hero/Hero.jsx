@@ -13,6 +13,7 @@ import { useMediaQuery } from "react-responsive";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import "./Hero.css";
+import { usePerformanceProfile } from "../../hooks/usePerformanceProfile";
 const HeroScene = lazy(() => import("./HeroScene"));
 
 const Motion = motion;
@@ -121,6 +122,7 @@ function AnimatedWord() {
 
 function Hero() {
   const isMobile = useMediaQuery({ maxWidth: 853 });
+  const { lowPower } = usePerformanceProfile();
   const hasTouchPrimaryInput = useMediaQuery({
     query: "(hover: none), (pointer: coarse)",
   });
@@ -135,7 +137,7 @@ function Hero() {
     const el = heroRef.current;
     if (!el) return;
 
-    if (shouldReduceMotion) {
+    if (shouldReduceMotion || lowPower) {
       el.style.setProperty("--hero-parallax-bg", "0px");
       el.style.setProperty("--hero-parallax-canvas", "0px");
       el.style.setProperty("--hero-parallax-content", "0px");
@@ -180,7 +182,7 @@ function Hero() {
       window.removeEventListener("resize", onScroll);
       if (raf) window.cancelAnimationFrame(raf);
     };
-  }, [isMobile, shouldReduceMotion]);
+  }, [isMobile, shouldReduceMotion, lowPower]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => setIsInView(entry.isIntersecting));
@@ -222,6 +224,7 @@ function Hero() {
             <Suspense fallback={null}>
               <HeroScene
                 isMobile={isMobile}
+                lowPower={lowPower}
                 disableModelInteraction={isMobile || hasTouchPrimaryInput}
                 isActive={isInView && isPageVisible}
                 shouldReduceMotion={shouldReduceMotion}

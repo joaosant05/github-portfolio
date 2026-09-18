@@ -7,10 +7,10 @@ Title: Docker Logo
 */
 
 import React from 'react'
-import { useGLTF } from '@react-three/drei'
+import { usePortfolioModel } from '../../../hooks/usePortfolioModel'
 
 export function Model(props) {
-  const { nodes, materials } = useGLTF('/models/docker_icon.glb')
+  const { nodes, materials } = usePortfolioModel('/models/docker_icon.glb')
   return (
     <group {...props} dispose={null}>
       <mesh castShadow receiveShadow geometry={nodes.Object_4.geometry} material={materials.blue} />
