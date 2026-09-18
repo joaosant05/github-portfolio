@@ -19,6 +19,8 @@
     }
   },
   "hero": {
+    "pauseAnimations": "Pausar animações",
+    "resumeAnimations": "Retomar animações",
     "eyebrow": "Oi, eu sou João Santos",
     "titleLine1": "Um desenvolvedor",
     "titleLine2": "dedicado a criar",
@@ -272,6 +274,13 @@
     "productIntegrations": "Produto e integrações"
   },
   "contact": {
+    "formSending": "Enviando…",
+    "formStatus": {
+      "success": "Mensagem encaminhada. Obrigado pelo contato!",
+      "error": "Não foi possível enviar. Seus dados foram mantidos; tente novamente mais tarde.",
+      "timeout": "O serviço demorou para responder. Não foi possível confirmar o envio; seus dados foram mantidos.",
+      "invalid": "Preencha todos os campos antes de enviar."
+    },
     "eyebrow": "Contato",
     "title": "Vamos conversar",
     "description": "Entre em contato para falar sobre projetos, interfaces, automações ou oportunidades de colaboração.",

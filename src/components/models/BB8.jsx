@@ -22,7 +22,7 @@ export function BB8({
 
     action.reset();
     action.setEffectiveWeight(1);
-    action.setEffectiveTimeScale(paused ? 0 : 1);
+    action.setEffectiveTimeScale(1);
     action.play();
 
     onAnimationReady?.({
@@ -34,7 +34,13 @@ export function BB8({
     return () => {
       action.stop();
     };
-  }, [actions, animations, mixer, onAnimationReady, paused]);
+  }, [actions, animations, mixer, onAnimationReady]);
+
+  useEffect(() => {
+    const clip = animations?.[0];
+    const action = clip ? actions?.[clip.name] : null;
+    action?.setEffectiveTimeScale(paused ? 0 : 1);
+  }, [actions, animations, paused]);
 
   return (
     <group ref={group} {...props} dispose={null}>

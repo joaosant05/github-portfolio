@@ -19,6 +19,8 @@
     }
   },
   "hero": {
+    "pauseAnimations": "Pause animations",
+    "resumeAnimations": "Resume animations",
     "eyebrow": "Hi, I'm João Santos",
     "titleLine1": "A developer",
     "titleLine2": "dedicated to creating",
@@ -267,6 +269,13 @@
     "productIntegrations": "Product and integrations"
   },
   "contact": {
+    "formSending": "Sending…",
+    "formStatus": {
+      "success": "Message submitted. Thanks for getting in touch!",
+      "error": "Unable to send. Your details have been kept; please try again later.",
+      "timeout": "The service took too long to respond. Delivery could not be confirmed; your details have been kept.",
+      "invalid": "Please complete all fields before sending."
+    },
     "eyebrow": "Contact",
     "title": "Let's talk",
     "description": "Use the direct channels to talk about projects, interfaces, automation, or collaboration opportunities.",

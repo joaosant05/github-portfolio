@@ -25,6 +25,7 @@ function BB8Runner({
   disableModelInteraction = false,
   onReady,
   shouldReduceMotion,
+  isActive,
 }) {
   const rootRef = useRef(null);
   const visualRef = useRef(null);
@@ -347,7 +348,7 @@ function BB8Runner({
       <group ref={visualRef}>
         <BB8
           modelPath={modelPath}
-          paused={shouldReduceMotion}
+          paused={!isActive}
           onAnimationReady={handleAnimationReady}
           interactiveHandlers={interactiveHandlers}
           scale={RUN_CONFIG.scale}
@@ -401,7 +402,7 @@ export default function HeroScene({
       onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
     >
       <CanvasViewport />
-      <RenderLoop active={isActive && !shouldReduceMotion} fps={lowPower ? 30 : 60} />
+      <RenderLoop active={isActive} fps={lowPower || shouldReduceMotion ? 30 : 60} />
       <CameraTarget isMobile={isMobile} />
       <ambientLight intensity={1.18} />
       <directionalLight position={[6, 3, 1]} intensity={1.3} />
@@ -413,6 +414,7 @@ export default function HeroScene({
             disableModelInteraction || shouldReduceMotion
           }
           shouldReduceMotion={shouldReduceMotion}
+          isActive={isActive}
           onReady={onReady}
         />
       </Suspense>

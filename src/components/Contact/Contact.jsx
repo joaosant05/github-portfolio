@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from "react";
+import { sendContactMessage } from "../../utils/sendContactMessage";
 import {
   FiArrowUpRight,
   FiMail,
@@ -11,31 +13,38 @@ import "./Contact.css";
 function Contact() {
   const { t } = useTranslation();
 
-  const handleSubmit = (event) => {
+  const [status, setStatus] = useState("idle");
+  const pendingRequest = useRef(null);
+
+  useEffect(() => () => pendingRequest.current?.abort(), []);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-
-    const formData = new FormData(event.currentTarget);
-    const name = formData.get("name")?.toString().trim();
-    const email = formData.get("email")?.toString().trim();
-    const subject = formData.get("subject")?.toString().trim();
-    const message = formData.get("message")?.toString().trim();
-
-    const body = [
-      `${t("contact.formNameLabel")}: ${name}`,
-      `${t("contact.formEmailLabel")}: ${email}`,
-      `${t("contact.formSubjectLabel")}: ${subject}`,
-      "",
-      `${t("contact.formMessageLabel")}:`,
-      message,
-    ].join("\n");
-
-    const mailtoSubject = subject
-      ? `${t("contact.formMailSubjectPrefix")} ${subject}`
-      : t("contact.formMailSubjectFallback");
-
-    window.location.href = `mailto:${profileConfig.email}?subject=${encodeURIComponent(
-      mailtoSubject,
-    )}&body=${encodeURIComponent(body)}`;
+    if (pendingRequest.current) return;
+    const form = event.currentTarget;
+    if (!form.reportValidity()) return;
+    const formData = new FormData(form);
+    const fields = Object.fromEntries(
+      ["name", "email", "subject", "message", "_honey"].map((key) => [key, String(formData.get(key) ?? "").trim()]),
+    );
+    if (![fields.name, fields.email, fields.subject, fields.message].every(Boolean)) {
+      setStatus("invalid");
+      return;
+    }
+    const controller = new AbortController();
+    pendingRequest.current = controller;
+    setStatus("sending");
+    const timeout = window.setTimeout(() => controller.abort(), 20000);
+    try {
+      await sendContactMessage(fields, controller.signal);
+      setStatus("success");
+      form.reset();
+    } catch {
+      setStatus(controller.signal.aborted ? "timeout" : "error");
+    } finally {
+      window.clearTimeout(timeout);
+      pendingRequest.current = null;
+    }
   };
 
   return (
@@ -80,6 +89,7 @@ function Contact() {
               className="contact__form"
               aria-label={t("contact.formAriaLabel")}
               onSubmit={handleSubmit}
+              aria-busy={status === "sending"}
             >
               <h3 className="contact__form-title">{t("contact.formTitle")}</h3>
 
@@ -125,10 +135,18 @@ function Contact() {
                 />
               </label>
 
-              <button className="contact__submit" type="submit">
-                <span>{t("contact.formSubmitLabel")}</span>
+              <label className="contact__honeypot" aria-hidden="true">
+                Leave this field empty
+                <input name="_honey" type="text" tabIndex={-1} autoComplete="off" />
+              </label>
+
+              <button className="contact__submit" type="submit" disabled={status === "sending"}>
+                <span>{t(status === "sending" ? "contact.formSending" : "contact.formSubmitLabel")}</span>
                 <FiSend aria-hidden="true" />
               </button>
+              <p className={`contact__form-status is-${status}`} role="status" aria-live="polite">
+                {status !== "idle" && status !== "sending" ? t(`contact.formStatus.${status}`) : ""}
+              </p>
             </form>
           </div>
         </div>

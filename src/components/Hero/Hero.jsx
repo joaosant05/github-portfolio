@@ -20,7 +20,7 @@ const Motion = motion;
 
 const clamp01 = (value) => Math.min(1, Math.max(0, value));
 
-function AnimatedWord() {
+function AnimatedWord({ active }) {
   const { t, i18n } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
@@ -35,14 +35,14 @@ function AnimatedWord() {
   const activeIndex = words.length ? index % words.length : 0;
 
   useEffect(() => {
-    if (!words.length || shouldReduceMotion) return;
+    if (!words.length || !active) return;
 
     const interval = window.setInterval(() => {
       setIndex((prev) => (prev + 1) % words.length);
     }, 2600);
 
     return () => window.clearInterval(interval);
-  }, [words.length, shouldReduceMotion]);
+  }, [words.length, active]);
 
   useLayoutEffect(() => {
     const el = sizerRef.current;
@@ -75,14 +75,6 @@ function AnimatedWord() {
 
   if (!words.length) return null;
 
-  if (shouldReduceMotion) {
-    return (
-      <span className="hero__word-wrap hero__word-wrap--static">
-        <span className="hero__word hero__word--static">{words[0]}</span>
-      </span>
-    );
-  }
-
   return (
     <>
       <span className="hero__sr-only">{words[0]}</span>
@@ -104,9 +96,9 @@ function AnimatedWord() {
           <Motion.span
             key={`${i18n.resolvedLanguage}-${activeIndex}-${words[activeIndex]}`}
             className="hero__word"
-            initial={{ opacity: 0, y: 18, filter: "blur(6px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            exit={{ opacity: 0, y: -18, filter: "blur(4px)" }}
+            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -18 }}
             transition={{
               duration: 0.42,
               ease: [0.22, 1, 0.36, 1],
@@ -131,6 +123,8 @@ function Hero() {
   const [isInView, setIsInView] = useState(true);
   const [isPageVisible, setIsPageVisible] = useState(() => !document.hidden);
   const [isModelReady, setIsModelReady] = useState(false);
+  const [animationsPaused, setAnimationsPaused] = useState(false);
+  const animationsActive = isInView && isPageVisible && !animationsPaused;
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -226,7 +220,7 @@ function Hero() {
                 isMobile={isMobile}
                 lowPower={lowPower}
                 disableModelInteraction={isMobile || hasTouchPrimaryInput}
-                isActive={isInView && isPageVisible}
+                isActive={animationsActive}
                 shouldReduceMotion={shouldReduceMotion}
                 onReady={handleModelReady}
               />
@@ -270,13 +264,13 @@ function Hero() {
                   </span>
 
                   <span className="hero__line hero__line--word">
-                    <AnimatedWord />
+                    <AnimatedWord active={animationsActive} />
                   </span>
                 </>
               ) : (
                 <>
                   <span className="hero__line hero__line--word">
-                    <AnimatedWord />
+                    <AnimatedWord active={animationsActive} />
                   </span>
 
                   <span className="hero__line hero__line--solution">
@@ -291,6 +285,14 @@ function Hero() {
           </Motion.div>
         </div>
       </div>
+      <button
+        type="button"
+        className="hero__animation-toggle"
+        aria-pressed={animationsPaused}
+        onClick={() => setAnimationsPaused((paused) => !paused)}
+      >
+        {t(animationsPaused ? "hero.resumeAnimations" : "hero.pauseAnimations")}
+      </button>
     </section>
   );
 }
