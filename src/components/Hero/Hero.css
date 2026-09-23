@@ -508,6 +508,44 @@
   }
 }
 
+.hero__fallback {
+  position: absolute;
+  left: 63%;
+  bottom: 30%;
+  width: clamp(130px, 15vw, 240px);
+  animation: hero-fallback-travel 10s ease-in-out infinite;
+}
+
+.hero__fallback svg { display: block; width: 100%; height: auto; }
+.hero__fallback-body {
+  transform-origin: 100px 166px;
+  animation: hero-fallback-roll 10s ease-in-out infinite;
+}
+.hero__fallback-head {
+  transform-origin: 100px 100px;
+  animation: hero-fallback-tilt 2.5s ease-in-out infinite alternate;
+}
+@keyframes hero-fallback-travel {
+  0%, 72%, 100% { transform: translateX(0); }
+  85% { transform: translateX(55vw); }
+  85.01% { transform: translateX(-85vw); }
+}
+@keyframes hero-fallback-roll {
+  0%, 72% { transform: rotate(0); }
+  100% { transform: rotate(720deg); }
+}
+@keyframes hero-fallback-tilt {
+  from { transform: rotate(-5deg); }
+  to { transform: rotate(5deg); }
+}
+.hero.is-paused .hero__fallback,
+.hero.is-paused .hero__fallback g,
+.hero.is-paused .hero__model-loader span { animation-play-state: paused; }
+
+@media (max-width: 853px) {
+  .hero__fallback { left: 56%; bottom: 25%; width: clamp(110px, 27vw, 190px); }
+}
+
 @keyframes hero-loader-pulse {
   0%,
   100% {
@@ -831,13 +869,17 @@
 
   .hero__backdrop::before,
   .hero__canvas-shell,
-  .hero__content {
+  .hero__content,
+  .hero__canvas-zone,
+  .hero__content-zone {
     transform: none !important;
   }
 
   .hero__model-loader-ring,
   .hero__model-loader-core,
-  .hero__model-loader-shadow {
+  .hero__model-loader-shadow,
+  .hero__fallback,
+  .hero__fallback g {
     animation: none !important;
   }
 }

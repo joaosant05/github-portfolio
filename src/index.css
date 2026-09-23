@@ -253,7 +253,7 @@
 }
 
 html.dark {
-  --hero-bg-image: url("/assets/theme/desert.jpg");
+  --hero-bg-image: url("/assets/theme/desert.webp");
   --hero-text-color: #f4e4c8;
   --hero-text-soft-color: #e8d3af;
   --hero-muted-color: #d8c199;
@@ -270,7 +270,7 @@ html.light {
 
 @media (max-width: 853px) {
   html.dark {
-    --hero-bg-image: url("/assets/theme/desert-mobile.jpg");
+    --hero-bg-image: url("/assets/theme/desert-mobile.webp");
   }
 
   html.light {

@@ -1,0 +1,124 @@
+[
+  {
+    "asset": "bb8-mobile.glb",
+    "beforeBytes": 2178340,
+    "afterBytes": 1319812,
+    "beforeTriangles": 50227,
+    "afterTriangles": 21115
+  },
+  {
+    "asset": "bb8.glb",
+    "beforeBytes": 4284600,
+    "afterBytes": 2866632,
+    "beforeTriangles": 96973,
+    "afterTriangles": 41038
+  },
+  {
+    "asset": "csharp_icon.glb",
+    "beforeBytes": 62428,
+    "afterBytes": 56268,
+    "beforeTriangles": 926,
+    "afterTriangles": 616
+  },
+  {
+    "asset": "devops_icon.glb",
+    "beforeBytes": 12232,
+    "afterBytes": 7384,
+    "beforeTriangles": 455,
+    "afterTriangles": 228
+  },
+  {
+    "asset": "digitalocean_icon.glb",
+    "beforeBytes": 36924,
+    "afterBytes": 16432,
+    "beforeTriangles": 1256,
+    "afterTriangles": 646
+  },
+  {
+    "asset": "docker_icon.glb",
+    "beforeBytes": 144776,
+    "afterBytes": 74480,
+    "beforeTriangles": 7706,
+    "afterTriangles": 3853
+  },
+  {
+    "asset": "fastapi_icon.glb",
+    "beforeBytes": 171632,
+    "afterBytes": 171632,
+    "beforeTriangles": 3136,
+    "afterTriangles": 3136
+  },
+  {
+    "asset": "figma_icon.glb",
+    "beforeBytes": 143004,
+    "afterBytes": 143004,
+    "beforeTriangles": 2438,
+    "afterTriangles": 2438
+  },
+  {
+    "asset": "git_icon.glb",
+    "beforeBytes": 18808,
+    "afterBytes": 13304,
+    "beforeTriangles": 565,
+    "afterTriangles": 383
+  },
+  {
+    "asset": "illustrator_icon.glb",
+    "beforeBytes": 386976,
+    "afterBytes": 304272,
+    "beforeTriangles": 12612,
+    "afterTriangles": 8352
+  },
+  {
+    "asset": "javascript_icon.glb",
+    "beforeBytes": 138156,
+    "afterBytes": 71368,
+    "beforeTriangles": 7380,
+    "afterTriangles": 3689
+  },
+  {
+    "asset": "java_icon.glb",
+    "beforeBytes": 198680,
+    "afterBytes": 98644,
+    "beforeTriangles": 8826,
+    "afterTriangles": 4412
+  },
+  {
+    "asset": "mysql_icon.glb",
+    "beforeBytes": 321580,
+    "afterBytes": 166456,
+    "beforeTriangles": 15584,
+    "afterTriangles": 8094
+  },
+  {
+    "asset": "python_icon.glb",
+    "beforeBytes": 546524,
+    "afterBytes": 546524,
+    "beforeTriangles": 5296,
+    "afterTriangles": 5296
+  },
+  {
+    "asset": "react_icon.glb",
+    "beforeBytes": 995532,
+    "afterBytes": 989244,
+    "beforeTriangles": 18576,
+    "afterTriangles": 18364
+  },
+  {
+    "asset": "typescript_icon.glb",
+    "beforeBytes": 140060,
+    "afterBytes": 72040,
+    "beforeTriangles": 7510,
+    "afterTriangles": 3754
+  },
+  {
+    "asset": "desert.webp",
+    "beforeBytes": 575882,
+    "afterBytes": 157688
+  },
+  {
+    "asset": "desert-mobile.webp",
+    "beforeBytes": 238694,
+    "afterBytes": 72152
+  }
+]

@@ -4,8 +4,10 @@ import { Box3, Vector3, MathUtils } from "three";
 import { OrbitControls } from "@react-three/drei";
 import RenderLoop from "../models/RenderLoop";
 import CanvasViewport from "../models/CanvasViewport";
+import CanvasHealth from "../models/CanvasHealth";
 import ModelErrorBoundary from "./ModelErrorBoundary";
 import { usePerformanceProfile } from "../../hooks/usePerformanceProfile";
+import { useCanvasRenderer } from "../../hooks/useCanvasRenderer";
 
 function normalizeLogoKey(value = "") {
   return value
@@ -160,6 +162,7 @@ const StackModelCanvas = memo(function StackModelCanvas({
   failed,
 }) {
   const { isMobile } = usePerformanceProfile();
+  const createRenderer = useCanvasRenderer(lowPower);
   const ModelComponent =
     logoRegistry[normalizeLogoKey(item.modelKey || item.name)];
 
@@ -189,18 +192,14 @@ const StackModelCanvas = memo(function StackModelCanvas({
           near: viewer.near ?? 0.01,
           far: viewer.far ?? 100,
         }}
-        gl={{
-          alpha: true,
-          antialias: !lowPower,
-          powerPreference: lowPower ? "low-power" : "default",
-          preserveDrawingBuffer: false,
-        }}
+        gl={createRenderer}
         onCreated={({ gl }) => {
           gl.setClearColor(0x000000, 0);
         }}
       >
         <CanvasViewport />
-        <RenderLoop active={animateModel && !failed && !reduceMotion && !lowPower} fps={30} />
+        <CanvasHealth onError={onError} />
+        <RenderLoop active={animateModel && !failed && !reduceMotion} fps={30} lowPower={lowPower} />
         <ambientLight intensity={1.08} />
         <directionalLight position={[3.2, 3.2, 4]} intensity={1.6} />
         <directionalLight position={[-3, -2, 3]} intensity={0.72} />
@@ -213,7 +212,7 @@ const StackModelCanvas = memo(function StackModelCanvas({
               viewer={viewer}
               ModelComponent={ModelComponent}
               isMobile={isMobile}
-              reduceMotion={reduceMotion || !animateModel || lowPower}
+              reduceMotion={reduceMotion || !animateModel}
               onReady={onReady}
             />
           </group>

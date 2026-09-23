@@ -1,7 +1,7 @@
 const backgroundAssets = {
   dark: {
-    desktop: "/assets/theme/desert.jpg",
-    mobile: "/assets/theme/desert-mobile.jpg",
+    desktop: "/assets/theme/desert.webp",
+    mobile: "/assets/theme/desert-mobile.webp",
   },
 };
 

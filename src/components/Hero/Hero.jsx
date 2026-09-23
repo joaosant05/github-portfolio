@@ -14,13 +14,16 @@ import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import "./Hero.css";
 import { usePerformanceProfile } from "../../hooks/usePerformanceProfile";
+import { useElementActivity } from "../../hooks/useElementActivity";
+import ModelErrorBoundary from "../About/ModelErrorBoundary";
+import HeroFallback from "./HeroFallback";
 const HeroScene = lazy(() => import("./HeroScene"));
 
 const Motion = motion;
 
 const clamp01 = (value) => Math.min(1, Math.max(0, value));
 
-function AnimatedWord() {
+function AnimatedWord({ active }) {
   const { t, i18n } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
@@ -35,14 +38,14 @@ function AnimatedWord() {
   const activeIndex = words.length ? index % words.length : 0;
 
   useEffect(() => {
-    if (!words.length) return;
+    if (!words.length || !active || shouldReduceMotion) return;
 
     const interval = window.setInterval(() => {
       setIndex((prev) => (prev + 1) % words.length);
     }, 2600);
 
     return () => window.clearInterval(interval);
-  }, [words.length]);
+  }, [words.length, active, shouldReduceMotion]);
 
   useLayoutEffect(() => {
     const el = sizerRef.current;
@@ -120,20 +123,26 @@ function Hero() {
   });
   const { t, i18n } = useTranslation();
   const heroRef = useRef(null);
+  const isActive = useElementActivity(heroRef);
   const [isModelReady, setIsModelReady] = useState(false);
+  const [sceneFailed, setSceneFailed] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     const el = heroRef.current;
     if (!el) return;
+    const backdrop = el.querySelector(".hero__backdrop");
+    const canvasZone = el.querySelector(".hero__canvas-zone");
+    const contentZone = el.querySelector(".hero__content-zone");
 
-    if (shouldReduceMotion || lowPower) {
-      el.style.setProperty("--hero-parallax-bg", "0px");
-      el.style.setProperty("--hero-parallax-canvas", "0px");
-      el.style.setProperty("--hero-parallax-content", "0px");
-      el.style.setProperty("--hero-parallax-overlay-opacity", "0");
+    if (shouldReduceMotion) {
+      backdrop.style.setProperty("--hero-parallax-bg", "0px");
+      backdrop.style.setProperty("--hero-parallax-overlay-opacity", "0");
+      canvasZone.style.transform = "none";
+      contentZone.style.transform = "none";
       return;
     }
+    if (!isActive) return;
 
     let raf = 0;
 
@@ -148,10 +157,10 @@ function Hero() {
       const contentY = progress * (isMobile ? 55 : 90);
       const overlayOpacity = progress * 0.42;
 
-      el.style.setProperty("--hero-parallax-bg", `${bgY}px`);
-      el.style.setProperty("--hero-parallax-canvas", `${canvasY}px`);
-      el.style.setProperty("--hero-parallax-content", `${contentY}px`);
-      el.style.setProperty(
+      backdrop.style.setProperty("--hero-parallax-bg", `${bgY}px`);
+      canvasZone.style.transform = `translate3d(0, ${-canvasY}px, 0)`;
+      contentZone.style.transform = `translate3d(0, ${-contentY}px, 0)`;
+      backdrop.style.setProperty(
         "--hero-parallax-overlay-opacity",
         overlayOpacity.toFixed(3)
       );
@@ -172,13 +181,17 @@ function Hero() {
       window.removeEventListener("resize", onScroll);
       if (raf) window.cancelAnimationFrame(raf);
     };
-  }, [isMobile, shouldReduceMotion, lowPower]);
+  }, [isMobile, shouldReduceMotion, isActive]);
 
   const handleModelReady = useCallback(() => setIsModelReady(true), []);
+  const handleSceneError = useCallback(() => {
+    setSceneFailed(true);
+    setIsModelReady(true);
+  }, []);
   const isPortuguese = i18n.resolvedLanguage?.toLowerCase().startsWith("pt");
 
   return (
-    <section ref={heroRef} className="hero" id="home">
+    <section ref={heroRef} className={`hero${isActive ? "" : " is-paused"}`} id="home">
       <div className="hero__backdrop" aria-hidden="true">
         <div className="hero__overlay" />
       </div>
@@ -200,6 +213,7 @@ function Hero() {
               </div>
             ) : null}
 
+            {sceneFailed ? <HeroFallback /> : <ModelErrorBoundary onError={handleSceneError}>
             <Suspense fallback={null}>
               <HeroScene
                 isMobile={isMobile}
@@ -208,8 +222,10 @@ function Hero() {
 
                 shouldReduceMotion={shouldReduceMotion}
                 onReady={handleModelReady}
+                onError={handleSceneError}
               />
             </Suspense>
+            </ModelErrorBoundary>}
           </div>
         </Motion.figure>
       </div>
@@ -249,13 +265,13 @@ function Hero() {
                   </span>
 
                   <span className="hero__line hero__line--word">
-                    <AnimatedWord />
+                    <AnimatedWord active={isActive} />
                   </span>
                 </>
               ) : (
                 <>
                   <span className="hero__line hero__line--word">
-                    <AnimatedWord />
+                    <AnimatedWord active={isActive} />
                   </span>
 
                   <span className="hero__line hero__line--solution">

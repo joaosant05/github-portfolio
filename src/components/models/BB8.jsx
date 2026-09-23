@@ -1,23 +1,32 @@
 //src/components/models/BB8.jsx
 import React, { useEffect, useRef } from "react";
-import { useAnimations } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
+import { AnimationMixer } from "three";
 import { usePortfolioModel } from "../../hooks/usePortfolioModel";
 
 export function BB8({
   modelPath = "/models/bb8.glb",
   onAnimationReady,
+  shouldReduceMotion = false,
   interactiveHandlers = {},
   ...props
 }) {
   const group = useRef();
   const { nodes, materials, animations } = usePortfolioModel(modelPath);
-  const { actions, mixer } = useAnimations(animations, group);
+  const mixerRef = useRef(null);
+
+  useFrame((_, delta) => {
+    // Resuming a sleeping canvas must not fast-forward the entire hidden period.
+    if (!shouldReduceMotion) mixerRef.current?.update(Math.min(delta, 0.05));
+  });
 
   useEffect(() => {
     const clip = animations?.[0];
-    const action = clip ? actions?.[clip.name] : null;
-
-    if (!clip || !action) return;
+    if (!clip || !group.current) return;
+    const root = group.current;
+    const mixer = new AnimationMixer(root);
+    const action = mixer.clipAction(clip);
+    mixerRef.current = mixer;
 
     action.reset();
     action.setEffectiveWeight(1);
@@ -32,8 +41,10 @@ export function BB8({
 
     return () => {
       action.stop();
+      mixer.uncacheRoot(root);
+      mixerRef.current = null;
     };
-  }, [actions, animations, mixer, onAnimationReady]);
+  }, [animations, onAnimationReady]);
 
 
   return (

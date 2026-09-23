@@ -5,13 +5,17 @@ import {
   useLayoutEffect,
   useMemo,
   useRef,
+  useState,
+  startTransition,
 } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { BB8 } from "../models/BB8";
 import RenderLoop from "../models/RenderLoop";
 import CanvasViewport from "../models/CanvasViewport";
+import CanvasHealth from "../models/CanvasHealth";
 import { canvasEvents } from "../../utils/canvasEvents";
+import { useCanvasRenderer } from "../../hooks/useCanvasRenderer";
 
 const clamp01 = (value) => Math.min(1, Math.max(0, value));
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
@@ -347,7 +351,7 @@ function BB8Runner({
       <group ref={visualRef}>
         <BB8
           modelPath={modelPath}
-
+          shouldReduceMotion={shouldReduceMotion}
           onAnimationReady={handleAnimationReady}
           interactiveHandlers={interactiveHandlers}
           scale={RUN_CONFIG.scale}
@@ -376,7 +380,13 @@ export default function HeroScene({
   disableModelInteraction,
   shouldReduceMotion,
   onReady,
+  onError,
 }) {
+  const [useLightModel, setUseLightModel] = useState(false);
+  const createRenderer = useCanvasRenderer(lowPower);
+  const handlePressure = useCallback(() => {
+    startTransition(() => setUseLightModel(true));
+  }, []);
   return (
     <Canvas
       events={canvasEvents}
@@ -388,11 +398,7 @@ export default function HeroScene({
       }
       frameloop="demand"
       dpr={lowPower ? 1 : [1, 1.25]}
-      gl={{
-        alpha: true,
-        antialias: !lowPower,
-        powerPreference: lowPower ? "low-power" : "default",
-      }}
+      gl={createRenderer}
       style={{
         pointerEvents: disableModelInteraction ? "none" : "auto",
         touchAction: "pan-y pinch-zoom",
@@ -400,14 +406,15 @@ export default function HeroScene({
       onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
     >
       <CanvasViewport />
-      <RenderLoop active fps={lowPower || shouldReduceMotion ? 30 : 60} />
+      <CanvasHealth onError={onError} />
+      <RenderLoop active={!shouldReduceMotion} fps={lowPower ? 30 : 60} lowPower={lowPower} onPressure={handlePressure} />
       <CameraTarget isMobile={isMobile} />
       <ambientLight intensity={1.18} />
       <directionalLight position={[6, 3, 1]} intensity={1.3} />
       <Suspense fallback={null}>
         <BB8Runner
           isMobile={isMobile}
-          lowPower={lowPower}
+          lowPower={lowPower || useLightModel}
           disableModelInteraction={
             disableModelInteraction || shouldReduceMotion
           }
