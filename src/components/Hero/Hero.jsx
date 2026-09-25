@@ -1,8 +1,5 @@
 // src/components/Hero/Hero.jsx
 import {
-  Suspense,
-  lazy,
-  useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -15,9 +12,7 @@ import { useTranslation } from "react-i18next";
 import "./Hero.css";
 import { usePerformanceProfile } from "../../hooks/usePerformanceProfile";
 import { useElementActivity } from "../../hooks/useElementActivity";
-import ModelErrorBoundary from "../About/ModelErrorBoundary";
-import HeroFallback from "./HeroFallback";
-const HeroScene = lazy(() => import("./HeroScene"));
+import HeroModel from "./HeroModel";
 
 const Motion = motion;
 
@@ -124,8 +119,6 @@ function Hero() {
   const { t, i18n } = useTranslation();
   const heroRef = useRef(null);
   const isActive = useElementActivity(heroRef);
-  const [isModelReady, setIsModelReady] = useState(false);
-  const [sceneFailed, setSceneFailed] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -183,11 +176,6 @@ function Hero() {
     };
   }, [isMobile, shouldReduceMotion, isActive]);
 
-  const handleModelReady = useCallback(() => setIsModelReady(true), []);
-  const handleSceneError = useCallback(() => {
-    setSceneFailed(true);
-    setIsModelReady(true);
-  }, []);
   const isPortuguese = i18n.resolvedLanguage?.toLowerCase().startsWith("pt");
 
   return (
@@ -205,27 +193,13 @@ function Hero() {
           transition={{ delay: 0.2, duration: 0.75, ease: "easeOut" }}
         >
           <div className="hero__canvas">
-            {!isModelReady ? (
-              <div className="hero__model-loader" aria-hidden="true">
-                <span className="hero__model-loader-ring" />
-                <span className="hero__model-loader-core" />
-                <span className="hero__model-loader-shadow" />
-              </div>
-            ) : null}
-
-            {sceneFailed ? <HeroFallback /> : <ModelErrorBoundary onError={handleSceneError}>
-            <Suspense fallback={null}>
-              <HeroScene
-                isMobile={isMobile}
-                lowPower={lowPower}
-                disableModelInteraction={isMobile || hasTouchPrimaryInput}
-
-                shouldReduceMotion={shouldReduceMotion}
-                onReady={handleModelReady}
-                onError={handleSceneError}
-              />
-            </Suspense>
-            </ModelErrorBoundary>}
+            <HeroModel
+              active={isActive}
+              isMobile={isMobile}
+              lowPower={lowPower}
+              disableModelInteraction={isMobile || hasTouchPrimaryInput}
+              shouldReduceMotion={shouldReduceMotion}
+            />
           </div>
         </Motion.figure>
       </div>

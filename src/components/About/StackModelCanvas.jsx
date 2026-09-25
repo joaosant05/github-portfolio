@@ -1,4 +1,4 @@
-import { Suspense, lazy, memo, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { Suspense, lazy, memo, useLayoutEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Box3, Vector3, MathUtils } from "three";
 import { OrbitControls } from "@react-three/drei";
@@ -8,6 +8,7 @@ import CanvasHealth from "../models/CanvasHealth";
 import ModelErrorBoundary from "./ModelErrorBoundary";
 import { usePerformanceProfile } from "../../hooks/usePerformanceProfile";
 import { useCanvasRenderer } from "../../hooks/useCanvasRenderer";
+import PreparedModel from "../models/PreparedModel";
 
 function normalizeLogoKey(value = "") {
   return value
@@ -37,15 +38,12 @@ const logoRegistry = {
   typescript: loadModel(() => import("../models/logos/Typescript")),
 };
 
-function FloatingModel({ item, viewer, ModelComponent, reduceMotion = false, isMobile, onReady }) {
+function FloatingModel({ item, viewer, ModelComponent, reduceMotion = false, isMobile }) {
   const fitRef = useRef(null);
   const rootRef = useRef(null);
   const spinRef = useRef(null);
   const StackLogo = ModelComponent;
   const { camera, size, invalidate } = useThree();
-  const readyFrame = useRef(null);
-  const reportedReady = useRef(false);
-  useEffect(() => () => window.cancelAnimationFrame(readyFrame.current), []);
 
   const basePosition = useMemo(
     () => viewer.position ?? [0, -0.12, 0],
@@ -106,11 +104,6 @@ function FloatingModel({ item, viewer, ModelComponent, reduceMotion = false, isM
     const spin = spinRef.current;
 
     if (!root || !spin) return;
-    // Run after this frame has submitted the loaded model to the renderer.
-    if (!reportedReady.current) {
-      reportedReady.current = true;
-      readyFrame.current = window.requestAnimationFrame(onReady);
-    }
 
     root.position.set(...basePosition);
     root.rotation.set(...baseRotation);
@@ -206,16 +199,15 @@ const StackModelCanvas = memo(function StackModelCanvas({
 
         {!failed && <ModelErrorBoundary key={item.name} onError={onError}>
         <Suspense fallback={null}>
-          <group>
+          <PreparedModel key={item.name} onReady={onReady} onError={onError}>
             <FloatingModel
               item={item}
               viewer={viewer}
               ModelComponent={ModelComponent}
               isMobile={isMobile}
               reduceMotion={reduceMotion || !animateModel}
-              onReady={onReady}
             />
-          </group>
+          </PreparedModel>
 
           <OrbitControls
             enabled={isInteractive}

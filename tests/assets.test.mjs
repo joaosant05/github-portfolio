@@ -6,9 +6,9 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { QuaternionKeyframeTrack, VectorKeyframeTrack } from 'three';
 
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS);
-for (const name of (await readdir('public/models')).filter(name => name.endsWith('.glb'))) {
+for (const name of (await readdir('asset-sources/models')).filter(name => name.endsWith('.glb'))) {
   test(`${name}: optimization preserves named scene, materials and animation targets`, async () => {
-    const before = (await io.read(`public/models/${name}`)).getRoot();
+    const before = (await io.read(`asset-sources/models/${name}`)).getRoot();
     const after = (await io.read(`public/models/optimized/${name}`)).getRoot();
     const names = list => list.map(item => item.getName()).sort();
     assert.deepEqual(names(after.listNodes()), names(before.listNodes()));

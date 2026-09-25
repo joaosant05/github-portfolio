@@ -14,8 +14,8 @@ const triangles = (document) => document.getRoot().listMeshes().reduce(
   (sum, mesh) => sum + mesh.listPrimitives().reduce(
     (n, primitive) => n + (primitive.getIndices()?.getCount() ?? primitive.getAttribute('POSITION').getCount()) / 3, 0), 0);
 
-for (const name of (await readdir('public/models')).filter((name) => name.endsWith('.glb'))) {
-  const input = `public/models/${name}`;
+for (const name of (await readdir('asset-sources/models')).filter((name) => name.endsWith('.glb'))) {
+  const input = `asset-sources/models/${name}`;
   const output = `public/models/optimized/${name}`;
   const document = await io.read(input);
   const before = triangles(document);
@@ -41,7 +41,7 @@ for (const name of (await readdir('public/models')).filter((name) => name.endsWi
 }
 
 for (const name of ['desert', 'desert-mobile']) {
-  const input = `public/assets/theme/${name}.jpg`;
+  const input = `asset-sources/theme/${name}.jpg`;
   const output = `public/assets/theme/${name}.webp`;
   await sharp(input).webp({ quality: 85, effort: 6 }).toFile(output);
   report.push({ asset: `${name}.webp`, beforeBytes: (await stat(input)).size, afterBytes: (await stat(output)).size });

@@ -328,27 +328,10 @@ img {
   height: auto;
 }
 
-a,
-button,
-input,
-textarea,
-section,
-div,
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-span,
-small,
-strong,
-label,
-li,
-ul,
-ol,
-svg {
+/* Motion and parallax already interpolate their frames. Global transitions on
+   div/span/section restart on every update (hundreds of cancellations in Firefox).
+   Keep default hover transitions on controls; components own other animations. */
+:where(a, button, input, textarea, select) {
   transition:
     background-color var(--ease-standard),
     color var(--ease-standard),

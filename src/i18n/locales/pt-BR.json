@@ -19,6 +19,10 @@
     }
   },
   "hero": {
+    "modelErrorTitle": "O modelo 3D não carregou",
+    "modelErrorDescription": "Tentamos carregar o BB-8, mas não foi possível. Atualize a página para tentar novamente.",
+    "modelErrorReload": "Atualizar página",
+    "modelErrorDismiss": "Fechar",
     "eyebrow": "Oi, eu sou João Santos",
     "titleLine1": "Um desenvolvedor",
     "titleLine2": "dedicado a criar",

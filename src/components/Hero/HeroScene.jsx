@@ -16,6 +16,7 @@ import CanvasViewport from "../models/CanvasViewport";
 import CanvasHealth from "../models/CanvasHealth";
 import { canvasEvents } from "../../utils/canvasEvents";
 import { useCanvasRenderer } from "../../hooks/useCanvasRenderer";
+import PreparedModel from "../models/PreparedModel";
 
 const clamp01 = (value) => Math.min(1, Math.max(0, value));
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
@@ -27,13 +28,12 @@ function BB8Runner({
   isMobile,
   lowPower,
   disableModelInteraction = false,
-  onReady,
+  attempt,
   shouldReduceMotion,
 }) {
   const rootRef = useRef(null);
   const visualRef = useRef(null);
   const animRef = useRef(null);
-  const hasReportedReadyRef = useRef(false);
 
   const dragRef = useRef({
     active: false,
@@ -65,24 +65,17 @@ function BB8Runner({
     }),
     [isMobile],
   );
-  const modelPath = lowPower ? "/models/bb8-mobile.glb" : "/models/bb8.glb";
+  const modelPath = (lowPower ? "/models/bb8-mobile.glb" : "/models/bb8.glb") + (attempt ? `?retry=${attempt}` : "");
 
   const setCursor = useCallback((value) => {
     document.body.style.cursor = value;
   }, []);
 
-  const reportReady = useCallback(() => {
-    if (hasReportedReadyRef.current) return;
-    hasReportedReadyRef.current = true;
-    window.requestAnimationFrame(() => onReady?.());
-  }, [onReady]);
-
   const handleAnimationReady = useCallback(
     (data) => {
       animRef.current = data;
-      reportReady();
     },
-    [reportReady],
+    [],
   );
 
   const handlePointerDown = useCallback(
@@ -172,9 +165,7 @@ function BB8Runner({
         obj.receiveShadow = false;
       }
     });
-
-    reportReady();
-  }, [reportReady]);
+  }, []);
 
   useEffect(() => {
     if (disableModelInteraction) return;
@@ -381,6 +372,7 @@ export default function HeroScene({
   shouldReduceMotion,
   onReady,
   onError,
+  attempt = 0,
 }) {
   const [useLightModel, setUseLightModel] = useState(false);
   const createRenderer = useCanvasRenderer(lowPower);
@@ -412,16 +404,15 @@ export default function HeroScene({
       <ambientLight intensity={1.18} />
       <directionalLight position={[6, 3, 1]} intensity={1.3} />
       <Suspense fallback={null}>
-        <BB8Runner
-          isMobile={isMobile}
-          lowPower={lowPower || useLightModel}
-          disableModelInteraction={
-            disableModelInteraction || shouldReduceMotion
-          }
-          shouldReduceMotion={shouldReduceMotion}
-
-          onReady={onReady}
-        />
+        <PreparedModel key={`${lowPower || useLightModel}-${attempt}`} onReady={onReady} onError={onError}>
+          <BB8Runner
+            isMobile={isMobile}
+            lowPower={lowPower || useLightModel}
+            disableModelInteraction={disableModelInteraction || shouldReduceMotion}
+            shouldReduceMotion={shouldReduceMotion}
+            attempt={attempt}
+          />
+        </PreparedModel>
       </Suspense>
     </Canvas>
   );

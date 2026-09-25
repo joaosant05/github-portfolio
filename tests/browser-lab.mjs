@@ -3,6 +3,20 @@ const mode = new URLSearchParams(location.search).get('mode');
 const originalGetContext = HTMLCanvasElement.prototype.getContext;
 const contexts = new WeakSet();
 const counters = new Map();
+if (mode === 'model-retry' || mode === 'model-fail') {
+  const originalFetch = window.fetch.bind(window);
+  let attempts = 0;
+  window.fetch = (input, ...args) => {
+    const url = typeof input === 'string' ? input : input.url;
+    if (/\/models\/optimized\/bb8[^/]*\.glb/.test(url)) {
+      document.body.dataset.testModelRequests = String(++attempts);
+      if (mode === 'model-fail' || attempts === 1) {
+        return Promise.resolve(new Response('Simulated model load failure', { status: 503 }));
+      }
+    }
+    return originalFetch(input, ...args);
+  };
+}
 HTMLCanvasElement.prototype.getContext = function (type, ...args) {
   if (mode === 'no-webgl' && /webgl/.test(type)) return null;
   const context = originalGetContext.call(this, type, ...args);

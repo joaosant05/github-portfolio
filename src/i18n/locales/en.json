@@ -19,6 +19,10 @@
     }
   },
   "hero": {
+    "modelErrorTitle": "The 3D model couldn't load",
+    "modelErrorDescription": "We tried to load BB-8, but couldn't complete it. Refresh the page to try again.",
+    "modelErrorReload": "Refresh page",
+    "modelErrorDismiss": "Close",
     "eyebrow": "Hi, I'm João Santos",
     "titleLine1": "A developer",
     "titleLine2": "dedicated to creating",
