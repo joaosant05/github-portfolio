@@ -138,12 +138,12 @@ function Hero() {
     if (!isActive) return;
 
     let raf = 0;
+    let sectionTop = 0;
+    let viewportHeight = 1;
 
     const updateParallax = () => {
       raf = 0;
-
-      const rect = el.getBoundingClientRect();
-      const progress = clamp01(-rect.top / window.innerHeight);
+      const progress = clamp01((window.scrollY - sectionTop) / viewportHeight);
 
       const bgY = progress * (isMobile ? 40 : 72);
       const canvasY = progress * (isMobile ? 22 : 38);
@@ -159,19 +159,27 @@ function Hero() {
       );
     };
 
+    const measure = () => {
+      // Geometry is stable while scrolling. Read layout only on activation or
+      // resize, then use scrollY in the hot path.
+      sectionTop = el.getBoundingClientRect().top + window.scrollY;
+      viewportHeight = Math.max(1, window.innerHeight);
+      updateParallax();
+    };
+
     const onScroll = () => {
       if (raf) return;
       raf = window.requestAnimationFrame(updateParallax);
     };
 
-    updateParallax();
+    measure();
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", measure);
 
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", measure);
       if (raf) window.cancelAnimationFrame(raf);
     };
   }, [isMobile, shouldReduceMotion, isActive]);

@@ -30,65 +30,48 @@ function Navbar() {
   }, [i18n.language]);
 
   useEffect(() => {
-    let raf = 0;
+    const sections = navItems
+      .map((item) => document.querySelector(item.href))
+      .filter(Boolean);
+    if (!sections.length) return undefined;
 
-    const updateActiveSection = () => {
-      const sections = navItems
-        .map((item) => document.querySelector(item.href))
-        .filter(Boolean);
-
-      if (!sections.length) return;
-
-      const navbarOffset = 140;
-      const currentScroll = window.scrollY + navbarOffset;
-
-      let currentSection = "#home";
-
-      for (const section of sections) {
-        const sectionTop = section.offsetTop;
-        const sectionHeight = section.offsetHeight;
-        const sectionBottom = sectionTop + sectionHeight;
-        const sectionId = `#${section.id}`;
-
-        if (currentScroll >= sectionTop && currentScroll < sectionBottom) {
-          currentSection = sectionId;
-          break;
+    // A narrow band below the fixed navbar replaces offsetTop/offsetHeight
+    // reads on every scroll frame. Only observer callbacks update React state.
+    const visibleSections = new Map();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            visibleSections.set(entry.target.id, entry.intersectionRatio);
+          } else {
+            visibleSections.delete(entry.target.id);
+          }
         }
+
+        let currentSection = null;
+        let greatestRatio = -1;
+        for (const section of sections) {
+          const ratio = visibleSections.get(section.id);
+          if (ratio !== undefined && ratio > greatestRatio) {
+            currentSection = `#${section.id}`;
+            greatestRatio = ratio;
+          }
+        }
+
+        if (currentSection) {
+          setActiveSection((current) =>
+            current === currentSection ? current : currentSection
+          );
+        }
+      },
+      {
+        rootMargin: "-140px 0px -70% 0px",
+        threshold: [0, 0.01, 0.5, 1],
       }
+    );
 
-      const pageBottom =
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 10;
-
-      if (pageBottom) {
-        currentSection = navItems[navItems.length - 1]?.href || "#contact";
-      }
-
-      setActiveSection((current) =>
-        current === currentSection ? current : currentSection
-      );
-    };
-
-    const scheduleActiveSectionUpdate = () => {
-      if (raf) return;
-      raf = window.requestAnimationFrame(() => {
-        raf = 0;
-        updateActiveSection();
-      });
-    };
-
-    updateActiveSection();
-
-    window.addEventListener("scroll", scheduleActiveSectionUpdate, {
-      passive: true,
-    });
-    window.addEventListener("resize", scheduleActiveSectionUpdate);
-
-    return () => {
-      window.removeEventListener("scroll", scheduleActiveSectionUpdate);
-      window.removeEventListener("resize", scheduleActiveSectionUpdate);
-      if (raf) window.cancelAnimationFrame(raf);
-    };
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
   }, [navItems]);
 
   useEffect(() => {

@@ -9,6 +9,8 @@ export function useCanvasRenderer(lowPower) {
         ...defaults,
         alpha: true,
         antialias: !lowPower,
+        depth: true,
+        stencil: false,
         powerPreference: lowPower ? "low-power" : "default",
         preserveDrawingBuffer: false,
       });

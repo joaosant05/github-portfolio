@@ -4,7 +4,17 @@ import { cappedDpr, createRenderQuality, sampleRenderQuality } from "../../utils
 
 // Demand rendering lets hidden/static scenes sleep, and avoids running at
 // 120/144 fps on high-refresh screens. Controls can still invalidate on input.
-export default function RenderLoop({ active, fps = 60, lowPower = false, onPressure }) {
+const SAMPLE_WINDOW_MS = 1000;
+const WARMUP_MS = 1500;
+const SCROLL_IDLE_MS = 140;
+
+export default function RenderLoop({
+  active,
+  fps = 60,
+  lowPower = false,
+  onPressure,
+  scrollFps = null,
+}) {
   const { invalidate, gl, setDpr, size } = useThree();
   const frames = useRef(0);
   const savedQuality = useRef(null);
@@ -26,16 +36,21 @@ export default function RenderLoop({ active, fps = 60, lowPower = false, onPress
     let sampleStart = 0;
     let sampleFrames = 0;
     let warmupUntil = 0;
+    let scrolling = false;
+    let scrollTimer = 0;
 
     const tick = (now) => {
       raf = window.requestAnimationFrame(tick);
-      const interval = 1000 / quality.fps;
+      const targetFps = scrolling && scrollFps
+        ? Math.min(quality.fps, scrollFps)
+        : quality.fps;
+      const interval = 1000 / targetFps;
       if (now - lastTick >= interval - 1) {
         // Avoid accumulating requests or catch-up frames after a slow render.
         lastTick = now - (Math.max(0, now - lastTick - interval) % interval);
         invalidate();
       }
-      if (now >= warmupUntil && now - sampleStart >= 1500) {
+      if (!scrolling && now >= warmupUntil && now - sampleStart >= SAMPLE_WINDOW_MS) {
         const measured = (frames.current - sampleFrames) * 1000 / (now - sampleStart);
         const next = sampleRenderQuality(quality, measured);
         if (!pressureReported && next.dpr <= 0.7 && quality.slow >= 1 && measured < quality.fps * 0.78) {
@@ -54,6 +69,21 @@ export default function RenderLoop({ active, fps = 60, lowPower = false, onPress
         }
       }
     };
+    const resetSample = () => {
+      sampleStart = performance.now();
+      sampleFrames = frames.current;
+    };
+    const onScroll = () => {
+      if (!scrollFps || !visible) return;
+      scrolling = true;
+      resetSample();
+      window.clearTimeout(scrollTimer);
+      scrollTimer = window.setTimeout(() => {
+        scrolling = false;
+        resetSample();
+        invalidate();
+      }, SCROLL_IDLE_MS);
+    };
     const sync = () => {
       window.cancelAnimationFrame(raf);
       raf = 0;
@@ -62,7 +92,7 @@ export default function RenderLoop({ active, fps = 60, lowPower = false, onPress
       if (!running) return;
       lastTick = sampleStart = performance.now();
       sampleFrames = frames.current;
-      warmupUntil = sampleStart + 3000;
+      warmupUntil = sampleStart + WARMUP_MS;
       quality.slow = quality.fast = 0;
       invalidate();
       raf = window.requestAnimationFrame(tick);
@@ -74,13 +104,16 @@ export default function RenderLoop({ active, fps = 60, lowPower = false, onPress
     });
     observer.observe(canvas);
     document.addEventListener("visibilitychange", sync);
+    if (scrollFps) window.addEventListener("scroll", onScroll, { passive: true });
     sync();
     return () => {
       window.cancelAnimationFrame(raf);
+      window.clearTimeout(scrollTimer);
       observer.disconnect();
       document.removeEventListener("visibilitychange", sync);
+      if (scrollFps) window.removeEventListener("scroll", onScroll);
     };
-  }, [active, fps, gl, invalidate, lowPower, onPressure, setDpr, size.width, size.height]);
+  }, [active, fps, gl, invalidate, lowPower, onPressure, scrollFps, setDpr, size.width, size.height]);
 
   return null;
 }

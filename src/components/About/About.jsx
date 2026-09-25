@@ -55,7 +55,7 @@ const stackItems = [
     viewer: {
       cameraPosition: [0, 0, 5.05],
       fov: 34,
-      scale: 0.4,
+      scale: 0.32,
       position: [-0.1, -0.01, 0],
       rotation: [0.08, -0.2, 0],
       minAzimuthAngle: -0.62,
@@ -72,7 +72,7 @@ const stackItems = [
     viewer: {
       cameraPosition: [0, 0, 3.35],
       fov: 34,
-      scale: 10.2,
+      scale: 12.2,
       position: [0, -0.55, 0],
       rotation: [0.08, 0, 0],
       target: [0, 0, 0],
@@ -90,7 +90,7 @@ const stackItems = [
     viewer: {
       cameraPosition: [0, 0, 3.42],
       fov: 34,
-      scale: 10.22,
+      scale: 12.2,
       position: [0, -0.02, 0],
       rotation: [0.08, 0, 0],
       minAzimuthAngle: -0.5,
@@ -107,7 +107,7 @@ const stackItems = [
     viewer: {
       cameraPosition: [0, 0, 5.2],
       fov: 34,
-      scale: 0.03,
+      scale: 0.024,
       desktopScaleMultiplier: 0.85,
       position: [0, -0.06, 0],
       rotation: [0.08, 0.24, 0],
@@ -125,7 +125,7 @@ const stackItems = [
     viewer: {
       cameraPosition: [0, 0, 4.72],
       fov: 34,
-      scale: 0.52,
+      scale: 0.42,
       desktopScaleMultiplier: 0.85,
       position: [0, 0.08, 0],
       target: [0, 0, 0],
@@ -218,7 +218,7 @@ const stackItems = [
     viewer: {
       cameraPosition: [0, 0, 3.18],
       fov: 34,
-      scale: 8.65,
+      scale: 10.4,
       desktopScaleMultiplier: 1.15,
       position: [0, 0, 0],
       rotation: [0.08, 0.26, 0],
@@ -236,7 +236,7 @@ const stackItems = [
     viewer: {
       cameraPosition: [0, 0, 3.15],
       fov: 34,
-      scale: 0.37,
+      scale: 0.45,
       desktopScaleMultiplier: 1.15,
       position: [0, -0.02, 0],
       target: [0, 0, 0],

@@ -399,7 +399,13 @@ export default function HeroScene({
     >
       <CanvasViewport />
       <CanvasHealth onError={onError} />
-      <RenderLoop active={!shouldReduceMotion} fps={lowPower ? 30 : 60} lowPower={lowPower} onPressure={handlePressure} />
+      <RenderLoop
+        active={!shouldReduceMotion}
+        fps={lowPower ? 30 : 60}
+        scrollFps={30}
+        lowPower={lowPower}
+        onPressure={handlePressure}
+      />
       <CameraTarget isMobile={isMobile} />
       <ambientLight intensity={1.18} />
       <directionalLight position={[6, 3, 1]} intensity={1.3} />

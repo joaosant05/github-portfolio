@@ -1797,6 +1797,13 @@
     -webkit-backdrop-filter: none;
   }
 
+  .about__stack-card.is-near-prev,
+  .about__stack-card.is-near-next,
+  .about__stack-card.is-far-prev,
+  .about__stack-card.is-far-next {
+    filter: none;
+  }
+
   .about__stack-carousel-track {
     perspective: none;
     transform-style: flat;

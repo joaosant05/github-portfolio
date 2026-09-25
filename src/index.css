@@ -306,6 +306,15 @@ body {
   font-family: var(--font-family-base);
 }
 
+/* Keep all sections and assets intact while letting the browser skip layout
+   and paint work for content that is still far outside the viewport. */
+.about,
+.portfolio,
+.contact {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
+}
+
 *,
 *::before,
 *::after {
